@@ -1,4 +1,4 @@
-package logica.enums;
+package com.pap.java.datatypes;
 
 public enum Zona {
     BIBLIOTECA_CENTRAL,

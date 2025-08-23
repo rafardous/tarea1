@@ -1,6 +1,9 @@
-package dominio;
+package com.pap.java.logica;
 
 import jakarta.persistence.*;
+import com.pap.java.datatypes.EstadoLector;
+import com.pap.java.datatypes.Zona;
+import com.pap.java.logica.Prestamo;
 import java.util.Date;
 import java.util.List;
 

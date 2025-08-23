@@ -1,4 +1,4 @@
-package dominio;
+package com.pap.java.logica;
 
 import jakarta.persistence.*;
 
