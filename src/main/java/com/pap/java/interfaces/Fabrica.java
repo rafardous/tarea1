@@ -1,6 +1,7 @@
-package com.pap.interfaces;
+package com.pap.java.interfaces;
 
 import com.pap.java.logica.Controlador;
+import com.pap.java.interfaces.IControlador;
 
 public class Fabrica {
     

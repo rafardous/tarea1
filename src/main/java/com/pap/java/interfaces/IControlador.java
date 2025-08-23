@@ -1,4 +1,4 @@
-package com.pap.interfaces;
+package com.pap.java.interfaces;
 
 import com.pap.java.logica.Lector;
 import com.pap.java.logica.Bibliotecario;

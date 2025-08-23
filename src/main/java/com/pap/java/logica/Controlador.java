@@ -1,6 +1,6 @@
 package com.pap.java.logica;
 
-import com.pap.interfaces.IControlador;
+import com.pap.java.interfaces.IControlador;
 import com.pap.java.datatypes.EstadoLector;
 import com.pap.java.datatypes.Zona;
 import java.util.List;
