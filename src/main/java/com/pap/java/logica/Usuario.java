@@ -26,7 +26,6 @@ public abstract class Usuario {
         this.email = email;
     }
 
-    // Getters y setters
     public Long getId() {
         return id;
     }

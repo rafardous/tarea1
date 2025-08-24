@@ -19,38 +19,26 @@ public class DtLector extends DtUsuario {
         this.zona = zona;
     }
 
-    // Getters y setters
+ 
     public String getDireccion() {
         return direccion;
     }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
 
     public Date getFechaRegistro() {
         return fechaRegistro;
     }
 
-    public void setFechaRegistro(Date fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
-    }
 
     public EstadoLector getEstado() {
         return estado;
     }
 
-    public void setEstado(EstadoLector estado) {
-        this.estado = estado;
-    }
 
     public Zona getZona() {
         return zona;
     }
 
-    public void setZona(Zona zona) {
-        this.zona = zona;
-    }
 
     @Override
     public String toString() {

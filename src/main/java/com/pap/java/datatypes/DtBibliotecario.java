@@ -10,13 +10,8 @@ public class DtBibliotecario extends DtUsuario {
         this.numeroEmpleado = numeroEmpleado;
     }
 
-    // Getters y setters
     public String getNumeroEmpleado() {
         return numeroEmpleado;
-    }
-
-    public void setNumeroEmpleado(String numeroEmpleado) {
-        this.numeroEmpleado = numeroEmpleado;
     }
 
     @Override
