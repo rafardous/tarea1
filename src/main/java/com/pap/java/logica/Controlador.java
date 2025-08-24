@@ -3,7 +3,12 @@ package com.pap.java.logica;
 import com.pap.java.interfaces.IControlador;
 import com.pap.java.datatypes.EstadoLector;
 import com.pap.java.datatypes.Zona;
+import com.pap.java.datatypes.DtBibliotecario;
+import com.pap.java.datatypes.DtLector;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 
 public class Controlador implements IControlador {
     
@@ -82,6 +87,58 @@ public class Controlador implements IControlador {
         } catch (Exception e) {
             System.err.println("Error al cambiar zona: " + e.getMessage());
             return false;
+        }
+    }
+    
+    @Override
+    public List<DtLector> listarLectores() {
+        try {
+            List<Usuario> usuarios = manejadorUsuarios.listarUsuarios();
+            List<DtLector> dtLectores = new ArrayList<>();
+            
+            for (Usuario usuario : usuarios) {
+                if (usuario instanceof Lector) {
+                    Lector lector = (Lector) usuario;
+                    DtLector dtLector = new DtLector(
+                        lector.getNombre(),
+                        lector.getEmail(),
+                        lector.getDireccion(),
+                        lector.getFechaRegistro(),
+                        lector.getEstado(),
+                        lector.getZona()
+                    );
+                    dtLectores.add(dtLector);
+                }
+            }
+            
+            return dtLectores;
+        } catch (Exception e) {
+            System.err.println("Error al listar lectores: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<DtBibliotecario> listaBibliotecarios(){
+        try {
+            List<Usuario> usuarios = manejadorUsuarios.listarUsuarios();
+            List<DtBibliotecario> dtBibliotecarios = new ArrayList<>();
+
+            for (Usuario usuario : usuarios) {
+                if (usuario instanceof Bibliotecario) {
+                    Bibliotecario bibliotecario = (Bibliotecario) usuario;
+                    DtBibliotecario dtBibliotecario = new DtBibliotecario(
+                        bibliotecario.getNombre(),
+                        bibliotecario.getEmail(),
+                        bibliotecario.getNumeroEmpleado()
+                    );
+                    dtBibliotecarios.add(dtBibliotecario);
+                }
+            }
+            return dtBibliotecarios;
+        } catch (Exception e) {
+            System.err.println("Error al listar bibliotecarios: " + e.getMessage());
+            return new ArrayList<>();
         }
     }
 }

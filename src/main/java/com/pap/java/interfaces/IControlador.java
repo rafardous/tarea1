@@ -1,9 +1,12 @@
 package com.pap.java.interfaces;
 
+import java.util.List;
 import com.pap.java.logica.Lector;
 import com.pap.java.logica.Bibliotecario;
 import com.pap.java.datatypes.EstadoLector;
 import com.pap.java.datatypes.Zona;
+import com.pap.java.datatypes.DtBibliotecario;
+import com.pap.java.datatypes.DtLector;
 
 public interface IControlador {
     
@@ -16,4 +19,9 @@ public interface IControlador {
     boolean modificarEstado(Long lectorId, EstadoLector nuevoEstado);
 
     boolean cambiarZona(Long lectorId, Zona nuevaZona);
+    
+    // metodo para listar lectores y la otra para bibliotecarios
+    List<DtLector> listarLectores();
+
+    List<DtBibliotecario> listaBibliotecarios();
 }
