@@ -12,7 +12,7 @@ public interface IControlador {
     
     
     // en vez de void, vamo a probar con que devuelva true si pudo registrar/modificar algo y false si hubo error en cada caso de estos
-    boolean registrarLector(Lector lector);
+    boolean registrarLector(Lector lector) throws Exception;
 
     boolean registrarBibliotecario(Bibliotecario bibliotecario);
 

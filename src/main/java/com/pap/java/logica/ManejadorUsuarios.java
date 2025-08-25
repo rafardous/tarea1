@@ -21,7 +21,14 @@ public class ManejadorUsuarios {
         return instancia;
     }
 
-    public void agregarUsuario(Usuario usuario) {
+
+    public void agregarUsuario(Usuario usuario) throws Exception {
+        // check si ya existe un usuario con ese email
+        for (Usuario u : Usuarios) {
+            if (u.getEmail().equalsIgnoreCase(usuario.getEmail())) {
+                throw new Exception("Ya existe un usuario con el email: " + usuario.getEmail());
+            }
+        }
         Usuarios.add(usuario);
     }
 

@@ -199,11 +199,13 @@ public class AltaLector extends JInternalFrame {
             }
             
             // Crear el lector
-            Lector lector = new Lector(nombre, email, direccion, new Date(), 
-                                     (EstadoLector) cmbEstado.getSelectedItem(), 
-                                     (Zona) cmbZona.getSelectedItem());
+            Lector lector = new Lector(
+                nombre, email, direccion, new Date(),
+                (EstadoLector) cmbEstado.getSelectedItem(),
+                (Zona) cmbZona.getSelectedItem()
+            );
             
-            // Registrar usando el controlador
+            // Registrar
             boolean resultado = controlador.registrarLector(lector);
             
             if (resultado) {
@@ -213,20 +215,16 @@ public class AltaLector extends JInternalFrame {
                     JOptionPane.INFORMATION_MESSAGE);
                 limpiarCampos();
                 setVisible(false);
-            } else {
-                JOptionPane.showMessageDialog(this, 
-                    "Error al registrar el lector", 
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE);
             }
             
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, 
-                "Error: " + ex.getMessage(), 
+                ex.getMessage(),  // ahora sí llega "Ya existe un usuario con el email..."
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
         }
     }
+    
     
     private void limpiarCampos() {
         txtNombre.setText("");

@@ -19,18 +19,16 @@ public class Controlador implements IControlador {
     }
     
     @Override
-    public boolean registrarLector(Lector lector) {
-        try {
-            if (lector != null && lector.getNombre() != null && lector.getEmail() != null) {
-                manejadorUsuarios.agregarUsuario(lector);
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            System.err.println("Error al registrar lector: " + e.getMessage());
-            return false;
+    public boolean registrarLector(Lector lector) throws Exception {
+        if (lector != null && lector.getNombre() != null && lector.getEmail() != null) {
+            manejadorUsuarios.agregarUsuario(lector); // puede lanzar excepción
+            return true;
         }
+        throw new Exception("Datos incompletos del lector");
     }
+
+
+
     
     @Override
     public boolean registrarBibliotecario(Bibliotecario bibliotecario) {
