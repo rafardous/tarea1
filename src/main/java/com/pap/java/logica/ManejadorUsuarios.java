@@ -23,14 +23,27 @@ public class ManejadorUsuarios {
 
 
     public void agregarUsuario(Usuario usuario) throws Exception {
-        // check si ya existe un usuario con ese email
         for (Usuario u : Usuarios) {
+            // ver si email repetido
             if (u.getEmail().equalsIgnoreCase(usuario.getEmail())) {
                 throw new Exception("Ya existe un usuario con el email: " + usuario.getEmail());
             }
+    
+            // ver si número de empleado no esta en uso, sólo si se trata de un bibliotecario
+            if (usuario instanceof Bibliotecario && u instanceof Bibliotecario) {
+                Bibliotecario nuevo = (Bibliotecario) usuario;
+                Bibliotecario existente = (Bibliotecario) u;
+    
+                if (nuevo.getNumeroEmpleado().equalsIgnoreCase(existente.getNumeroEmpleado())) {
+                    throw new Exception("Ya existe un bibliotecario con el número de empleado: " 
+                                        + nuevo.getNumeroEmpleado());
+                }
+            }
         }
+    
         Usuarios.add(usuario);
     }
+    
 
     public List<Usuario> listarUsuarios() {
         return Usuarios;

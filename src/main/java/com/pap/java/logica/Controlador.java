@@ -21,29 +21,21 @@ public class Controlador implements IControlador {
     @Override
     public boolean registrarLector(Lector lector) throws Exception {
         if (lector != null && lector.getNombre() != null && lector.getEmail() != null) {
-            manejadorUsuarios.agregarUsuario(lector); // puede lanzar excepción
+            manejadorUsuarios.agregarUsuario(lector); 
             return true;
         }
         throw new Exception("Datos incompletos del lector");
     }
 
-
-
-    
     @Override
-    public boolean registrarBibliotecario(Bibliotecario bibliotecario) {
-        try {
-            if (bibliotecario != null && bibliotecario.getNombre() != null && 
-                bibliotecario.getEmail() != null && bibliotecario.getNumeroEmpleado() != null) {
-                manejadorUsuarios.agregarUsuario(bibliotecario);
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            System.err.println("Error al registrar bibliotecario: " + e.getMessage());
-            return false;
+    public boolean registrarBibliotecario(Bibliotecario bibliotecario) throws Exception {
+        if (bibliotecario != null && bibliotecario.getNombre() != null && bibliotecario.getEmail() != null) {
+            manejadorUsuarios.agregarUsuario(bibliotecario); // puede lanzar excepción
+            return true;
         }
+        throw new Exception("Datos incompletos del bibliotecario");
     }
+   
     
     @Override
     public boolean modificarEstado(Long lectorId, EstadoLector nuevoEstado) {
