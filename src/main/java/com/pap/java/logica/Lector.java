@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@Table(name = "lector")
 public class Lector extends Usuario {
 
     @Column(nullable = false)

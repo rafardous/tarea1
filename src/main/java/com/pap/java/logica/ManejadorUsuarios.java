@@ -10,6 +10,8 @@ public class ManejadorUsuarios {
     private static ManejadorUsuarios instancia = null;
     private List<Usuario> Usuarios;
 
+    
+
     private ManejadorUsuarios() {
         this.Usuarios = new ArrayList<>();
     }
