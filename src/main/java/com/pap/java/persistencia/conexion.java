@@ -1,24 +1,24 @@
-package persistencia;
+package com.pap.java.persistencia;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
-import interfaces.Fabrica;
-import interfaces.IControlador;
-import logica.Controlador;
+import com.pap.java.interfaces.Fabrica;
+import com.pap.java.interfaces.IControlador;
+import com.pap.java.logica.Controlador;
 
-public class Conexion {
-	private static Conexion instancia = null;
+public class conexion {
+	private static conexion instancia = null;
 	private static EntityManagerFactory emf;
 	private static EntityManager em;
 	
-	private Conexion(){}
+	private conexion(){}
 	
-	public static Conexion getInstancia() {
+	public static conexion getInstancia() {
 		if (instancia == null) {
-			instancia = new Conexion();
-			emf = Persistence.createEntityManagerFactory("gymhibernate");
+			instancia = new conexion();
+			emf = Persistence.createEntityManagerFactory("biblioteca");
 			em=emf.createEntityManager();
 		}
 		return instancia;
@@ -32,6 +32,4 @@ public class Conexion {
 		this.em.close();
 		this.emf.close();
 	}
-
-
 }
