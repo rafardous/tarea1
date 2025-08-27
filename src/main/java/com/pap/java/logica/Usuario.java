@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 // Clase abstracta para cualquier usuario del sistema
 @Entity
+@Table(name="Usuarios") 
 @Inheritance(strategy = InheritanceType.JOINED) // permite herencia con subclases
 public abstract class Usuario {
 
