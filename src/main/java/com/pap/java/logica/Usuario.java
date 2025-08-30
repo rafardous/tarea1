@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 // Clase abstracta para cualquier usuario del sistema
 @Entity
+@Table(name="Usuarios") 
 @Inheritance(strategy = InheritanceType.JOINED) // permite herencia con subclases
 public abstract class Usuario {
 
@@ -26,7 +27,6 @@ public abstract class Usuario {
         this.email = email;
     }
 
-    // Getters y setters
     public Long getId() {
         return id;
     }
