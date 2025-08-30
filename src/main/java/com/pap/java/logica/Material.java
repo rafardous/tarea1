@@ -5,6 +5,7 @@ import java.util.Date;
 import com.pap.java.logica.Prestamo;
 
 @Entity
+@Table(name="materiales")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Material {
     

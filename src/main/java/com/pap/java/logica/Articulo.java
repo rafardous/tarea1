@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "articulos")
 public class Articulo extends Material {
     
     @Column(nullable = false)

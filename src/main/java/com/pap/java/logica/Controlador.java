@@ -43,7 +43,7 @@ public class Controlador implements IControlador {
             if (lectorId != null && nuevoEstado != null) {
                 List<Usuario> usuarios = manejadorUsuarios.listarUsuarios();
                 for (Usuario usuario : usuarios) {
-                    if (usuario instanceof Lector && usuario.getId().equals(lectorId)) {
+                    if (usuario instanceof Lector && usuario.getEmail().equals(lectorId.toString())) {
                         Lector lector = (Lector) usuario;
                         lector.setEstado(nuevoEstado);
                         return true;
@@ -64,7 +64,7 @@ public class Controlador implements IControlador {
                 List<Usuario> usuarios = manejadorUsuarios.listarUsuarios();
                 boolean encontrado = false;
                 for (Usuario usuario : usuarios) {
-                    if (usuario instanceof Lector && usuario.getId().equals(lectorId)) {
+                    if (usuario instanceof Lector && usuario.getEmail().equals(lectorId.toString())) {
                         Lector lector = (Lector) usuario;
                         lector.setZona(nuevaZona);
                         encontrado = true;

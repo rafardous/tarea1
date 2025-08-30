@@ -9,14 +9,11 @@ import jakarta.persistence.*;
 public abstract class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;   // Clave primaria (no estaba en el UML, pero es necesaria en BD)
+    @Column(nullable = false, unique = true)
+    private String email;   // Clave primaria usando el email
 
     @Column(nullable = false)
     private String nombre;
-
-    @Column(nullable = false, unique = true)
-    private String email;
 
     // Constructor vacío requerido por JPA
     public Usuario() {}
@@ -27,9 +24,7 @@ public abstract class Usuario {
         this.email = email;
     }
 
-    public Long getId() {
-        return id;
-    }
+
 
     public String getNombre() {
         return nombre;

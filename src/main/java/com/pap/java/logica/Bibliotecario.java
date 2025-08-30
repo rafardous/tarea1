@@ -5,6 +5,7 @@ import java.util.List;
 import com.pap.java.logica.Prestamo;
 
 @Entity
+@Table(name = "bibliotecarios")
 public class Bibliotecario extends Usuario {
     
     @Column(nullable = false)
