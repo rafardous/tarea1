@@ -395,7 +395,8 @@ public class Principal {
         ListaDeLectores listaDeLectoresFrame = new ListaDeLectores(controlador);
         listaDeLectoresFrame.setLocation(200, 100);
         listaDeLectoresFrame.setVisible(true);
-        mainPanel.add(listaDeLectoresFrame);
+        // No agregar el frame al panel - debe ser una ventana independiente
+        // mainPanel.add(listaDeLectoresFrame);
         listaDeLectoresFrame.toFront();
     }
 
@@ -403,7 +404,8 @@ public class Principal {
         ListaDeBibliotecarios listaDeBibliotecariosFrame = new ListaDeBibliotecarios(controlador);
         listaDeBibliotecariosFrame.setLocation(200, 100);
         listaDeBibliotecariosFrame.setVisible(true);
-        mainPanel.add(listaDeBibliotecariosFrame);
+        // No agregar el frame al panel - debe ser una ventana independiente
+        // mainPanel.add(listaDeBibliotecariosFrame);
         listaDeBibliotecariosFrame.toFront();
     }
 }
