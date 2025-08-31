@@ -19,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.pap.java.interfaces.IControlador;
 import com.pap.java.logica.Bibliotecario;
+import com.pap.java.datatypes.DtBibliotecario;
 
 public class AltaBibliotecario extends JInternalFrame {
     
@@ -161,7 +162,7 @@ public class AltaBibliotecario extends JInternalFrame {
             }
             
             // Crear el bibliotecario
-            Bibliotecario bibliotecario = new Bibliotecario(nombre, email, numeroEmpleado);
+            DtBibliotecario bibliotecario = new DtBibliotecario(nombre, email, numeroEmpleado);
             
             // Registrar usando el controlador
             boolean resultado = controlador.registrarBibliotecario(bibliotecario);

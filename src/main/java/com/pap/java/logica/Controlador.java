@@ -3,6 +3,7 @@ package com.pap.java.logica;
 import com.pap.java.interfaces.IControlador;
 import com.pap.java.datatypes.EstadoLector;
 import com.pap.java.datatypes.Zona;
+import com.pap.java.excepciones.UsuarioRepetidoExc;
 import com.pap.java.datatypes.DtBibliotecario;
 import com.pap.java.datatypes.DtLector;
 import java.util.List;
@@ -19,21 +20,48 @@ public class Controlador implements IControlador {
     }
     
     @Override
-    public boolean registrarLector(Lector lector) throws Exception {
-        if (lector != null && lector.getNombre() != null && lector.getEmail() != null) {
-            manejadorUsuarios.agregarUsuario(lector); 
+    public boolean registrarLector(DtLector lector) throws UsuarioRepetidoExc, Exception {
+        ManejadorUsuarios mu = ManejadorUsuarios.getInstancia();
+        if (lector != null && lector.getNombre() != null && lector.getEmail() != null && lector.getDireccion() != null) {
+            if (mu.buscarLector(lector.getEmail()) != null){
+                throw new UsuarioRepetidoExc("Ya existe un usuario con ese email");
+            } else {
+                Usuario nuevoUsuario = null;
+                nuevoUsuario = new Lector(lector.getNombre(),
+                                         lector.getEmail(), 
+                                         lector.getDireccion(), 
+                                         lector.getFechaRegistro(), 
+                                         lector.getEstado(), 
+                                         lector.getZona()
+                                         );
+
+                mu.agregarUsuario(nuevoUsuario); 
             return true;
-        }
+            }
+        } else {
         throw new Exception("Datos incompletos del lector");
+        }
     }
 
     @Override
-    public boolean registrarBibliotecario(Bibliotecario bibliotecario) throws Exception {
-        if (bibliotecario != null && bibliotecario.getNombre() != null && bibliotecario.getEmail() != null) {
-            manejadorUsuarios.agregarUsuario(bibliotecario); // puede lanzar excepción
+    public boolean registrarBibliotecario(DtBibliotecario bibliotecario) throws UsuarioRepetidoExc, Exception {
+        ManejadorUsuarios mu = ManejadorUsuarios.getInstancia();
+        if (bibliotecario != null && bibliotecario.getNombre() != null && bibliotecario.getEmail() != null && bibliotecario.getNumeroEmpleado() != null) {
+            if (mu.buscarLector(bibliotecario.getEmail()) != null){
+                throw new UsuarioRepetidoExc("Ya existe un usuario con ese email");
+            } else {
+                Usuario nuevoUsuario = null;
+                nuevoUsuario = new Bibliotecario(bibliotecario.getNombre(),
+                                                bibliotecario.getEmail(), 
+                                                bibliotecario.getNumeroEmpleado()
+                                                ); 
+
+                mu.agregarUsuario(nuevoUsuario); 
             return true;
-        }
+            }
+        } else {
         throw new Exception("Datos incompletos del bibliotecario");
+        }
     }
    
     

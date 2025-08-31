@@ -8,16 +8,16 @@ import com.pap.java.interfaces.Fabrica;
 import com.pap.java.interfaces.IControlador;
 import com.pap.java.logica.Controlador;
 
-public class conexion {
-	private static conexion instancia = null;
+public class Conexion {
+	private static Conexion instancia = null;
 	private static EntityManagerFactory emf;
 	private static EntityManager em;
 	
-	private conexion(){}
+	private Conexion(){}
 	
-	public static conexion getInstancia() {
+	public static Conexion getInstancia() {
 		if (instancia == null) {
-			instancia = new conexion();
+			instancia = new Conexion();
 			emf = Persistence.createEntityManagerFactory("biblioteca");
 			em=emf.createEntityManager();
 		}

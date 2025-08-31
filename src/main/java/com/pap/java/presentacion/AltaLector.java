@@ -1,4 +1,5 @@
 package com.pap.java.presentacion;
+import com.pap.java.datatypes.DtLector;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -190,6 +191,7 @@ public class AltaLector extends JInternalFrame {
             String email = txtEmail.getText().trim();
             String direccion = txtDireccion.getText().trim();
             
+            // Validación básica
             if (nombre.isEmpty() || email.isEmpty() || direccion.isEmpty()) {
                 JOptionPane.showMessageDialog(this, 
                     "Todos los campos son obligatorios", 
@@ -198,15 +200,26 @@ public class AltaLector extends JInternalFrame {
                 return;
             }
             
-            // Crear el lector
-            Lector lector = new Lector(
+            // Validar de enums
+            EstadoLector estado = (EstadoLector) cmbEstado.getSelectedItem();
+            Zona zona = (Zona) cmbZona.getSelectedItem();
+            
+            if (estado == null || zona == null) {
+                JOptionPane.showMessageDialog(this, 
+                    "Debe seleccionar un estado y una zona", 
+                    "Error de Validación", 
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            // Crear el dtlector
+            DtLector dtlector = new DtLector(
                 nombre, email, direccion, new Date(),
-                (EstadoLector) cmbEstado.getSelectedItem(),
-                (Zona) cmbZona.getSelectedItem()
+                estado, zona
             );
             
             // Registrar
-            boolean resultado = controlador.registrarLector(lector);
+            boolean resultado = controlador.registrarLector(dtlector);
             
             if (resultado) {
                 JOptionPane.showMessageDialog(this, 
@@ -219,7 +232,7 @@ public class AltaLector extends JInternalFrame {
             
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, 
-                ex.getMessage(),  // ahora sí llega "Ya existe un usuario con el email..."
+                ex.getMessage(),
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
         }
