@@ -3,7 +3,6 @@ package com.pap.java.logica;
 import jakarta.persistence.*;
 import com.pap.java.datatypes.EstadoLector;
 import com.pap.java.datatypes.Zona;
-import com.pap.java.logica.Prestamo;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,28 +87,6 @@ public class Lector extends Usuario {
         this.zona = zona;
     }
 
-    public List<Prestamo> getPrestamos() {
-        return prestamos;
-    }
-
-    public void setPrestamos(List<Prestamo> prestamos) {
-        this.prestamos = prestamos;
-    }
-
-    // Métodos de conveniencia para manejar préstamos
-    public void agregarPrestamo(Prestamo prestamo) {
-        if (prestamo != null && !prestamos.contains(prestamo)) {
-            prestamos.add(prestamo);
-            prestamo.setLector(this);
-        }
-    }
-
-    public void removerPrestamo(Prestamo prestamo) {
-        if (prestamo != null && prestamos.remove(prestamo)) {
-            prestamo.setLector(null);
-        }
-    }
-
     @Override
     public String toString() {
         return "Lector{" +
@@ -119,7 +96,6 @@ public class Lector extends Usuario {
                 ", fechaRegistro=" + fechaRegistro +
                 ", estado=" + estado +
                 ", zona=" + zona +
-                ", prestamos=" + prestamos.size() +
                 '}';
     }
 }
