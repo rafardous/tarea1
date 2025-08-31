@@ -5,39 +5,54 @@ import com.pap.java.datatypes.EstadoLector;
 import com.pap.java.datatypes.Zona;
 import com.pap.java.logica.Prestamo;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entidad que representa a un lector del sistema.
+ * Extiende de Usuario y utiliza discriminador "Lector".
+ */
 @Entity
 @Table(name = "lectores")
+@DiscriminatorValue("Lector")
+@PrimaryKeyJoinColumn(name = "email")
 public class Lector extends Usuario {
 
-    @Column(nullable = false)
+    @Column(name = "direccion", nullable = false, length = 200)
     private String direccion;
 
+    @Column(name = "fecha_registro", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date fechaRegistro;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false)
     private EstadoLector estado;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "zona", nullable = false)
     private Zona zona;
 
     // Relación: un lector puede tener muchos préstamos
-    @OneToMany(mappedBy = "lector", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Prestamo> prestamos;
+    @OneToMany(mappedBy = "lector", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Prestamo> prestamos = new ArrayList<>();
 
     // Constructor vacío requerido por JPA
-    public Lector() {}
+    public Lector() {
+        super();
+        this.fechaRegistro = new Date();
+        this.estado = EstadoLector.ACTIVO; // Estado por defecto
+        this.zona = Zona.BIBLIOTECA_CENTRAL; // Zona por defecto
+    }
 
     // Constructor con parámetros
     public Lector(String nombre, String email, String direccion, Date fechaRegistro, 
                   EstadoLector estado, Zona zona) {
         super(nombre, email);
         this.direccion = direccion;
-        this.fechaRegistro = fechaRegistro;
-        this.estado = estado;
-        this.zona = zona;
+        this.fechaRegistro = fechaRegistro != null ? fechaRegistro : new Date();
+        this.estado = estado != null ? estado : EstadoLector.ACTIVO;
+        this.zona = zona != null ? zona : Zona.BIBLIOTECA_CENTRAL;
     }
 
     // Getters y setters
@@ -79,5 +94,32 @@ public class Lector extends Usuario {
 
     public void setPrestamos(List<Prestamo> prestamos) {
         this.prestamos = prestamos;
+    }
+
+    // Métodos de conveniencia para manejar préstamos
+    public void agregarPrestamo(Prestamo prestamo) {
+        if (prestamo != null && !prestamos.contains(prestamo)) {
+            prestamos.add(prestamo);
+            prestamo.setLector(this);
+        }
+    }
+
+    public void removerPrestamo(Prestamo prestamo) {
+        if (prestamo != null && prestamos.remove(prestamo)) {
+            prestamo.setLector(null);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Lector{" +
+                "email='" + getEmail() + '\'' +
+                ", nombre='" + getNombre() + '\'' +
+                ", direccion='" + direccion + '\'' +
+                ", fechaRegistro=" + fechaRegistro +
+                ", estado=" + estado +
+                ", zona=" + zona +
+                ", prestamos=" + prestamos.size() +
+                '}';
     }
 }

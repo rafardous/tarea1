@@ -3,59 +3,71 @@ package com.pap.java.logica;
 import jakarta.persistence.*;
 import com.pap.java.datatypes.EstadoPrestamo;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entidad que representa un préstamo en el sistema.
+ * Gestiona la relación entre lectores, bibliotecarios y materiales.
+ */
 @Entity
 @Table(name = "prestamos")
 public class Prestamo {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
     
-    @Column(nullable = false)
-    @Temporal(TemporalType.DATE)
+    @Column(name = "fecha_solicitud", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaSolicitud;
     
-    @Column(nullable = false)
-    @Temporal(TemporalType.DATE)
+    @Column(name = "fecha_devolucion", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaDevolucion;
     
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "estado", nullable = false)
     private EstadoPrestamo estado;
     
-    // Relación con Lector (1..*)
-    @ManyToOne
-    @JoinColumn(name = "lector_id", nullable = false)
+    // Relación con Lector (ManyToOne)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lector_email", nullable = false, referencedColumnName = "email")
     private Lector lector;
     
-    // Relación con Bibliotecario (1..*)
-    @ManyToOne
-    @JoinColumn(name = "bibliotecario_id", nullable = false)
+    // Relación con Bibliotecario (ManyToOne)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bibliotecario_email", nullable = false, referencedColumnName = "email")
     private Bibliotecario bibliotecario;
     
-    // Relación con Material (1..*)
-    @ManyToMany
+    // Relación con Material (ManyToMany)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "prestamo_material",
         joinColumns = @JoinColumn(name = "prestamo_id"),
         inverseJoinColumns = @JoinColumn(name = "material_id")
     )
-    private List<Material> materiales;
+    private List<Material> materiales = new ArrayList<>();
     
     // Constructor vacío requerido por JPA
-    public Prestamo() {}
+    public Prestamo() {
+        this.fechaSolicitud = new Date();
+        this.estado = EstadoPrestamo.PENDIENTE;
+    }
     
     // Constructor con parámetros
     public Prestamo(Date fechaSolicitud, Date fechaDevolucion, EstadoPrestamo estado, 
                    Lector lector, Bibliotecario bibliotecario, List<Material> materiales) {
-        this.fechaSolicitud = fechaSolicitud;
+        this();
+        this.fechaSolicitud = fechaSolicitud != null ? fechaSolicitud : new Date();
         this.fechaDevolucion = fechaDevolucion;
-        this.estado = estado;
+        this.estado = estado != null ? estado : EstadoPrestamo.PENDIENTE;
         this.lector = lector;
         this.bibliotecario = bibliotecario;
-        this.materiales = materiales;
+        if (materiales != null) {
+            this.materiales.addAll(materiales);
+        }
     }
     
     // Getters y setters
@@ -109,5 +121,35 @@ public class Prestamo {
     
     public void setMateriales(List<Material> materiales) {
         this.materiales = materiales;
+    }
+
+    // Métodos de conveniencia para manejar materiales
+    public void agregarMaterial(Material material) {
+        if (material != null && !materiales.contains(material)) {
+            materiales.add(material);
+        }
+    }
+
+    public void removerMaterial(Material material) {
+        if (material != null) {
+            materiales.remove(material);
+        }
+    }
+
+    public void cambiarEstado(EstadoPrestamo nuevoEstado) {
+        this.estado = nuevoEstado;
+    }
+
+    @Override
+    public String toString() {
+        return "Prestamo{" +
+                "id=" + id +
+                ", fechaSolicitud=" + fechaSolicitud +
+                ", fechaDevolucion=" + fechaDevolucion +
+                ", estado=" + estado +
+                ", lector=" + (lector != null ? lector.getEmail() : "null") +
+                ", bibliotecario=" + (bibliotecario != null ? bibliotecario.getEmail() : "null") +
+                ", materiales=" + materiales.size() +
+                '}';
     }
 }

@@ -1,0 +1,29 @@
+-- Eliminar esquema existente
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+
+-- Crear enums
+CREATE TYPE EstadoLector AS ENUM ('ACTIVO', 'SUSPENDIDO');
+CREATE TYPE Zona AS ENUM ('BIBLIOTECA_CENTRAL', 'BIBLIOTECA_SUR', 'BIBLIOTECA_NORTE', 'BIBLIOTECA_ESTE', 'BIBLIOTECA_OESTE');
+CREATE TYPE EstadoPrestamo AS ENUM ('PENDIENTE', 'EN_CURSO', 'DEVUELTO');
+
+-- Crear tablas con email como PK
+CREATE TABLE "Usuarios" (
+    email VARCHAR(255) PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE lectores (
+    email VARCHAR(255) PRIMARY KEY,
+    direccion VARCHAR(255) NOT NULL,
+    fecha_registro DATE NOT NULL DEFAULT CURRENT_DATE,
+    estado EstadoLector NOT NULL,
+    zona Zona NOT NULL,
+    FOREIGN KEY (email) REFERENCES "Usuarios"(email)
+);
+
+CREATE TABLE bibliotecarios (
+    email VARCHAR(255) PRIMARY KEY,
+    numero_empleado VARCHAR(255) UNIQUE NOT NULL,
+    FOREIGN KEY (email) REFERENCES "Usuarios"(email)
+);
