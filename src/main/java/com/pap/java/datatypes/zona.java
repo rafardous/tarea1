@@ -2,8 +2,8 @@ package com.pap.java.datatypes;
 
 public enum Zona {
     BIBLIOTECA_CENTRAL,
-    BIBLIOTECA_SUR,
-    BIBLIOTECA_NORTE,
-    BIBLIOTECA_ESTE,
-    BIBLIOTECA_OESTE
+    SUCURSAL_ESTE,
+    SUCURSAL_OESTE,
+    BIBLIOTECA_INFANTIL,
+    ARCHIVO_GENERAL
 }
