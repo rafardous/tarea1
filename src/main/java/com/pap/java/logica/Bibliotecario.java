@@ -41,35 +41,12 @@ public class Bibliotecario extends Usuario {
         this.numeroEmpleado = numeroEmpleado;
     }
     
-    public List<Prestamo> getPrestamos() {
-        return prestamos;
-    }
-    
-    public void setPrestamos(List<Prestamo> prestamos) {
-        this.prestamos = prestamos;
-    }
-
-    // Métodos de conveniencia para manejar préstamos
-    public void agregarPrestamo(Prestamo prestamo) {
-        if (prestamo != null && !prestamos.contains(prestamo)) {
-            prestamos.add(prestamo);
-            prestamo.setBibliotecario(this);
-        }
-    }
-
-    public void removerPrestamo(Prestamo prestamo) {
-        if (prestamo != null && prestamos.remove(prestamo)) {
-            prestamo.setBibliotecario(null);
-        }
-    }
-
     @Override
     public String toString() {
         return "Bibliotecario{" +
                 "email='" + getEmail() + '\'' +
                 ", nombre='" + getNombre() + '\'' +
                 ", numeroEmpleado='" + numeroEmpleado + '\'' +
-                ", prestamos=" + prestamos.size() +
                 '}';
     }
 }
