@@ -252,7 +252,7 @@ public class CambiarZonaLector extends JInternalFrame {
         setCamposDatosEnabled(false);
     }
     
-    private void cargarLectores() {
+    public void cargarLectores() {
         try {
             List<DtLector> lectores = controlador.listarLectores();
             

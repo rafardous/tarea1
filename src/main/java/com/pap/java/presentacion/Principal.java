@@ -476,12 +476,16 @@ public class Principal {
     }
     
     public void abrirModificarEstadoLector() {
+        // Recargar lectores antes de mostrar la ventana
+        modificarEstadoLectorInternalFrame.cargarLectores();
         modificarEstadoLectorInternalFrame.setLocation(200, 100);
         modificarEstadoLectorInternalFrame.setVisible(true);
         modificarEstadoLectorInternalFrame.toFront();
     }
     
     public void abrirCambiarZonaLector() {
+        // Recargar lectores antes de mostrar la ventana
+        cambiarZonaLectorInternalFrame.cargarLectores();
         cambiarZonaLectorInternalFrame.setLocation(200, 100);
         cambiarZonaLectorInternalFrame.setVisible(true);
         cambiarZonaLectorInternalFrame.toFront();
