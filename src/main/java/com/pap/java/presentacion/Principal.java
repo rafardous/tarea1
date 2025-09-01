@@ -36,6 +36,7 @@ import javax.swing.border.EmptyBorder;
 import com.pap.java.interfaces.Fabrica;
 import com.pap.java.interfaces.IControlador;
 import com.pap.java.presentacion.ModificarEstadoLector;
+import com.pap.java.presentacion.CambiarZonaLector;
 
 public class Principal {
 
@@ -46,6 +47,7 @@ public class Principal {
     private AltaLector altaLectorInternalFrame;
     private AltaBibliotecario altaBibliotecarioInternalFrame;
     private ModificarEstadoLector modificarEstadoLectorInternalFrame;
+    private CambiarZonaLector cambiarZonaLectorInternalFrame;
 
     private IControlador controlador; // PRUEBO EL CONTROLADOR COMO ATRIBUTO A VER SI FUNCA ACA
 
@@ -94,6 +96,12 @@ public class Principal {
         modificarEstadoLectorInternalFrame.setLocation(200, 100);
         modificarEstadoLectorInternalFrame.setVisible(false);
         mainPanel.add(modificarEstadoLectorInternalFrame);
+        
+        cambiarZonaLectorInternalFrame = new CambiarZonaLector(controlador);
+        cambiarZonaLectorInternalFrame.setClosable(true);
+        cambiarZonaLectorInternalFrame.setLocation(200, 100);
+        cambiarZonaLectorInternalFrame.setVisible(false);
+        mainPanel.add(cambiarZonaLectorInternalFrame);
         
         // Panel de bienvenida con imagen de fondo
         JPanel welcomePanel = new JPanel() {
@@ -379,6 +387,31 @@ public class Principal {
             }
         });
         menuUsuarios.add(menuItemModificarEstadoLector);
+        
+        // -------------------------------------------------------
+        // Item para cambiar zona de lector
+        JMenuItem menuItemCambiarZonaLector = new JMenuItem("Cambiar Zona de Lector") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuItemCambiarZonaLector.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuItemCambiarZonaLector.setForeground(Color.BLACK);
+        menuItemCambiarZonaLector.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        menuItemCambiarZonaLector.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirCambiarZonaLector();
+            }
+        });
+        menuUsuarios.add(menuItemCambiarZonaLector);
         // -------------------------------------------------------
         
         // Menú "Salir" con estilo moderno
@@ -443,8 +476,18 @@ public class Principal {
     }
     
     public void abrirModificarEstadoLector() {
+        // Recargar lectores antes de mostrar la ventana
+        modificarEstadoLectorInternalFrame.cargarLectores();
         modificarEstadoLectorInternalFrame.setLocation(200, 100);
         modificarEstadoLectorInternalFrame.setVisible(true);
         modificarEstadoLectorInternalFrame.toFront();
+    }
+    
+    public void abrirCambiarZonaLector() {
+        // Recargar lectores antes de mostrar la ventana
+        cambiarZonaLectorInternalFrame.cargarLectores();
+        cambiarZonaLectorInternalFrame.setLocation(200, 100);
+        cambiarZonaLectorInternalFrame.setVisible(true);
+        cambiarZonaLectorInternalFrame.toFront();
     }
 }

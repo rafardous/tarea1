@@ -1,7 +1,7 @@
 package com.pap.java.presentacion;
 
 import com.pap.java.datatypes.DtLector;
-import com.pap.java.datatypes.EstadoLector;
+import com.pap.java.datatypes.Zona;
 import com.pap.java.interfaces.IControlador;
 
 import java.awt.Color;
@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-public class ModificarEstadoLector extends JInternalFrame {
+public class CambiarZonaLector extends JInternalFrame {
     
     private IControlador controlador;
     
@@ -42,22 +42,22 @@ public class ModificarEstadoLector extends JInternalFrame {
     private JTextField txtEstadoActual;
     private JTextField txtZona;
     
-    // Componentes para cambio de estado
-    private JComboBox<EstadoLector> cmbEstado;
+    // Componentes para cambio de zona
+    private JComboBox<Zona> cmbZona;
     private JButton btnModificar;
     private JButton btnCancelar;
     
     // Formato de fecha
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-    public ModificarEstadoLector(IControlador controlador) {
+    public CambiarZonaLector(IControlador controlador) {
         this.controlador = controlador;
         initialize();
         cargarLectores();
     }
 
     private void initialize() {
-        setTitle("Modificar Estado de Lector");
+        setTitle("Cambiar Zona de Lector");
         setBounds(0, 0, 500, 500);
         setLayout(null);
         setBorder(BorderFactory.createCompoundBorder(
@@ -87,7 +87,7 @@ public class ModificarEstadoLector extends JInternalFrame {
         add(contentPanel);
         
         // Titulo con estilo moderno
-        JLabel lblTitulo = new JLabel("Modificar Estado de Lector");
+        JLabel lblTitulo = new JLabel("Cambiar Zona de Lector");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
         lblTitulo.setForeground(new Color(52, 73, 94));
         lblTitulo.setBounds(120, 20, 300, 30);
@@ -213,19 +213,19 @@ public class ModificarEstadoLector extends JInternalFrame {
         txtZona.setBounds(140, 315, 300, 25);
         contentPanel.add(txtZona);
         
-        // Seccion de cambio de estado
-        JLabel lblCambiarEstado = new JLabel("Cambiar estado a:");
-        lblCambiarEstado.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblCambiarEstado.setForeground(new Color(52, 73, 94));
-        lblCambiarEstado.setBounds(30, 360, 130, 20);
-        contentPanel.add(lblCambiarEstado);
+        // Seccion de cambio de zona
+        JLabel lblCambiarZona = new JLabel("Cambiar zona a:");
+        lblCambiarZona.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblCambiarZona.setForeground(new Color(52, 73, 94));
+        lblCambiarZona.setBounds(30, 360, 130, 20);
+        contentPanel.add(lblCambiarZona);
         
-        cmbEstado = new JComboBox<>(EstadoLector.values());
-        cmbEstado.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        cmbEstado.setBounds(170, 360, 270, 25);
+        cmbZona = new JComboBox<>(Zona.values());
+        cmbZona.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        cmbZona.setBounds(170, 360, 270, 25);
         // Inicialmente sin seleccion
-        cmbEstado.setSelectedItem(null);
-        contentPanel.add(cmbEstado);
+        cmbZona.setSelectedItem(null);
+        contentPanel.add(cmbZona);
         
         // Botones
         btnModificar = createStyledButton("Modificar", new Color(52, 152, 219));
@@ -233,7 +233,7 @@ public class ModificarEstadoLector extends JInternalFrame {
         btnModificar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                modificarEstado();
+                modificarZona();
             }
         });
         contentPanel.add(btnModificar);
@@ -299,9 +299,9 @@ public class ModificarEstadoLector extends JInternalFrame {
         setCamposDatosEnabled(true);
     }
     
-    private void modificarEstado() {
+    private void modificarZona() {
         DtLector lectorSeleccionado = (DtLector) cmbLector.getSelectedItem();
-        EstadoLector nuevoEstado = (EstadoLector) cmbEstado.getSelectedItem();
+        Zona nuevaZona = (Zona) cmbZona.getSelectedItem();
         
         // Validaciones
         if (lectorSeleccionado == null) {
@@ -312,52 +312,52 @@ public class ModificarEstadoLector extends JInternalFrame {
             return;
         }
         
-        if (nuevoEstado == null) {
+        if (nuevaZona == null) {
             JOptionPane.showMessageDialog(this, 
-                "Debe seleccionar un estado", 
+                "Debe seleccionar una zona", 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        // Verificar si el estado es diferente
-        if (lectorSeleccionado.getEstado() == nuevoEstado) {
+        // Verificar si la zona es diferente
+        if (lectorSeleccionado.getZona() == nuevaZona) {
             JOptionPane.showMessageDialog(this, 
-                "El lector ya tiene el estado seleccionado", 
+                "El lector ya tiene la zona seleccionada", 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
             return;
         }
         
         try {
-            // Llamar al controlador para modificar el estado
-            boolean exito = controlador.modificarEstado(lectorSeleccionado.getEmail(), nuevoEstado);
+            // Llamar al controlador para modificar la zona
+            boolean exito = controlador.cambiarZona(lectorSeleccionado.getEmail(), nuevaZona);
             
             if (exito) {
                 JOptionPane.showMessageDialog(this, 
-                    "Estado modificado exitosamente", 
+                    "Zona modificada exitosamente", 
                     "Exito", 
                     JOptionPane.INFORMATION_MESSAGE);
                 
                 // Actualizar la lista de lectores
                 cargarLectores();
                 
-                // Limpiar seleccion de estado
-                cmbEstado.setSelectedItem(null);
+                // Limpiar seleccion de zona
+                cmbZona.setSelectedItem(null);
                 
                 // Cerrar la ventana
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, 
-                    "Error al modificar el estado", 
+                    "Error al modificar la zona", 
                     "Error", 
                     JOptionPane.ERROR_MESSAGE);
             }
             
         } catch (Exception e) {
-            System.err.println("Error al modificar estado: " + e.getMessage());
+            System.err.println("Error al modificar zona: " + e.getMessage());
             JOptionPane.showMessageDialog(this, 
-                "Error al modificar el estado: " + e.getMessage(), 
+                "Error al modificar la zona: " + e.getMessage(), 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
         }
