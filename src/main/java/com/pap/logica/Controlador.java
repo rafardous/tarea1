@@ -1,4 +1,6 @@
 package com.pap.logica;
+import com.pap.datatypes.*;
+import com.pap.excepciones.*;
 
 import com.pap.interfaces.IControlador;
 import com.pap.datatypes.EstadoLector;
@@ -9,6 +11,7 @@ import com.pap.datatypes.DtLector;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.Date;
 
 
 public class Controlador implements IControlador {
@@ -19,6 +22,8 @@ public class Controlador implements IControlador {
         this.manejadorUsuarios = ManejadorUsuarios.getInstancia();
     }
     
+
+    // -- FUNCIONES DE GESTION DE USUARIOS --------------------------------
     @Override
     public boolean registrarLector(DtLector lector) throws UsuarioRepetidoExc, Exception {
         try {
@@ -188,6 +193,95 @@ public class Controlador implements IControlador {
             bibliotecario.getNumeroEmpleado()
         );
     }
+
+
+    // FUNCIONES DE GESTION DE MATERIALES --------------------------------
+
+    @Override
+    public void RegistrarDonacionLibro(String idLibro, String titulo, String paginas) throws RegistrarDonacionLibroExcepcion{
+		ManejadorGestionMaterial mGM = ManejadorGestionMaterial.getInstancia();
+		Material material = mGM.buscarMaterial(idLibro);
+
+		if (material != null){
+			throw new RegistrarDonacionLibroExcepcion("El Material: " + idLibro + " ya esta registrado");
+		}
+
+		Libro libro = new Libro(idLibro, new Date(), titulo, paginas);
+		mGM.registrarDonacionLibro(libro);
+	}
+
+	@Override
+    public void RegistrarDonacionArticulo(String idArticulo, String descripcion, float pesoKg, String dimensiones) throws RegistrarDonacionArticuloExcepcion{
+		ManejadorGestionMaterial mGM = ManejadorGestionMaterial.getInstancia();
+		Material material = mGM.buscarMaterial(idArticulo);
+
+		if (material != null){
+			throw new RegistrarDonacionArticuloExcepcion("El Material: " + idArticulo + " ya esta registrado");
+		}
+
+		Articulo articulo = new Articulo(idArticulo, new Date(), descripcion, pesoKg, dimensiones);
+		mGM.registrarDonacionArticulo(articulo);
+	}
+
+	@Override
+	public ArrayList<DtArticulo> RegistroDonacionArticulo() throws RegistroDonacionExcepcion{
+		ManejadorGestionMaterial mGM = ManejadorGestionMaterial.getInstancia();
+
+		ArrayList<DtArticulo> articulos = mGM.obtenerArticulos();
+		
+		return articulos;
+	}
+
+	@Override
+	public ArrayList<DtLibro> RegistroDonacionLibro() throws RegistroDonacionExcepcion{
+		ManejadorGestionMaterial mGM = ManejadorGestionMaterial.getInstancia();
+
+		ArrayList<DtLibro> libros = mGM.obtenerLibros();
+		
+		return libros;
+	}
+
+    // FUNCIONES DE GESTION DE PRESTAMOS --------------------------------
+
+    @Override
+    public void RegistroDonacionFecha() throws RegistroDonacionFechaExcepcion{
+		
+	}
+
+	@Override
+    public void RegistrarPrestamo() throws RegistrarPrestamoExcepcion{
+		
+	}
+
+	@Override
+    public void ActualizarEstadoPrestamo() throws ActualizarEstadoPrestamoExcepcion{
+		
+	}
+
+	@Override
+	public void ActualizarPrestamo() throws ActualizarPrestamoExcepcion{
+		
+	}
+
+	@Override
+    public void ListarPrestamoLector() throws ListarPrestamoLectorExcepcion{
+		
+	}
+
+	@Override
+    public void HistorialPrestamoBibliotecario() throws HistorialPrestamoBibliotecarioExcepcion{
+		
+	}
+
+	@Override
+	public void ReportePrestamoZona() throws ReportePrestamoZonaExcepcion{
+		
+	}
+
+	@Override
+    public void MaterialPendiente() throws MaterialPendienteExcepcion{
+		
+	}
 
           
 }
