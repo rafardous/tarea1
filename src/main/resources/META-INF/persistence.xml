@@ -2,13 +2,13 @@
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence" version="3.0">
   <persistence-unit name="biblioteca" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <class>com.pap.java.logica.Usuario</class>
-    <class>com.pap.java.logica.Lector</class>
-    <class>com.pap.java.logica.Bibliotecario</class>
-    <class>com.pap.java.logica.Prestamo</class>
-    <class>com.pap.java.logica.Material</class>
-    <class>com.pap.java.logica.Libro</class>
-    <class>com.pap.java.logica.Articulo</class>
+    <class>com.pap.logica.Usuario</class>
+    <class>com.pap.logica.Lector</class>
+    <class>com.pap.logica.Bibliotecario</class>
+    <class>com.pap.logica.Prestamo</class>
+    <class>com.pap.logica.Material</class>
+    <class>com.pap.logica.Libro</class>
+    <class>com.pap.logica.Articulo</class>
 
     <properties>
       <!-- Configuración de conexión -->
@@ -19,7 +19,7 @@
 
       <!-- Hibernate settings para creación automática -->
       <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="hibernate.hbm2ddl.auto" value="create"/>
       <property name="hibernate.show_sql" value="true"/>
       <property name="hibernate.format_sql" value="true"/>
       

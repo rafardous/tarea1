@@ -54,7 +54,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>com.pap.java.presentacion.Principal</mainClass>
+              <mainClass>com.pap.presentacion.Principal</mainClass>
             </manifest>
           </archive>
         </configuration>

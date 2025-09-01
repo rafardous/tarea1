@@ -1,0 +1,118 @@
+package com.pap.logica;
+
+import com.pap.persistencia.Conexion;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.NoResultException;
+
+
+import com.pap.datatypes.DtArticulo;
+import com.pap.datatypes.DtLibro;
+
+public class ManejadorGestionMaterial {
+    private static ManejadorGestionMaterial instancia = null;
+	
+	private ManejadorGestionMaterial(){}
+	
+	public static ManejadorGestionMaterial getInstancia() {
+		if (instancia == null)
+			instancia = new ManejadorGestionMaterial();
+		return instancia;
+	}
+
+	public void registrarDonacionLibro(Libro libro) {
+		Conexion conexion = Conexion.getInstancia();
+		EntityManager em = conexion.getEntityManager();
+		em.getTransaction().begin();
+		
+		em.persist(libro);
+		
+		em.getTransaction().commit();
+	}
+
+	public void registrarDonacionArticulo(Articulo articulo) {
+		Conexion conexion = Conexion.getInstancia();
+		EntityManager em = conexion.getEntityManager();
+		em.getTransaction().begin();
+		
+		em.persist(articulo);
+		
+		em.getTransaction().commit();
+	}
+
+	public Material buscarMaterial(String idArticulo) {
+		Conexion conexion = Conexion.getInstancia();
+		EntityManager em = conexion.getEntityManager();
+		try {
+			return em.createQuery("SELECT m FROM Material m WHERE m.id = :codigo", Material.class).setParameter("codigo", idArticulo).getSingleResult();
+		} catch (NoResultException arg0) {
+			return null;
+		}
+
+	}
+
+	public ArrayList<DtArticulo> obtenerArticulos(){
+		Conexion conexion = Conexion.getInstancia();
+		EntityManager em = conexion.getEntityManager();
+		
+		ArrayList<DtArticulo> aRetornar = new ArrayList<>();
+
+		try {
+			TypedQuery<Articulo> query = em.createQuery("SELECT a FROM Articulo a", Articulo.class);
+			List<Articulo> listArticulo = query.getResultList();
+			
+			for (Articulo a : listArticulo) {
+				
+				DtArticulo dto = new DtArticulo(
+					a.getIdMaterial(),
+					a.getId(),
+					a.getFechaIngreso(),
+					a.getDescripcion(),
+					a.getPesoKg(),
+					a.getDimensiones()
+				);
+				aRetornar.add(dto);
+			}
+			return aRetornar;
+
+		} catch (NoResultException arg0) {
+			return aRetornar;
+		}
+
+	}
+
+	public ArrayList<DtLibro> obtenerLibros(){
+		Conexion conexion = Conexion.getInstancia();
+		EntityManager em = conexion.getEntityManager();
+		
+		ArrayList<DtLibro> aRetornar = new ArrayList<>();
+
+		try {
+			TypedQuery<Libro> query = em.createQuery("SELECT l FROM Libro l", Libro.class);
+			List<Libro> listLibro = query.getResultList();
+			
+			for (Libro l : listLibro) {
+				
+				DtLibro dto = new DtLibro(
+					l.getIdMaterial(),
+					l.getId(),
+					l.getFechaIngreso(),
+					l.getTitulo(),
+					l.getCantidadPaginas()
+				);
+				aRetornar.add(dto);
+			}
+			return aRetornar;
+			
+		} catch (NoResultException arg0) {
+			return aRetornar;
+		}
+
+	}
+	
+}
