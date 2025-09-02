@@ -8,7 +8,7 @@ import java.util.List;
 
 
 
- //singleton!
+ //singleton
 public class ManejadorUsuarios {
 
     private static ManejadorUsuarios instancia = null;
@@ -121,22 +121,7 @@ public class ManejadorUsuarios {
         }
     }
 
-    public void eliminarUsuario(String email) throws Exception {
-        try {
-            Usuario usuario = buscarUsuario(email);
-            if (usuario != null) {
-                em.getTransaction().begin();
-                em.remove(usuario);
-                em.getTransaction().commit();
-            }
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new Exception("Error al eliminar usuario: " + e.getMessage(), e);
-        }
-    }
-
+    // si me da el tiempo, hago en el jinternalframe la opcion de buscar por nombre al usuario a modificar como detallecito extra
     public List<Usuario> buscarUsuariosPorNombre(String nombre) {
         try {
             TypedQuery<Usuario> query = em.createQuery(

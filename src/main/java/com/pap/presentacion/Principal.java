@@ -27,12 +27,18 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 
 import javax.swing.UIManager;
 
 
 import com.pap.interfaces.Fabrica;
 import com.pap.interfaces.IControlador;
+
+import com.pap.presentacion.RegistrarDonacionLibro;
+import com.pap.presentacion.RegistrarDonacionArticulo;
+import com.pap.presentacion.ConsultarDonacionesRegistradas;
+import com.pap.presentacion.ConsultarDonacionesPorFecha;
 
 
 public class Principal {
@@ -45,6 +51,13 @@ public class Principal {
     private AltaBibliotecario altaBibliotecarioInternalFrame;
     private ModificarEstadoLector modificarEstadoLectorInternalFrame;
     private CambiarZonaLector cambiarZonaLectorInternalFrame;
+    
+    // Internal Frames para gestión de materiales
+
+    private RegistrarDonacionLibro registrarDonacionLibroInternalFrame;
+    private RegistrarDonacionArticulo registrarDonacionArticuloInternalFrame;
+    private ConsultarDonacionesRegistradas consultarDonacionesRegistradasInternalFrame;
+    private ConsultarDonacionesPorFecha consultarDonacionesPorFechaInternalFrame;
 
     private IControlador controlador; // PRUEBO EL CONTROLADOR COMO ATRIBUTO A VER SI FUNCA ACA
 
@@ -99,6 +112,33 @@ public class Principal {
         cambiarZonaLectorInternalFrame.setLocation(200, 100);
         cambiarZonaLectorInternalFrame.setVisible(false);
         mainPanel.add(cambiarZonaLectorInternalFrame);
+        
+
+        // Crear los Internal Frames para gestión de materiales
+        
+        registrarDonacionLibroInternalFrame = new RegistrarDonacionLibro(controlador);
+        registrarDonacionLibroInternalFrame.setClosable(true);
+        registrarDonacionLibroInternalFrame.setLocation(200, 100);
+        registrarDonacionLibroInternalFrame.setVisible(false);
+        mainPanel.add(registrarDonacionLibroInternalFrame);
+        
+        registrarDonacionArticuloInternalFrame = new RegistrarDonacionArticulo(controlador);
+        registrarDonacionArticuloInternalFrame.setClosable(true);
+        registrarDonacionArticuloInternalFrame.setLocation(200, 100);
+        registrarDonacionArticuloInternalFrame.setVisible(false);
+        mainPanel.add(registrarDonacionArticuloInternalFrame);
+        
+        consultarDonacionesRegistradasInternalFrame = new ConsultarDonacionesRegistradas(controlador);
+        consultarDonacionesRegistradasInternalFrame.setClosable(true);
+        consultarDonacionesRegistradasInternalFrame.setLocation(200, 100);
+        consultarDonacionesRegistradasInternalFrame.setVisible(false);
+        mainPanel.add(consultarDonacionesRegistradasInternalFrame);
+        
+        consultarDonacionesPorFechaInternalFrame = new ConsultarDonacionesPorFecha(controlador);
+        consultarDonacionesPorFechaInternalFrame.setClosable(true);
+        consultarDonacionesPorFechaInternalFrame.setLocation(200, 100);
+        consultarDonacionesPorFechaInternalFrame.setVisible(false);
+        mainPanel.add(consultarDonacionesPorFechaInternalFrame);
         
         // Panel de bienvenida con imagen de fondo
         JPanel welcomePanel = new JPanel() {
@@ -411,6 +451,125 @@ public class Principal {
         menuUsuarios.add(menuItemCambiarZonaLector);
         // -------------------------------------------------------
         
+        // Menú "Gestión de Materiales" con estilo moderno
+        JMenu menuMateriales = new JMenu("Gestion de Materiales") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuMateriales.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        menuMateriales.setForeground(new Color(220, 220, 220));
+        menuMateriales.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
+        menuBar.add(menuMateriales);
+        
+        // Item para registrar donación de libro con estilo moderno
+        JMenuItem menuItemRegistrarLibro = new JMenuItem("Registrar donacion de libro") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuItemRegistrarLibro.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuItemRegistrarLibro.setForeground(Color.BLACK);
+        menuItemRegistrarLibro.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        menuItemRegistrarLibro.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirRegistrarDonacionLibro();
+            }
+        });
+        menuMateriales.add(menuItemRegistrarLibro);
+        
+        // Item para registrar donación de artículo con estilo moderno
+        JMenuItem menuItemRegistrarArticulo = new JMenuItem("Registrar donacion de articulo") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuItemRegistrarArticulo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuItemRegistrarArticulo.setForeground(Color.BLACK);
+        menuItemRegistrarArticulo.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        menuItemRegistrarArticulo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirRegistrarDonacionArticulo();
+            }
+        });
+        menuMateriales.add(menuItemRegistrarArticulo);
+        
+        // Separador visual
+        menuMateriales.addSeparator();
+        
+        // Item para consultar donaciones registradas
+        JMenuItem menuItemConsultarDonaciones = new JMenuItem("Consultar donaciones registradas") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuItemConsultarDonaciones.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuItemConsultarDonaciones.setForeground(Color.BLACK);
+        menuItemConsultarDonaciones.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        menuItemConsultarDonaciones.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirConsultarDonacionesRegistradas();
+            }
+        });
+        menuMateriales.add(menuItemConsultarDonaciones);
+        
+        // Item para consultar donaciones por fecha
+        JMenuItem menuItemConsultarPorFecha = new JMenuItem("Consultar donaciones por fecha") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuItemConsultarPorFecha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuItemConsultarPorFecha.setForeground(Color.BLACK);
+        menuItemConsultarPorFecha.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        menuItemConsultarPorFecha.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirConsultarDonacionesPorFecha();
+            }
+        });
+        menuMateriales.add(menuItemConsultarPorFecha);
+        // -------------------------------------------------------
+        
         // Menú "Salir" con estilo moderno
         JMenu menuSalir = new JMenu("Salir") {
             @Override
@@ -486,5 +645,31 @@ public class Principal {
         cambiarZonaLectorInternalFrame.setLocation(200, 100);
         cambiarZonaLectorInternalFrame.setVisible(true);
         cambiarZonaLectorInternalFrame.toFront();
+    }
+    
+
+    // aca va lo d abrir ventanas de gestión de materiales
+    public void abrirRegistrarDonacionLibro() {
+        registrarDonacionLibroInternalFrame.setLocation(200, 100);
+        registrarDonacionLibroInternalFrame.setVisible(true);
+        registrarDonacionLibroInternalFrame.toFront();
+    }
+    
+    public void abrirRegistrarDonacionArticulo() {
+        registrarDonacionArticuloInternalFrame.setLocation(200, 100);
+        registrarDonacionArticuloInternalFrame.setVisible(true);
+        registrarDonacionArticuloInternalFrame.toFront();
+    }
+    
+    public void abrirConsultarDonacionesRegistradas() {
+        consultarDonacionesRegistradasInternalFrame.setLocation(200, 100);
+        consultarDonacionesRegistradasInternalFrame.setVisible(true);
+        consultarDonacionesRegistradasInternalFrame.toFront();
+    }
+    
+    public void abrirConsultarDonacionesPorFecha() {
+        consultarDonacionesPorFechaInternalFrame.setLocation(200, 100);
+        consultarDonacionesPorFechaInternalFrame.setVisible(true);
+        consultarDonacionesPorFechaInternalFrame.toFront();
     }
 }

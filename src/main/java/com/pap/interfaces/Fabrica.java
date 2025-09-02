@@ -8,10 +8,6 @@ public class Fabrica {
     
     private Fabrica() {}
     
-    /**
-     * Obtiene la instancia única de la fábrica (Singleton)
-     * @return La instancia de la fábrica
-     */
     public static Fabrica getInstancia() {
         if (instancia == null) {
             instancia = new Fabrica();
@@ -19,10 +15,6 @@ public class Fabrica {
         return instancia;
     }
     
-    /**
-     * Crea y retorna una instancia del controlador
-     * @return Una nueva instancia del controlador
-     */
     public IControlador crearControlador() {
         return new Controlador();
     }
