@@ -238,6 +238,23 @@ public class ConsultarDonacionesPorFecha extends JInternalFrame {
                 return;
             }
             
+            // Normalizar fechas para comparar solo por día (sin hora)
+            Calendar calInicio = Calendar.getInstance();
+            calInicio.setTime(fechaInicio);
+            calInicio.set(Calendar.HOUR_OF_DAY, 0);
+            calInicio.set(Calendar.MINUTE, 0);
+            calInicio.set(Calendar.SECOND, 0);
+            calInicio.set(Calendar.MILLISECOND, 0);
+            Date fechaInicioNormalizada = calInicio.getTime();
+            
+            Calendar calFin = Calendar.getInstance();
+            calFin.setTime(fechaFin);
+            calFin.set(Calendar.HOUR_OF_DAY, 23);
+            calFin.set(Calendar.MINUTE, 59);
+            calFin.set(Calendar.SECOND, 59);
+            calFin.set(Calendar.MILLISECOND, 999);
+            Date fechaFinNormalizada = calFin.getTime();
+            
             // Limpiar tabla
             modeloTabla.setRowCount(0);
             
@@ -247,7 +264,7 @@ public class ConsultarDonacionesPorFecha extends JInternalFrame {
             ArrayList<DtLibro> libros = controlador.RegistroDonacionLibro();
             for (DtLibro libro : libros) {
                 Date fechaLibro = libro.getFechaIngreso();
-                if (fechaLibro.compareTo(fechaInicio) >= 0 && fechaLibro.compareTo(fechaFin) <= 0) {
+                if (fechaLibro.compareTo(fechaInicioNormalizada) >= 0 && fechaLibro.compareTo(fechaFinNormalizada) <= 0) {
                     Object[] fila = {
                         libro.getId(),
                         "Libro",
@@ -264,7 +281,7 @@ public class ConsultarDonacionesPorFecha extends JInternalFrame {
             ArrayList<DtArticulo> articulos = controlador.RegistroDonacionArticulo();
             for (DtArticulo articulo : articulos) {
                 Date fechaArticulo = articulo.getFechaIngreso();
-                if (fechaArticulo.compareTo(fechaInicio) >= 0 && fechaArticulo.compareTo(fechaFin) <= 0) {
+                if (fechaArticulo.compareTo(fechaInicioNormalizada) >= 0 && fechaArticulo.compareTo(fechaFinNormalizada) <= 0) {
                     Object[] fila = {
                         articulo.getId(),
                         "Articulo",

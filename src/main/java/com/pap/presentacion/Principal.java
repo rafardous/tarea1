@@ -39,6 +39,8 @@ import com.pap.presentacion.RegistrarDonacionLibro;
 import com.pap.presentacion.RegistrarDonacionArticulo;
 import com.pap.presentacion.ConsultarDonacionesRegistradas;
 import com.pap.presentacion.ConsultarDonacionesPorFecha;
+import com.pap.presentacion.RegistrarPrestamo;
+import com.pap.presentacion.ActualizarPrestamo;
 
 
 public class Principal {
@@ -58,6 +60,10 @@ public class Principal {
     private RegistrarDonacionArticulo registrarDonacionArticuloInternalFrame;
     private ConsultarDonacionesRegistradas consultarDonacionesRegistradasInternalFrame;
     private ConsultarDonacionesPorFecha consultarDonacionesPorFechaInternalFrame;
+    
+    // Internal Frames para gestión de préstamos
+    private RegistrarPrestamo registrarPrestamoInternalFrame;
+    private ActualizarPrestamo actualizarPrestamoInternalFrame;
 
     private IControlador controlador; // PRUEBO EL CONTROLADOR COMO ATRIBUTO A VER SI FUNCA ACA
 
@@ -140,6 +146,19 @@ public class Principal {
         consultarDonacionesPorFechaInternalFrame.setVisible(false);
         mainPanel.add(consultarDonacionesPorFechaInternalFrame);
         
+        // Crear los Internal Frames para gestión de préstamos
+        registrarPrestamoInternalFrame = new RegistrarPrestamo(controlador);
+        registrarPrestamoInternalFrame.setClosable(true);
+        registrarPrestamoInternalFrame.setLocation(200, 100);
+        registrarPrestamoInternalFrame.setVisible(false);
+        mainPanel.add(registrarPrestamoInternalFrame);
+        
+        actualizarPrestamoInternalFrame = new ActualizarPrestamo(controlador);
+        actualizarPrestamoInternalFrame.setClosable(true);
+        actualizarPrestamoInternalFrame.setLocation(200, 100);
+        actualizarPrestamoInternalFrame.setVisible(false);
+        mainPanel.add(actualizarPrestamoInternalFrame);
+        
         // Panel de bienvenida con imagen de fondo
         JPanel welcomePanel = new JPanel() {
             @Override
@@ -187,14 +206,14 @@ public class Principal {
         lblBienvenida.setBounds(200, 150, 400, 80);
         welcomePanel.add(lblBienvenida);
         
-        // Subtítulo
+        // Subtitulo
         JLabel lblSubtitulo = new JLabel("Sistema de Gestion de Biblioteca Comunitaria");
         lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 20));
         lblSubtitulo.setForeground(new Color(255, 255, 255));
         lblSubtitulo.setBounds(200, 250, 400, 30);
         welcomePanel.add(lblSubtitulo);
         
-        // Descripción
+        // Descripcion
         JLabel lblDescripcion = new JLabel("<html><div style='text-align: center; width: 400px;'>" +
             "Bienvenido al sistema de gestion integral para bibliotecas comunitarias.<br>" +
             "Desde aqui podras administrar usuarios, materiales y prestamos de manera eficiente.</div></html>");
@@ -570,6 +589,98 @@ public class Principal {
         menuMateriales.add(menuItemConsultarPorFecha);
         // -------------------------------------------------------
         
+        // Menú "Gestión de Préstamos" con estilo moderno
+        JMenu menuPrestamos = new JMenu("Gestion de Prestamos") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuPrestamos.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        menuPrestamos.setForeground(new Color(220, 220, 220));
+        menuPrestamos.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
+        menuBar.add(menuPrestamos);
+        
+        // Item para registrar préstamo con estilo moderno
+        JMenuItem menuItemRegistrarPrestamo = new JMenuItem("Registrar Prestamo") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuItemRegistrarPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuItemRegistrarPrestamo.setForeground(Color.BLACK);
+        menuItemRegistrarPrestamo.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        menuItemRegistrarPrestamo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirRegistrarPrestamo();
+            }
+        });
+        menuPrestamos.add(menuItemRegistrarPrestamo);
+        
+        // Item para actualizar préstamo con estilo moderno
+        JMenuItem menuItemActualizarPrestamo = new JMenuItem("Actualizar Prestamo") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuItemActualizarPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuItemActualizarPrestamo.setForeground(Color.BLACK);
+        menuItemActualizarPrestamo.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        menuItemActualizarPrestamo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirActualizarPrestamo();
+            }
+        });
+        menuPrestamos.add(menuItemActualizarPrestamo);
+        
+        // Item para historial de préstamos del lector con estilo moderno
+        JMenuItem menuItemHistorialPrestamosLector = new JMenuItem("Historial Prestamos Lector") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuItemHistorialPrestamosLector.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuItemHistorialPrestamosLector.setForeground(Color.BLACK);
+        menuItemHistorialPrestamosLector.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        menuItemHistorialPrestamosLector.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirHistorialPrestamosLector();
+            }
+        });
+        menuPrestamos.add(menuItemHistorialPrestamosLector);
+        // -------------------------------------------------------
+        
         // Menú "Salir" con estilo moderno
         JMenu menuSalir = new JMenu("Salir") {
             @Override
@@ -662,6 +773,8 @@ public class Principal {
     }
     
     public void abrirConsultarDonacionesRegistradas() {
+        // Recargar donaciones antes de mostrar la ventana
+        consultarDonacionesRegistradasInternalFrame.cargarDonaciones();
         consultarDonacionesRegistradasInternalFrame.setLocation(200, 100);
         consultarDonacionesRegistradasInternalFrame.setVisible(true);
         consultarDonacionesRegistradasInternalFrame.toFront();
@@ -671,5 +784,27 @@ public class Principal {
         consultarDonacionesPorFechaInternalFrame.setLocation(200, 100);
         consultarDonacionesPorFechaInternalFrame.setVisible(true);
         consultarDonacionesPorFechaInternalFrame.toFront();
+    }
+    
+    // aca va lo d abrir ventanas de gestión de préstamos
+    public void abrirRegistrarPrestamo() {
+        registrarPrestamoInternalFrame.setLocation(200, 100);
+        registrarPrestamoInternalFrame.setVisible(true);
+        registrarPrestamoInternalFrame.toFront();
+    }
+    
+    public void abrirActualizarPrestamo() {
+        // Recargar préstamos antes de mostrar la ventana
+        actualizarPrestamoInternalFrame.cargarPrestamos();
+        actualizarPrestamoInternalFrame.setLocation(200, 100);
+        actualizarPrestamoInternalFrame.setVisible(true);
+        actualizarPrestamoInternalFrame.toFront();
+    }
+    
+    public void abrirHistorialPrestamosLector() {
+        JOptionPane.showMessageDialog(frame, 
+            "ya la hago locoooo", 
+            "esperaaa", 
+            JOptionPane.INFORMATION_MESSAGE);
     }
 }

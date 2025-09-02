@@ -43,7 +43,7 @@ public class ConsultarDonacionesRegistradas extends JInternalFrame {
     public ConsultarDonacionesRegistradas(IControlador controlador) {
         this.controlador = controlador;
         initialize();
-        cargarDonaciones();
+        // No cargar donaciones automáticamente al crear el frame
     }
 
     private void initialize() {
@@ -149,12 +149,12 @@ public class ConsultarDonacionesRegistradas extends JInternalFrame {
         // Configurar anchos de columna
         tablaDonaciones.getColumnModel().getColumn(0).setPreferredWidth(80);  // ID
         tablaDonaciones.getColumnModel().getColumn(1).setPreferredWidth(100); // Tipo
-        tablaDonaciones.getColumnModel().getColumn(2).setPreferredWidth(250); // Título/Descripción
+        tablaDonaciones.getColumnModel().getColumn(2).setPreferredWidth(250); // Titulo/Descripcion
         tablaDonaciones.getColumnModel().getColumn(3).setPreferredWidth(200); // Detalles
         tablaDonaciones.getColumnModel().getColumn(4).setPreferredWidth(120); // Fecha
     }
     
-    private void cargarDonaciones() {
+    public void cargarDonaciones() {
         try {
             // Limpiar tabla
             modeloTabla.setRowCount(0);

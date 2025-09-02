@@ -41,10 +41,10 @@ public interface IControlador {
 
     public ArrayList<DtMaterial> RegistroDonacionFecha(Date fechaDesde, Date fechaHasta) throws RegistroDonacionFechaExcepcion;
     
-    public void RegistrarPrestamo() throws RegistrarPrestamoExcepcion;
+    public boolean RegistrarPrestamo(Date fechaSol, Date fechaDev, EstadoPrestamo estado, String emailLector, String emailBiblio, String material) throws RegistrarPrestamoExcepcion;
 
     // no voy a hacer dos funciones para actualizar el prestamo una pa fecha y otra para todo
-	public void ActualizarPrestamo() throws ActualizarPrestamoExcepcion;
+	public boolean ActualizarPrestamo(int id, Date fechaSol, Date fechaDev, EstadoPrestamo estado) throws ActualizarPrestamoExcepcion;
 
     public void ListarPrestamoLector() throws ListarPrestamoLectorExcepcion;
     
@@ -53,6 +53,9 @@ public interface IControlador {
 	public void ReportePrestamoZona() throws ReportePrestamoZonaExcepcion;
 
     public void MaterialPendiente() throws MaterialPendienteExcepcion;
+
+    // Método para obtener todos los préstamos con información completa
+    public ArrayList<DtPrestamo> listarTodosLosPrestamos();
 
     
 }

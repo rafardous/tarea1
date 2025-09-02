@@ -56,6 +56,21 @@ public class ManejadorGestionMaterial {
 		}
 
 	}
+	
+	public boolean existeMaterial(String idMaterial) {
+		Conexion conexion = Conexion.getInstancia();
+		EntityManager em = conexion.getEntityManager();
+		try {
+			TypedQuery<Long> query = em.createQuery("SELECT COUNT(m) FROM Material m WHERE m.id = :codigo", Long.class);
+			query.setParameter("codigo", idMaterial);
+			return query.getSingleResult() > 0;
+		} catch (NoResultException e) {
+			return false;
+		} catch (Exception e) {
+			System.err.println("Error al verificar existencia de material: " + e.getMessage());
+			return false;
+		}
+	}
 
 	public ArrayList<DtArticulo> obtenerArticulos(){
 		Conexion conexion = Conexion.getInstancia();
@@ -123,7 +138,7 @@ public class ManejadorGestionMaterial {
 		ArrayList<DtMaterial> aRetornar = new ArrayList<>();
 
 		try {
-			TypedQuery<Material> query = em.createQuery("SELECT l FROM Material l WHERE l.fechaIngreso BETWEEN :fechaDesde AND :fechaHasta", Material.class);
+			TypedQuery<Material> query = em.createQuery("SELECT l FROM Material l WHERE l.fechaIngreso >= :fechaDesde <= :fechaHasta", Material.class);
 			query.setParameter("fechaDesde", fechaDesde);
 			query.setParameter("fechaHasta", fechaHasta);
 			List<Material> listMaterial = query.getResultList();

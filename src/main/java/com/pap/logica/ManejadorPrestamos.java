@@ -54,7 +54,7 @@ public class ManejadorPrestamos {
         }
     }
 
-    public void actualizarPrestamo(Prestamo prestamo) throws Exception {
+    public void actualizarPrestamo(Prestamo prestamo) throws Exception {    // toy en duda de si crear un prestamo o usar un dtprestamo -- consultar eficiencia a nivel de memoria
         try {
             em.getTransaction().begin();
             em.merge(prestamo);

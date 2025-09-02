@@ -37,24 +37,15 @@ public class Prestamo {
     private Bibliotecario bibliotecario;
     
     // y tambien aca
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "prestamo_material",
-        joinColumns = @JoinColumn(name = "prestamo_id"),
-        inverseJoinColumns = @JoinColumn(name = "material_id")
-    )
-    private Material material = new Material();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "material_id", nullable = false, referencedColumnName = "id_material")
+    private Material material;
     
     // construct:
-    public Prestamo() {
-        this.fechaSolicitud = new Date();
-        this.estado = EstadoPrestamo.PENDIENTE;
-    }
  
     public Prestamo(Date fechaSolicitud, Date fechaDevolucion, EstadoPrestamo estado, 
                    Lector lector, Bibliotecario bibliotecario, Material material) {
-        this();
-        this.fechaSolicitud = fechaSolicitud != null ? fechaSolicitud : new Date();
+        this.fechaSolicitud = fechaSolicitud != null ? fechaSolicitud : new Date(); 
         this.fechaDevolucion = fechaDevolucion;
         this.estado = estado != null ? estado : EstadoPrestamo.PENDIENTE;
         this.lector = lector;
@@ -110,7 +101,7 @@ public class Prestamo {
         return material;
     }
     
-    public void setMateriales(Material material) {
+    public void setMaterial(Material material) {
         this.material = material;
     }
 

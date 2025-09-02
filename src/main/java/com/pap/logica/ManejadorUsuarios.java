@@ -107,6 +107,32 @@ public class ManejadorUsuarios {
             return false;
         }
     }
+    
+    public boolean existeLector(String email) {
+        try {
+            TypedQuery<Long> query = em.createQuery("SELECT COUNT(l) FROM Lector l WHERE l.email = :email", Long.class);
+            query.setParameter("email", email);
+            return query.getSingleResult() > 0;
+        } catch (NoResultException e) {
+            return false;
+        } catch (Exception e) {
+            System.err.println("Error al verificar existencia de lector: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    public boolean existeBibliotecario(String email) {
+        try {
+            TypedQuery<Long> query = em.createQuery("SELECT COUNT(b) FROM Bibliotecario b WHERE b.email = :email", Long.class);
+            query.setParameter("email", email);
+            return query.getSingleResult() > 0;
+        } catch (NoResultException e) {
+            return false;
+        } catch (Exception e) {
+            System.err.println("Error al verificar existencia de bibliotecario: " + e.getMessage());
+            return false;
+        }
+    }
 
     public void actualizarUsuario(Usuario usuario) throws Exception { // idem prestamo toy en duda de si crear un usuario o usar un dt usuario
         try {

@@ -17,9 +17,13 @@ import java.util.Date;
 public class Controlador implements IControlador {
     
     private final ManejadorUsuarios manejadorUsuarios;
+    private final ManejadorPrestamos manejadorPrestamos;
+    private final ManejadorGestionMaterial manejadorMaterial;
     
     public Controlador() {
         this.manejadorUsuarios = ManejadorUsuarios.getInstancia();
+        this.manejadorPrestamos = ManejadorPrestamos.getInstancia();
+        this.manejadorMaterial = ManejadorGestionMaterial.getInstancia();
     }
     
 
@@ -250,19 +254,124 @@ public class Controlador implements IControlador {
 		return materiales;
 	}
 
-    // FUNCIONES DE GESTION DE PRESTAMOS --------------------------------
 
 
+// FUNCIONES DE GESTION DE PRESTAMOS --------------------------------
+
+
+    public boolean RegistrarPrestamo(Date fechaSol, Date fechaDev, EstadoPrestamo estado, String emailLector, String emailBiblio, String material) throws RegistrarPrestamoExcepcion{
+        
+        // existe ellector?
+        if (!manejadorUsuarios.existeLector(emailLector)) {
+            throw new RegistrarPrestamoExcepcion("El lector con email '" + emailLector + "' no existe en el sistema");
+        }
+        
+        // existe bibliotecario?
+        if (!manejadorUsuarios.existeBibliotecario(emailBiblio)) {
+            throw new RegistrarPrestamoExcepcion("El bibliotecario con email '" + emailBiblio + "' no existe en el sistema");
+        }
+        
+        // y material
+        if (!manejadorMaterial.existeMaterial(material)) {
+            throw new RegistrarPrestamoExcepcion("El material con ID '" + material + "' no existe en el sistema");
+        }
+        
+        Prestamo nuevoPrestamo = new Prestamo(
+                fechaSol,
+                fechaDev,
+                estado,
+                manejadorUsuarios.buscarLector(emailLector),
+                manejadorUsuarios.buscarBibliotecario(emailBiblio),
+                manejadorMaterial.buscarMaterial(material)
+            );
+
+        try {
+            manejadorPrestamos.agregarPrestamo(nuevoPrestamo);
+            return true;
+        } catch (Exception e) {
+            throw new RegistrarPrestamoExcepcion("Error al registrar el prestamo: " + e.getMessage());
+        }
+    }
 
 	@Override
-    public void RegistrarPrestamo() throws RegistrarPrestamoExcepcion{
-		
+	public boolean ActualizarPrestamo(int id, Date fechaSol, Date fechaDev, EstadoPrestamo estado) throws ActualizarPrestamoExcepcion{
+
+        try {
+            Prestamo prestamo = manejadorPrestamos.buscarPrestamo(id);
+
+        if (prestamo != null){
+            prestamo.setFechaSolicitud(fechaSol);
+            prestamo.setFechaDevolucion(fechaDev);
+            prestamo.setEstado(estado);
+            manejadorPrestamos.actualizarPrestamo(prestamo);
+            return true;
+        }else {
+            return false;
+        }
+        } catch (Exception e) {
+            System.err.println("Error al cambiar datos Prestamo: " + e.getMessage());
+            return false;
+        }
 	}
 
-	@Override
-	public void ActualizarPrestamo() throws ActualizarPrestamoExcepcion{
-		
-	}
+    // para listar todos los prestamos
+    public ArrayList<DtPrestamo> listarTodosLosPrestamos() {
+        try {
+            List<Prestamo> prestamos = manejadorPrestamos.listarPrestamos();
+            ArrayList<DtPrestamo> dtPrestamos = new ArrayList<>();
+            
+            if (prestamos != null) {            // pruebo con hacer una lista de DtPrestamos asi, queda medio chancha pero we
+                for (Prestamo prestamo : prestamos) {
+                    DtPrestamo dtPrestamo = new DtPrestamo(
+                        prestamo.getFechaSolicitud(),
+                        prestamo.getFechaDevolucion(),
+                        prestamo.getEstado(),
+                        new DtLector(
+                            prestamo.getLector().getNombre(),
+                            prestamo.getLector().getEmail(),
+                            prestamo.getLector().getDireccion(),
+                            prestamo.getLector().getFechaRegistro(),
+                            prestamo.getLector().getEstado(),
+                            prestamo.getLector().getZona()
+                        ),
+                        new DtBibliotecario(
+                            prestamo.getBibliotecario().getNombre(),
+                            prestamo.getBibliotecario().getEmail(),
+                            prestamo.getBibliotecario().getNumeroEmpleado()
+                        ),
+                        prestamo.getMaterial() instanceof Libro ? 
+                            new DtLibro(
+                                prestamo.getMaterial().getId(),
+                                prestamo.getMaterial().getFechaIngreso(),
+                                ((Libro) prestamo.getMaterial()).getTitulo(),
+                                ((Libro) prestamo.getMaterial()).getCantidadPaginas()
+                            ) :
+                            new DtArticulo(
+                                prestamo.getMaterial().getId(),
+                                prestamo.getMaterial().getFechaIngreso(),
+                                ((Articulo) prestamo.getMaterial()).getDescripcion(),
+                                ((Articulo) prestamo.getMaterial()).getPesoKg(),
+                                ((Articulo) prestamo.getMaterial()).getDimensiones()
+                            )
+                    );
+                    // Usar reflexión para establecer el id ya que es privado
+                    try {
+                        java.lang.reflect.Field idField = DtPrestamo.class.getDeclaredField("id");
+                        idField.setAccessible(true);
+                        idField.set(dtPrestamo, prestamo.getId());
+                    } catch (Exception e) {
+                        System.err.println("Error al establecer ID del prestamo: " + e.getMessage());
+                    }
+                    dtPrestamos.add(dtPrestamo);
+                }
+            }
+            
+            return dtPrestamos;
+        } catch (Exception e) {
+            System.err.println("Error al listar prestamos: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
 
 	@Override
     public void ListarPrestamoLector() throws ListarPrestamoLectorExcepcion{
@@ -283,6 +392,8 @@ public class Controlador implements IControlador {
     public void MaterialPendiente() throws MaterialPendienteExcepcion{
 		
 	}
+
+
 
           
 }
