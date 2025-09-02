@@ -8,6 +8,7 @@ import com.pap.datatypes.EstadoLector;
 import com.pap.datatypes.Zona;
 import com.pap.datatypes.DtBibliotecario;
 import com.pap.datatypes.DtLector;
+import java.util.Date;
 
 
 public interface IControlador {
@@ -38,12 +39,11 @@ public interface IControlador {
 
     public ArrayList<DtLibro> RegistroDonacionLibro() throws RegistroDonacionExcepcion;
 
-    public void RegistroDonacionFecha() throws RegistroDonacionFechaExcepcion;
+    public ArrayList<DtMaterial> RegistroDonacionFecha(Date fechaDesde, Date fechaHasta) throws RegistroDonacionFechaExcepcion;
     
     public void RegistrarPrestamo() throws RegistrarPrestamoExcepcion;
 
-    public void ActualizarEstadoPrestamo() throws ActualizarEstadoPrestamoExcepcion;
-
+    // no voy a hacer dos funciones para actualizar el prestamo una pa fecha y otra para todo
 	public void ActualizarPrestamo() throws ActualizarPrestamoExcepcion;
 
     public void ListarPrestamoLector() throws ListarPrestamoLectorExcepcion;

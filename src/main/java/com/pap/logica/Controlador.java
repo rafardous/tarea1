@@ -241,20 +241,21 @@ public class Controlador implements IControlador {
 		return libros;
 	}
 
+    @Override
+    public ArrayList<DtMaterial> RegistroDonacionFecha(Date fechaDesde, Date fechaHasta) throws RegistroDonacionFechaExcepcion{
+		ManejadorGestionMaterial mGM = ManejadorGestionMaterial.getInstancia();
+
+		ArrayList<DtMaterial> materiales = mGM.obtenerMateriales(fechaDesde, fechaHasta);
+		
+		return materiales;
+	}
+
     // FUNCIONES DE GESTION DE PRESTAMOS --------------------------------
 
-    @Override
-    public void RegistroDonacionFecha() throws RegistroDonacionFechaExcepcion{
-		
-	}
+
 
 	@Override
     public void RegistrarPrestamo() throws RegistrarPrestamoExcepcion{
-		
-	}
-
-	@Override
-    public void ActualizarEstadoPrestamo() throws ActualizarEstadoPrestamoExcepcion{
 		
 	}
 

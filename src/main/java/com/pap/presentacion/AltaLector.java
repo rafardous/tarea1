@@ -103,7 +103,7 @@ public class AltaLector extends JInternalFrame {
         contentPanel.add(txtEmail);
         
         // Dirección
-        JLabel lblDireccion = new JLabel("Dirección:");
+        JLabel lblDireccion = new JLabel("Direccio'n:");
         lblDireccion.setFont(new Font("Segoe UI", Font.BOLD, 12));
         lblDireccion.setForeground(new Color(52, 73, 94));
         lblDireccion.setBounds(30, 180, 100, 20);

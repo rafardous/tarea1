@@ -108,7 +108,7 @@ public class ManejadorUsuarios {
         }
     }
 
-    public void actualizarUsuario(Usuario usuario) throws Exception {
+    public void actualizarUsuario(Usuario usuario) throws Exception { // idem prestamo toy en duda de si crear un usuario o usar un dt usuario
         try {
             em.getTransaction().begin();
             em.merge(usuario);

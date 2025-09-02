@@ -4,13 +4,14 @@ import com.pap.persistencia.Conexion;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.NoResultException;
 
-
+import com.pap.datatypes.DtMaterial;
 import com.pap.datatypes.DtArticulo;
 import com.pap.datatypes.DtLibro;
 
@@ -104,6 +105,35 @@ public class ManejadorGestionMaterial {
 					l.getFechaIngreso(),
 					l.getTitulo(),
 					l.getCantidadPaginas()
+				);
+				aRetornar.add(dto);
+			}
+			return aRetornar;
+			
+		} catch (NoResultException arg0) {
+			return aRetornar;
+		}
+
+	}
+
+	public ArrayList<DtMaterial> obtenerMateriales(Date fechaDesde, Date fechaHasta){
+		Conexion conexion = Conexion.getInstancia();
+		EntityManager em = conexion.getEntityManager();
+		
+		ArrayList<DtMaterial> aRetornar = new ArrayList<>();
+
+		try {
+			TypedQuery<Material> query = em.createQuery("SELECT l FROM Material l WHERE l.fechaIngreso BETWEEN :fechaDesde AND :fechaHasta", Material.class);
+			query.setParameter("fechaDesde", fechaDesde);
+			query.setParameter("fechaHasta", fechaHasta);
+			List<Material> listMaterial = query.getResultList();
+			
+			for (Material l : listMaterial) {
+				
+				DtMaterial dto = new DtMaterial(
+					l.getIdMaterial(),
+					l.getId(),
+					l.getFechaIngreso()
 				);
 				aRetornar.add(dto);
 			}
