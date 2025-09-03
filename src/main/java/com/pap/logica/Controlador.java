@@ -315,7 +315,7 @@ public class Controlador implements IControlador {
         }
 	}
 
-    // para listar todos los prestamos
+    // para listar todos los prestamos   -- no pude achicar mas, viejo
     public ArrayList<DtPrestamo> listarTodosLosPrestamos() {
         try {
             List<Prestamo> prestamos = manejadorPrestamos.listarPrestamos();
@@ -329,37 +329,55 @@ public class Controlador implements IControlador {
                     Hibernate.initialize(prestamo.getBibliotecario());
                     Hibernate.initialize(prestamo.getMaterial());
                     
-                    // Determinar el tipo de material usando getClass() en lugar de instanceof
+                    // Determinar el tipo de material usando Hibernate.unproxy() para obtener la clase real
                     Material material = prestamo.getMaterial();
+                    Material materialReal = (Material) Hibernate.unproxy(material);
                     DtMaterial dtMaterial;
+                                       
                     
-                    if (material.getClass().getSimpleName().equals("Libro")) {
-                        // Es un libro, obtener datos específicos
-                        Libro libro = (Libro) material;
-                        dtMaterial = new DtLibro(
-                            libro.getId(),
-                            libro.getFechaIngreso(),
-                            libro.getTitulo(),
-                            libro.getCantidadPaginas()
-                        );
-                    } else if (material.getClass().getSimpleName().equals("Articulo")) {
-                        // Es un artículo, obtener datos específicos
-                        Articulo articulo = (Articulo) material;
-                        dtMaterial = new DtArticulo(
-                            articulo.getId(),
-                            articulo.getFechaIngreso(),
-                            articulo.getDescripcion(),
-                            articulo.getPesoKg(),
-                            articulo.getDimensiones()
-                        );
-                    } else {
-                        // Material genérico como fallback
-                        dtMaterial = new DtMaterial(
-                            material.getIdMaterial(),
-                            material.getId(),
-                            material.getFechaIngreso()
-                        );
-                    }
+                                         if (materialReal.getClass().getSimpleName().equals("Libro")) {
+                         // Es un libro, obtener datos específicos
+                         Libro libro = (Libro) materialReal;
+                         dtMaterial = new DtLibro(
+                             libro.getId().toString(), // Convertir Integer a String
+                             libro.getFechaIngreso(),
+                             libro.getTitulo(),
+                             libro.getCantidadPaginas()
+                         );
+                         // Establecer idMaterial usando reflexión
+                         try {
+                             java.lang.reflect.Field idMaterialField = DtMaterial.class.getDeclaredField("idMaterial");
+                             idMaterialField.setAccessible(true);
+                             idMaterialField.set(dtMaterial, libro.getIdMaterial());
+                         } catch (Exception e) {
+                             System.err.println("Error al establecer idMaterial del libro: " + e.getMessage());
+                         }
+                     } else if (materialReal.getClass().getSimpleName().equals("Articulo")) {
+                         // Es un artículo, obtener datos específicos
+                         Articulo articulo = (Articulo) materialReal;
+                         dtMaterial = new DtArticulo(
+                             articulo.getId().toString(), // Convertir Integer a String
+                             articulo.getFechaIngreso(),
+                             articulo.getDescripcion(),
+                             articulo.getPesoKg(),
+                             articulo.getDimensiones()
+                         );
+                         // Establecer idMaterial usando reflexión
+                         try {
+                             java.lang.reflect.Field idMaterialField = DtMaterial.class.getDeclaredField("idMaterial");
+                             idMaterialField.setAccessible(true);
+                             idMaterialField.set(dtMaterial, articulo.getIdMaterial());
+                         } catch (Exception e) {
+                             System.err.println("Error al establecer idMaterial del articulo: " + e.getMessage());
+                         }
+                     } else {
+                         // Material genérico como fallback
+                         dtMaterial = new DtMaterial(
+                             material.getIdMaterial(),
+                             material.getId(),
+                             material.getFechaIngreso()
+                         );
+                     }
                     
                     DtPrestamo dtPrestamo = new DtPrestamo(
                         prestamo.getFechaSolicitud(),

@@ -1,9 +1,9 @@
 package com.pap.presentacion;
 
 import com.pap.interfaces.IControlador;
-import com.pap.datatypes.DtPrestamo;
 import com.pap.datatypes.EstadoPrestamo;
 import com.pap.excepciones.ActualizarPrestamoExcepcion;
+import com.pap.datatypes.*;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -63,7 +63,7 @@ public class ActualizarPrestamo extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Actualizar Préstamo");
+        setTitle("Actualizar Prestamo");
         setBounds(0, 0, 1000, 700);
         setLayout(null);
         setBorder(BorderFactory.createCompoundBorder(
@@ -166,7 +166,7 @@ public class ActualizarPrestamo extends JInternalFrame {
         parent.add(panelSeleccion);
         
         // Label para el combo
-        JLabel lblPrestamo = new JLabel("Seleccionar Préstamo:");
+        JLabel lblPrestamo = new JLabel("Seleccionar Prestamo:");
         lblPrestamo.setFont(new Font("Segoe UI", Font.BOLD, 12));
         lblPrestamo.setForeground(new Color(52, 73, 94));
         lblPrestamo.setBounds(20, 15, 150, 20);
@@ -185,7 +185,7 @@ public class ActualizarPrestamo extends JInternalFrame {
         panelSeleccion.add(comboPrestamos);
         
         // Información adicional
-        JLabel lblInfo = new JLabel("info prestamo: Email Lector | Email Bibliotecario | Título/Descripción del Material");
+        JLabel lblInfo = new JLabel("info prestamo: ID | Email Lector | Email Bibliotecario | Titulo/Descripcion del Material");
         lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
         lblInfo.setForeground(new Color(108, 117, 125));
         lblInfo.setBounds(20, 40, 500, 20);
@@ -193,10 +193,10 @@ public class ActualizarPrestamo extends JInternalFrame {
     }
     
     private void crearTabla() {
-        // Definir columnas de la tabla
-        String[] columnas = {
-            "ID", "Fecha Solicitud", "Fecha Devolución", "Email Lector", "Email Bibliotecario", "ID Material", "Nombre Material"
-        };
+                 // Definir columnas de la tabla
+         String[] columnas = {
+             "ID", "Fecha Solicitud", "Fecha Devolucion", "Email Lector", "Email Bibliotecario", "ID Material", "Nombre/Descripcion Material", "Estado"
+         };
         
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
@@ -216,14 +216,15 @@ public class ActualizarPrestamo extends JInternalFrame {
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloTabla);
         tablaPrestamo.setRowSorter(sorter);
         
-        // Configurar anchos de columna
-        tablaPrestamo.getColumnModel().getColumn(0).setPreferredWidth(60);   // ID
-        tablaPrestamo.getColumnModel().getColumn(1).setPreferredWidth(120);  // Fecha Solicitud
-        tablaPrestamo.getColumnModel().getColumn(2).setPreferredWidth(120);  // Fecha Devolución
-        tablaPrestamo.getColumnModel().getColumn(3).setPreferredWidth(180);  // Email Lector
-        tablaPrestamo.getColumnModel().getColumn(4).setPreferredWidth(180);  // Email Bibliotecario
-        tablaPrestamo.getColumnModel().getColumn(5).setPreferredWidth(100);  // ID Material
-        tablaPrestamo.getColumnModel().getColumn(6).setPreferredWidth(200);  // Nombre Material
+                 // Configurar anchos de columna
+         tablaPrestamo.getColumnModel().getColumn(0).setPreferredWidth(60);   // ID
+         tablaPrestamo.getColumnModel().getColumn(1).setPreferredWidth(120);  // Fecha Solicitud
+         tablaPrestamo.getColumnModel().getColumn(2).setPreferredWidth(120);  // Fecha Devolucion
+         tablaPrestamo.getColumnModel().getColumn(3).setPreferredWidth(180);  // Email Lector
+         tablaPrestamo.getColumnModel().getColumn(4).setPreferredWidth(180);  // Email Bibliotecario
+         tablaPrestamo.getColumnModel().getColumn(5).setPreferredWidth(100);  // ID Material
+         tablaPrestamo.getColumnModel().getColumn(6).setPreferredWidth(200);  // Nombre/Descripcion Material
+         tablaPrestamo.getColumnModel().getColumn(7).setPreferredWidth(100);  // Estado
     }
     
     private void crearPanelEdicion(JPanel parent) {
@@ -261,7 +262,7 @@ public class ActualizarPrestamo extends JInternalFrame {
         panelEdicion.add(spinnerFechaSolicitud);
         
         // Fecha de devolución
-        JLabel lblFechaDevolucion = new JLabel("Nueva Fecha de Devolución:");
+        JLabel lblFechaDevolucion = new JLabel("Nueva Fecha de Devolucion:");
         lblFechaDevolucion.setFont(new Font("Segoe UI", Font.BOLD, 12));
         lblFechaDevolucion.setForeground(new Color(52, 73, 94));
         lblFechaDevolucion.setBounds(20, 80, 180, 20);
@@ -289,7 +290,7 @@ public class ActualizarPrestamo extends JInternalFrame {
         panelEdicion.add(comboEstado);
         
         // Informacion adicional
-        JLabel lblInfo = new JLabel("Modifica los campos necesarios y haz clic en 'Actualizar' para guardar los cambios");
+        JLabel lblInfo = new JLabel("Modifica los campos necesarios y haz clic en 'Actualizar'");
         lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
         lblInfo.setForeground(new Color(108, 117, 125));
         lblInfo.setBounds(20, 150, 400, 20);
@@ -311,9 +312,10 @@ public class ActualizarPrestamo extends JInternalFrame {
                         descripcionMaterial = ((com.pap.datatypes.DtArticulo) prestamo.getMaterial()).getDescripcion();
                     }
                     
-                    String itemCombo = prestamo.getLector().getEmail() + " | " + 
-                                     prestamo.getBibliotecario().getEmail() + " | " + 
-                                     descripcionMaterial;
+                                         String itemCombo = "ID: " + prestamo.getId() + " | " + 
+                                      prestamo.getLector().getEmail() + " | " + 
+                                      prestamo.getBibliotecario().getEmail() + " | " + 
+                                      descripcionMaterial;
                     comboPrestamos.addItem(itemCombo);
                 }
                 
@@ -342,24 +344,31 @@ public class ActualizarPrestamo extends JInternalFrame {
             // Limpiar tabla
             modeloTabla.setRowCount(0);
             
-            // Obtener descripción del material
-            String descripcionMaterial = "";
-            if (prestamo.getMaterial() instanceof com.pap.datatypes.DtLibro) {
-                descripcionMaterial = ((com.pap.datatypes.DtLibro) prestamo.getMaterial()).getTitulo();
-            } else if (prestamo.getMaterial() instanceof com.pap.datatypes.DtArticulo) {
-                descripcionMaterial = ((com.pap.datatypes.DtArticulo) prestamo.getMaterial()).getDescripcion();
-            }
+                         // descripcion del material
+             String descripcionMaterial = "";
+             
+             // Usar instanceof directamente
+             if (prestamo.getMaterial() instanceof DtLibro) {
+                 DtLibro dtLibro = (DtLibro) prestamo.getMaterial();
+                 descripcionMaterial = dtLibro.getTitulo();
+             } else if (prestamo.getMaterial() instanceof DtArticulo) {
+                 DtArticulo dtArticulo = (DtArticulo) prestamo.getMaterial();
+                 descripcionMaterial = dtArticulo.getDescripcion();
+             } else {
+                 descripcionMaterial = "Tipo no reconocido";
+             }
             
-            // Agregar fila a la tabla
-            Object[] fila = {
-                prestamo.getId(),
-                formatoFecha.format(prestamo.getFechaSolicitud()),
-                formatoFecha.format(prestamo.getFechaDevolucion()),
-                prestamo.getLector().getEmail(),
-                prestamo.getBibliotecario().getEmail(),
-                prestamo.getMaterial().getIdMaterial(),
-                descripcionMaterial
-            };
+                         // Agregar fila a la tabla
+             Object[] fila = {
+                 prestamo.getId(),
+                 formatoFecha.format(prestamo.getFechaSolicitud()),
+                 formatoFecha.format(prestamo.getFechaDevolucion()),
+                 prestamo.getLector().getEmail(),
+                 prestamo.getBibliotecario().getEmail(),
+                 prestamo.getMaterial().getId(), // Mostrar el id (String) en lugar del idMaterial (Integer)
+                 descripcionMaterial,
+                 prestamo.getEstado() // Agregar el estado del préstamo
+             };
             modeloTabla.addRow(fila);
             
             // Actualizar spinners y combo con valores actuales
