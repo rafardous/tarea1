@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.Date;
+import org.hibernate.Hibernate;
 
 
 public class Controlador implements IControlador {
@@ -318,10 +319,48 @@ public class Controlador implements IControlador {
     public ArrayList<DtPrestamo> listarTodosLosPrestamos() {
         try {
             List<Prestamo> prestamos = manejadorPrestamos.listarPrestamos();
+            
             ArrayList<DtPrestamo> dtPrestamos = new ArrayList<>();
             
             if (prestamos != null) {            // pruebo con hacer una lista de DtPrestamos asi, queda medio chancha pero we
                 for (Prestamo prestamo : prestamos) {
+                    // Inicializar entidades lazy para evitar problemas de casting
+                    Hibernate.initialize(prestamo.getLector());
+                    Hibernate.initialize(prestamo.getBibliotecario());
+                    Hibernate.initialize(prestamo.getMaterial());
+                    
+                    // Determinar el tipo de material usando getClass() en lugar de instanceof
+                    Material material = prestamo.getMaterial();
+                    DtMaterial dtMaterial;
+                    
+                    if (material.getClass().getSimpleName().equals("Libro")) {
+                        // Es un libro, obtener datos específicos
+                        Libro libro = (Libro) material;
+                        dtMaterial = new DtLibro(
+                            libro.getId(),
+                            libro.getFechaIngreso(),
+                            libro.getTitulo(),
+                            libro.getCantidadPaginas()
+                        );
+                    } else if (material.getClass().getSimpleName().equals("Articulo")) {
+                        // Es un artículo, obtener datos específicos
+                        Articulo articulo = (Articulo) material;
+                        dtMaterial = new DtArticulo(
+                            articulo.getId(),
+                            articulo.getFechaIngreso(),
+                            articulo.getDescripcion(),
+                            articulo.getPesoKg(),
+                            articulo.getDimensiones()
+                        );
+                    } else {
+                        // Material genérico como fallback
+                        dtMaterial = new DtMaterial(
+                            material.getIdMaterial(),
+                            material.getId(),
+                            material.getFechaIngreso()
+                        );
+                    }
+                    
                     DtPrestamo dtPrestamo = new DtPrestamo(
                         prestamo.getFechaSolicitud(),
                         prestamo.getFechaDevolucion(),
@@ -339,20 +378,7 @@ public class Controlador implements IControlador {
                             prestamo.getBibliotecario().getEmail(),
                             prestamo.getBibliotecario().getNumeroEmpleado()
                         ),
-                        prestamo.getMaterial() instanceof Libro ? 
-                            new DtLibro(
-                                prestamo.getMaterial().getId(),
-                                prestamo.getMaterial().getFechaIngreso(),
-                                ((Libro) prestamo.getMaterial()).getTitulo(),
-                                ((Libro) prestamo.getMaterial()).getCantidadPaginas()
-                            ) :
-                            new DtArticulo(
-                                prestamo.getMaterial().getId(),
-                                prestamo.getMaterial().getFechaIngreso(),
-                                ((Articulo) prestamo.getMaterial()).getDescripcion(),
-                                ((Articulo) prestamo.getMaterial()).getPesoKg(),
-                                ((Articulo) prestamo.getMaterial()).getDimensiones()
-                            )
+                        dtMaterial
                     );
                     // Usar reflexión para establecer el id ya que es privado
                     try {

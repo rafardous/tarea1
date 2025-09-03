@@ -42,6 +42,11 @@ public class Prestamo {
     private Material material;
     
     // construct:
+    
+    // Constructor por defecto requerido por Hibernate
+    public Prestamo() {
+        // Hibernate necesita este constructor para instanciar entidades desde la BD
+    }
  
     public Prestamo(Date fechaSolicitud, Date fechaDevolucion, EstadoPrestamo estado, 
                    Lector lector, Bibliotecario bibliotecario, Material material) {

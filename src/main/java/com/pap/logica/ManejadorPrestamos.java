@@ -47,9 +47,11 @@ public class ManejadorPrestamos {
 
     public List<Prestamo> listarPrestamos() {
         try {
-            return em.createQuery("SELECT p FROM Prestamo p", Prestamo.class).getResultList();
+            List<Prestamo> resultado = em.createQuery("SELECT p FROM Prestamo p", Prestamo.class).getResultList();
+            return resultado;
         } catch (Exception e) {
             System.err.println("Error al listar prestamos: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }

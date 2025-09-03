@@ -299,31 +299,38 @@ public class ActualizarPrestamo extends JInternalFrame {
     public void cargarPrestamos() {
         try {
             prestamos = controlador.listarTodosLosPrestamos();
+            
             comboPrestamos.removeAllItems();
             
-            for (DtPrestamo prestamo : prestamos) {
-                String descripcionMaterial = "";
-                if (prestamo.getMaterial() instanceof com.pap.datatypes.DtLibro) {
-                    descripcionMaterial = ((com.pap.datatypes.DtLibro) prestamo.getMaterial()).getTitulo();
-                } else if (prestamo.getMaterial() instanceof com.pap.datatypes.DtArticulo) {
-                    descripcionMaterial = ((com.pap.datatypes.DtArticulo) prestamo.getMaterial()).getDescripcion();
+            if (prestamos != null && !prestamos.isEmpty()) {
+                for (DtPrestamo prestamo : prestamos) {
+                    String descripcionMaterial = "";
+                    if (prestamo.getMaterial() instanceof com.pap.datatypes.DtLibro) {
+                        descripcionMaterial = ((com.pap.datatypes.DtLibro) prestamo.getMaterial()).getTitulo();
+                    } else if (prestamo.getMaterial() instanceof com.pap.datatypes.DtArticulo) {
+                        descripcionMaterial = ((com.pap.datatypes.DtArticulo) prestamo.getMaterial()).getDescripcion();
+                    }
+                    
+                    String itemCombo = prestamo.getLector().getEmail() + " | " + 
+                                     prestamo.getBibliotecario().getEmail() + " | " + 
+                                     descripcionMaterial;
+                    comboPrestamos.addItem(itemCombo);
                 }
                 
-                String itemCombo = prestamo.getLector().getEmail() + " | " + 
-                                 prestamo.getBibliotecario().getEmail() + " | " + 
-                                 descripcionMaterial;
-                comboPrestamos.addItem(itemCombo);
-            }
-            
-            if (prestamos.isEmpty()) {
+                // Seleccionar el primer item por defecto
+                if (comboPrestamos.getItemCount() > 0) {
+                    comboPrestamos.setSelectedIndex(0);
+                    mostrarPrestamoSeleccionado();
+                }
+            } else {
                 comboPrestamos.addItem("No hay prestamos disponibles");
             }
             
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                "Error al cargar prestamos: " + e.getMessage(),
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+            System.err.println("Error al cargar prestamos: " + e.getMessage());
+            e.printStackTrace();
+            comboPrestamos.removeAllItems();
+            comboPrestamos.addItem("Error al cargar prestamos");
         }
     }
     
@@ -366,8 +373,8 @@ public class ActualizarPrestamo extends JInternalFrame {
         int selectedIndex = comboPrestamos.getSelectedIndex();
         if (selectedIndex < 0 || selectedIndex >= prestamos.size()) {
             JOptionPane.showMessageDialog(this, 
-                "Debes seleccionar un préstamo válido",
-                "Error de Validación", 
+                "Debe seleccionar un prestamo valido",
+                "Error de Validacion", 
                 JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -383,8 +390,8 @@ public class ActualizarPrestamo extends JInternalFrame {
             // Validar que la fecha de solicitud sea anterior a la de devolución
             if (nuevaFechaSolicitud.after(nuevaFechaDevolucion)) {
                 JOptionPane.showMessageDialog(this, 
-                    "La fecha de solicitud debe ser anterior a la fecha de devolución", 
-                    "Error de Validación", 
+                    "La fecha de solicitud debe ser anterior a la fecha de devolucion", 
+                    "Error de Validacion", 
                     JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -399,8 +406,8 @@ public class ActualizarPrestamo extends JInternalFrame {
             
             if (resultado) {
                 JOptionPane.showMessageDialog(this, 
-                    "Préstamo actualizado exitosamente", 
-                    "Actualización Exitosa", 
+                    "Prestamo actualizado exitosamente", 
+                    "Actualizacion Exitosa", 
                     JOptionPane.INFORMATION_MESSAGE);
                 
                 // Recargar préstamos y actualizar la vista
@@ -408,14 +415,14 @@ public class ActualizarPrestamo extends JInternalFrame {
                 mostrarPrestamoSeleccionado();
             } else {
                 JOptionPane.showMessageDialog(this, 
-                    "No se pudo actualizar el préstamo", 
-                    "Error de Actualización", 
+                    "No se pudo actualizar el prestamo", 
+                    "Error de Actualizacion", 
                     JOptionPane.ERROR_MESSAGE);
             }
             
         } catch (ActualizarPrestamoExcepcion ex) {
             JOptionPane.showMessageDialog(this, 
-                "Error al actualizar préstamo: " + ex.getMessage(),
+                "Error al actualizar prestamo: " + ex.getMessage(),
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
@@ -442,7 +449,7 @@ public class ActualizarPrestamo extends JInternalFrame {
         
         JOptionPane.showMessageDialog(this, 
             "Formulario limpiado", 
-            "Información", 
+            "Informacion", 
             JOptionPane.INFORMATION_MESSAGE);
     }
     
