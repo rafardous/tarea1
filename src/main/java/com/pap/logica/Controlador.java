@@ -335,7 +335,7 @@ public class Controlador implements IControlador {
                     DtMaterial dtMaterial;
                                        
                     
-                                         if (materialReal.getClass().getSimpleName().equals("Libro")) {
+                        if (materialReal.getClass().getSimpleName().equals("Libro")) {
                          // Es un libro, obtener datos específicos
                          Libro libro = (Libro) materialReal;
                          dtMaterial = new DtLibro(
@@ -352,7 +352,7 @@ public class Controlador implements IControlador {
                          } catch (Exception e) {
                              System.err.println("Error al establecer idMaterial del libro: " + e.getMessage());
                          }
-                     } else if (materialReal.getClass().getSimpleName().equals("Articulo")) {
+                    } else if (materialReal.getClass().getSimpleName().equals("Articulo")) {
                          // Es un artículo, obtener datos específicos
                          Articulo articulo = (Articulo) materialReal;
                          dtMaterial = new DtArticulo(
@@ -370,14 +370,14 @@ public class Controlador implements IControlador {
                          } catch (Exception e) {
                              System.err.println("Error al establecer idMaterial del articulo: " + e.getMessage());
                          }
-                     } else {
+                    } else {
                          // Material genérico como fallback
                          dtMaterial = new DtMaterial(
                              material.getIdMaterial(),
                              material.getId(),
                              material.getFechaIngreso()
                          );
-                     }
+                    }
                     
                     DtPrestamo dtPrestamo = new DtPrestamo(
                         prestamo.getFechaSolicitud(),
@@ -418,8 +418,100 @@ public class Controlador implements IControlador {
     }
 
 	@Override
-    public void ListarPrestamoLector() throws ListarPrestamoLectorExcepcion{
-		
+    public ArrayList<DtPrestamo> ListarPrestamoLector(String emailLector) throws ListarPrestamoLectorExcepcion{ 
+        // uso el mismo criterio que en la anterior listarTodosLosPrestamos pro filtro por emailLector
+        try {           
+            List<Prestamo> prestamos = manejadorPrestamos.listarPrestamos();
+            
+            ArrayList<DtPrestamo> dtPrestamos = new ArrayList<>();
+            
+            if (prestamos != null) {            
+                for (Prestamo prestamo : prestamos) {
+                    Hibernate.initialize(prestamo.getLector());
+                    Hibernate.initialize(prestamo.getBibliotecario());
+                    Hibernate.initialize(prestamo.getMaterial());
+                    
+                    String lector = prestamo.getLector().getEmail();        // obtener email del elctor para comparar
+                    Material material = prestamo.getMaterial();
+                    Material materialReal = (Material) Hibernate.unproxy(material);
+                    DtMaterial dtMaterial;
+                                       
+                    if (lector.equalsIgnoreCase(emailLector)) {     // comparo por email, no salgo del FOR!
+                        if (materialReal.getClass().getSimpleName().equals("Libro")) {
+                            Libro libro = (Libro) materialReal;
+                            dtMaterial = new DtLibro(
+                                libro.getId().toString(), // conv integer a String
+                                libro.getFechaIngreso(),
+                                libro.getTitulo(),
+                                libro.getCantidadPaginas()
+                            );
+                            try {
+                                java.lang.reflect.Field idMaterialField = DtMaterial.class.getDeclaredField("idMaterial");
+                                idMaterialField.setAccessible(true);
+                                idMaterialField.set(dtMaterial, libro.getIdMaterial());
+                            } catch (Exception e) {
+                                System.err.println("Error al establecer idMaterial del libro: " + e.getMessage());
+                            }
+                        } else if (materialReal.getClass().getSimpleName().equals("Articulo")) {
+                            Articulo articulo = (Articulo) materialReal;
+                            dtMaterial = new DtArticulo(
+                                articulo.getId().toString(), 
+                                articulo.getFechaIngreso(),
+                                articulo.getDescripcion(),
+                                articulo.getPesoKg(),
+                                articulo.getDimensiones()
+                            );
+                            try {
+                                java.lang.reflect.Field idMaterialField = DtMaterial.class.getDeclaredField("idMaterial");
+                                idMaterialField.setAccessible(true);
+                                idMaterialField.set(dtMaterial, articulo.getIdMaterial());
+                            } catch (Exception e) {
+                                System.err.println("Error al establecer idMaterial del articulo: " + e.getMessage());
+                            }
+                        } else {
+                            dtMaterial = new DtMaterial(
+                                material.getIdMaterial(),
+                                material.getId(),
+                                material.getFechaIngreso()
+                            );
+                        }
+                        
+                        DtPrestamo dtPrestamo = new DtPrestamo(
+                            prestamo.getFechaSolicitud(),
+                            prestamo.getFechaDevolucion(),
+                            prestamo.getEstado(),
+                            new DtLector(
+                                prestamo.getLector().getNombre(),
+                                prestamo.getLector().getEmail(),
+                                prestamo.getLector().getDireccion(),
+                                prestamo.getLector().getFechaRegistro(),
+                                prestamo.getLector().getEstado(),
+                                prestamo.getLector().getZona()
+                            ),
+                            new DtBibliotecario(
+                                prestamo.getBibliotecario().getNombre(),
+                                prestamo.getBibliotecario().getEmail(),
+                                prestamo.getBibliotecario().getNumeroEmpleado()
+                            ),
+                            dtMaterial
+                        );
+                        try {
+                            java.lang.reflect.Field idField = DtPrestamo.class.getDeclaredField("id");
+                            idField.setAccessible(true);
+                            idField.set(dtPrestamo, prestamo.getId());
+                        } catch (Exception e) {
+                            System.err.println("Error al establecer ID del prestamo: " + e.getMessage());
+                        }
+                        dtPrestamos.add(dtPrestamo);
+                    }   
+                }
+            }           // para no confundirme, este esl del IF inicial
+            
+            return dtPrestamos;
+        } catch (Exception e) {
+            System.err.println("Error al listar prestamos: " + e.getMessage());
+            return new ArrayList<>();
+        }
 	}
 
 	@Override

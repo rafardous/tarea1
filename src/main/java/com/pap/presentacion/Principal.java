@@ -41,6 +41,7 @@ import com.pap.presentacion.ConsultarDonacionesRegistradas;
 import com.pap.presentacion.ConsultarDonacionesPorFecha;
 import com.pap.presentacion.RegistrarPrestamo;
 import com.pap.presentacion.ActualizarPrestamo;
+import com.pap.presentacion.HistorialPrestamosLector;
 
 
 public class Principal {
@@ -64,6 +65,7 @@ public class Principal {
     // Internal Frames para gestión de préstamos
     private RegistrarPrestamo registrarPrestamoInternalFrame;
     private ActualizarPrestamo actualizarPrestamoInternalFrame;
+    private HistorialPrestamosLector historialPrestamosLectorInternalFrame;
 
     private IControlador controlador; // PRUEBO EL CONTROLADOR COMO ATRIBUTO A VER SI FUNCA ACA
 
@@ -158,6 +160,12 @@ public class Principal {
         actualizarPrestamoInternalFrame.setLocation(200, 100);
         actualizarPrestamoInternalFrame.setVisible(false);
         mainPanel.add(actualizarPrestamoInternalFrame);
+        
+        historialPrestamosLectorInternalFrame = new HistorialPrestamosLector(controlador);
+        historialPrestamosLectorInternalFrame.setClosable(true);
+        historialPrestamosLectorInternalFrame.setLocation(200, 100);
+        historialPrestamosLectorInternalFrame.setVisible(false);
+        mainPanel.add(historialPrestamosLectorInternalFrame);
         
         // Panel de bienvenida con imagen de fondo
         JPanel welcomePanel = new JPanel() {
@@ -773,11 +781,11 @@ public class Principal {
     }
     
     public void abrirConsultarDonacionesRegistradas() {
-        // Recargar donaciones antes de mostrar la ventana
-        consultarDonacionesRegistradasInternalFrame.cargarDonaciones();
         consultarDonacionesRegistradasInternalFrame.setLocation(200, 100);
         consultarDonacionesRegistradasInternalFrame.setVisible(true);
         consultarDonacionesRegistradasInternalFrame.toFront();
+        // Cargar donaciones después de mostrar la ventana
+        consultarDonacionesRegistradasInternalFrame.cargarDonaciones();
     }
     
     public void abrirConsultarDonacionesPorFecha() {
@@ -802,9 +810,8 @@ public class Principal {
     }
     
     public void abrirHistorialPrestamosLector() {
-        JOptionPane.showMessageDialog(frame, 
-            "ya la hago locoooo", 
-            "esperaaa", 
-            JOptionPane.INFORMATION_MESSAGE);
+        historialPrestamosLectorInternalFrame.setLocation(200, 100);
+        historialPrestamosLectorInternalFrame.setVisible(true);
+        historialPrestamosLectorInternalFrame.toFront();
     }
 }

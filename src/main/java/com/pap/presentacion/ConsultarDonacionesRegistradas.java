@@ -27,6 +27,7 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import java.util.Comparator;
 
 public class ConsultarDonacionesRegistradas extends JInternalFrame {
     
@@ -144,6 +145,22 @@ public class ConsultarDonacionesRegistradas extends JInternalFrame {
         
         // Configurar el ordenador de filas para permitir ordenamiento
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloTabla);
+        
+        // Configurar comparador personalizado para la columna de fechas (índice 4)
+        sorter.setComparator(4, new Comparator<String>() {
+            @Override
+            public int compare(String fecha1, String fecha2) {
+                try {
+                    Date d1 = formatoFecha.parse(fecha1);
+                    Date d2 = formatoFecha.parse(fecha2);
+                    return d1.compareTo(d2);
+                } catch (Exception e) {
+                    // Si hay error al parsear, usar comparación alfabética como fallback
+                    return fecha1.compareTo(fecha2);
+                }
+            }
+        });
+        
         tablaDonaciones.setRowSorter(sorter);
         
         // Configurar anchos de columna

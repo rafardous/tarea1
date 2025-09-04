@@ -46,7 +46,7 @@ public interface IControlador {
     // no voy a hacer dos funciones para actualizar el prestamo una pa fecha y otra para todo
 	public boolean ActualizarPrestamo(int id, Date fechaSol, Date fechaDev, EstadoPrestamo estado) throws ActualizarPrestamoExcepcion;
 
-    public void ListarPrestamoLector() throws ListarPrestamoLectorExcepcion;
+    public ArrayList<DtPrestamo> ListarPrestamoLector(String emailLector) throws ListarPrestamoLectorExcepcion;
     
     public void HistorialPrestamoBibliotecario() throws HistorialPrestamoBibliotecarioExcepcion;
 
@@ -54,7 +54,6 @@ public interface IControlador {
 
     public void MaterialPendiente() throws MaterialPendienteExcepcion;
 
-    // Método para obtener todos los préstamos con información completa
     public ArrayList<DtPrestamo> listarTodosLosPrestamos();
 
     
