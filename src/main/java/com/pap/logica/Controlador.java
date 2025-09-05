@@ -5,6 +5,7 @@ import com.pap.excepciones.*;
 import com.pap.interfaces.IControlador;
 import com.pap.datatypes.EstadoLector;
 import com.pap.datatypes.Zona;
+import com.pap.datatypes.DtPrestamo;
 import com.pap.excepciones.UsuarioRepetidoExc;
 import com.pap.datatypes.DtBibliotecario;
 import com.pap.datatypes.DtLector;
@@ -20,11 +21,13 @@ public class Controlador implements IControlador {
     private final ManejadorUsuarios manejadorUsuarios;
     private final ManejadorPrestamos manejadorPrestamos;
     private final ManejadorGestionMaterial manejadorMaterial;
+    private final ManejadorControlSeguimiento mCS;
     
     public Controlador() {
         this.manejadorUsuarios = ManejadorUsuarios.getInstancia();
         this.manejadorPrestamos = ManejadorPrestamos.getInstancia();
         this.manejadorMaterial = ManejadorGestionMaterial.getInstancia();
+        this.mCS = ManejadorControlSeguimiento.getInstancia();
     }
     
 
@@ -515,18 +518,24 @@ public class Controlador implements IControlador {
 	}
 
 	@Override
-    public void HistorialPrestamoBibliotecario() throws HistorialPrestamoBibliotecarioExcepcion{
+    public ArrayList<DtPrestamo> HistorialPrestamoBibliotecario(String numeroEmpleado, Boolean funcion) throws HistorialPrestamoBibliotecarioExcepcion{
+		ArrayList<DtPrestamo> prestamos = mCS.obtenerPrestamos(numeroEmpleado, funcion);
 		
+		return prestamos;
 	}
 
 	@Override
-	public void ReportePrestamoZona() throws ReportePrestamoZonaExcepcion{
+	public ArrayList<DtPrestamo> ReportePrestamoZona(String zona, Boolean funcion) throws ReportePrestamoZonaExcepcion{
+		ArrayList<DtPrestamo> prestamos = mCS.obtenerPrestamos(zona, funcion);
 		
+		return prestamos;
 	}
 
 	@Override
-    public void MaterialPendiente() throws MaterialPendienteExcepcion{
+    public ArrayList<DtPrestamo> MaterialPendiente(String estado) throws MaterialPendienteExcepcion{
+		ArrayList<DtPrestamo> prestamos = mCS.obtenerMaterialPendiente(estado);
 		
+		return prestamos;
 	}
 
 

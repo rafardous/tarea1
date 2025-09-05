@@ -42,6 +42,9 @@ import com.pap.presentacion.ConsultarDonacionesPorFecha;
 import com.pap.presentacion.RegistrarPrestamo;
 import com.pap.presentacion.ActualizarPrestamo;
 import com.pap.presentacion.HistorialPrestamosLector;
+import com.pap.presentacion.HistorialPrestamoBibliotecario;
+import com.pap.presentacion.ReportePrestamoZona;
+import com.pap.presentacion.MaterialPendiente;
 
 
 public class Principal {
@@ -66,6 +69,11 @@ public class Principal {
     private RegistrarPrestamo registrarPrestamoInternalFrame;
     private ActualizarPrestamo actualizarPrestamoInternalFrame;
     private HistorialPrestamosLector historialPrestamosLectorInternalFrame;
+    
+    // Internal Frames para control y seguimiento
+    private HistorialPrestamoBibliotecario historialPrestamoBibliotecarioInternalFrame;
+    private ReportePrestamoZona reportePrestamoZonaInternalFrame;
+    private MaterialPendiente materialPendienteInternalFrame;
 
     private IControlador controlador; // PRUEBO EL CONTROLADOR COMO ATRIBUTO A VER SI FUNCA ACA
 
@@ -166,6 +174,25 @@ public class Principal {
         historialPrestamosLectorInternalFrame.setLocation(200, 100);
         historialPrestamosLectorInternalFrame.setVisible(false);
         mainPanel.add(historialPrestamosLectorInternalFrame);
+        
+        // Crear los Internal Frames para control y seguimiento
+        historialPrestamoBibliotecarioInternalFrame = new HistorialPrestamoBibliotecario(controlador);
+        historialPrestamoBibliotecarioInternalFrame.setClosable(true);
+        historialPrestamoBibliotecarioInternalFrame.setLocation(200, 100);
+        historialPrestamoBibliotecarioInternalFrame.setVisible(false);
+        mainPanel.add(historialPrestamoBibliotecarioInternalFrame);
+        
+        reportePrestamoZonaInternalFrame = new ReportePrestamoZona(controlador);
+        reportePrestamoZonaInternalFrame.setClosable(true);
+        reportePrestamoZonaInternalFrame.setLocation(200, 100);
+        reportePrestamoZonaInternalFrame.setVisible(false);
+        mainPanel.add(reportePrestamoZonaInternalFrame);
+        
+        materialPendienteInternalFrame = new MaterialPendiente(controlador);
+        materialPendienteInternalFrame.setClosable(true);
+        materialPendienteInternalFrame.setLocation(200, 100);
+        materialPendienteInternalFrame.setVisible(false);
+        mainPanel.add(materialPendienteInternalFrame);
         
         // Panel de bienvenida con imagen de fondo
         JPanel welcomePanel = new JPanel() {
@@ -689,6 +716,98 @@ public class Principal {
         menuPrestamos.add(menuItemHistorialPrestamosLector);
         // -------------------------------------------------------
         
+        // Menú "Control y Seguimiento" con estilo moderno
+        JMenu menuControlSeguimiento = new JMenu("Control y Seguimiento") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuControlSeguimiento.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        menuControlSeguimiento.setForeground(new Color(220, 220, 220));
+        menuControlSeguimiento.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
+        menuBar.add(menuControlSeguimiento);
+        
+        // Item para historial de préstamos del bibliotecario
+        JMenuItem menuItemHistorialPrestamoBibliotecario = new JMenuItem("Historial Prestamos Bibliotecario") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuItemHistorialPrestamoBibliotecario.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuItemHistorialPrestamoBibliotecario.setForeground(Color.BLACK);
+        menuItemHistorialPrestamoBibliotecario.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        menuItemHistorialPrestamoBibliotecario.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirHistorialPrestamoBibliotecario();
+            }
+        });
+        menuControlSeguimiento.add(menuItemHistorialPrestamoBibliotecario);
+        
+        // Item para reporte de préstamos por zona
+        JMenuItem menuItemReportePrestamoZona = new JMenuItem("Reporte Prestamos por Zona") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuItemReportePrestamoZona.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuItemReportePrestamoZona.setForeground(Color.BLACK);
+        menuItemReportePrestamoZona.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        menuItemReportePrestamoZona.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirReportePrestamoZona();
+            }
+        });
+        menuControlSeguimiento.add(menuItemReportePrestamoZona);
+        
+        // Item para materiales más solicitados
+        JMenuItem menuItemMaterialPendiente = new JMenuItem("Materiales mas solicitados") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getModel().isArmed()) {
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(new Color(70, 130, 180, 150));
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
+                    g2d.dispose();
+                }
+            }
+        };
+        menuItemMaterialPendiente.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        menuItemMaterialPendiente.setForeground(Color.BLACK);
+        menuItemMaterialPendiente.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        menuItemMaterialPendiente.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirMaterialPendiente();
+            }
+        });
+        menuControlSeguimiento.add(menuItemMaterialPendiente);
+        // -------------------------------------------------------
+        
         // Menú "Salir" con estilo moderno
         JMenu menuSalir = new JMenu("Salir") {
             @Override
@@ -813,5 +932,24 @@ public class Principal {
         historialPrestamosLectorInternalFrame.setLocation(200, 100);
         historialPrestamosLectorInternalFrame.setVisible(true);
         historialPrestamosLectorInternalFrame.toFront();
+    }
+    
+    // Metodos para abrir ventanas de control y seguimiento
+    public void abrirHistorialPrestamoBibliotecario() {
+        historialPrestamoBibliotecarioInternalFrame.setLocation(200, 100);
+        historialPrestamoBibliotecarioInternalFrame.setVisible(true);
+        historialPrestamoBibliotecarioInternalFrame.toFront();
+    }
+    
+    public void abrirReportePrestamoZona() {
+        reportePrestamoZonaInternalFrame.setLocation(200, 100);
+        reportePrestamoZonaInternalFrame.setVisible(true);
+        reportePrestamoZonaInternalFrame.toFront();
+    }
+    
+    public void abrirMaterialPendiente() {
+        materialPendienteInternalFrame.setLocation(200, 100);
+        materialPendienteInternalFrame.setVisible(true);
+        materialPendienteInternalFrame.toFront();
     }
 }
