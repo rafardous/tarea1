@@ -1,137 +1,289 @@
 package com.pap.presentacion;
 
+import com.pap.interfaces.IControlador;
+import com.pap.datatypes.DtPrestamo;
+import com.pap.datatypes.DtLibro;
+import com.pap.datatypes.DtArticulo;
+import com.pap.datatypes.Zona;
+import com.pap.excepciones.ReportePrestamoZonaExcepcion;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
-import com.pap.datatypes.DtPrestamo;
-import com.pap.interfaces.IControlador;
+public class ReportePrestamoZona extends JInternalFrame {
 
-public class ReportePrestamoZona extends JInternalFrame{
-    private static final long serialVersionUID = 1L;
+    private IControlador controlador;
 
-	private IControlador icon;
-    private JComboBox<String> comboZona;
-    private JTable tabla;
-    private JScrollPane scrollPane;
+    private JComboBox<Zona> cmbZona;
+    private JTable tablaPrestamos;
+    private DefaultTableModel modeloTabla;
+    private JButton btnConsultar;
+    private JButton btnLimpiar;
+    private JButton btnCerrar;
 
-	public ReportePrestamoZona(IControlador icon) {
-		this.icon = icon;
-		setResizable(true);
-        setIconifiable(true);
-        setMaximizable(true);
-        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        setClosable(true);
-        setTitle("Reporte de Prestamos por Zona");
-		setBounds(100, 100, 700, 400);
-		getContentPane().setLayout(null);
+    private SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
 
-        JLabel lblZona = new JLabel("Zona:");
-        lblZona.setBounds(20, 20, 120, 25);
-        getContentPane().add(lblZona);
-
-        comboZona = new JComboBox<>(new String[]{
-            "BIBLIOTECA_CENTRAL",
-            "SUCURSAL_ESTE",
-            "SUCURSAL_OESTE",
-            "BIBLIOTECA_INFANTIL",
-            "ARCHIVO_GENERAL"
-        });
-        comboZona.setBounds(150, 20, 200, 25);
-        getContentPane().add(comboZona);
-
-        JButton btnAceptar = new JButton("Aceptar");
-        btnAceptar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                ReportePrestamoZonaAceptarActionPerformed(arg0);
-            }
-        });
-        btnAceptar.setBounds(100, 60, 100, 30);
-        getContentPane().add(btnAceptar);
-
-        JButton btnCancelar = new JButton("Cancelar");
-        btnCancelar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                ReportePrestamoZonaCancelarActionPerformed(arg0);
-            }
-        });
-        btnCancelar.setBounds(250, 60, 100, 30);
-        getContentPane().add(btnCancelar);
-
-        scrollPane = new JScrollPane();
-        scrollPane.setBounds(20, 120, 650, 200);
-        getContentPane().add(scrollPane);
-
-        tabla = new JTable();
-        scrollPane.setViewportView(tabla);
-
+    public ReportePrestamoZona(IControlador controlador) {
+        this.controlador = controlador;
+        initialize();
     }
 
-    protected void ReportePrestamoZonaAceptarActionPerformed(ActionEvent arg0) {
-        String zona = (String) comboZona.getSelectedItem();
-        
-        if(checkFormulario()){
-            try {
-                
-                ArrayList<DtPrestamo> prestamos = icon.ReportePrestamoZona(zona, false);
+    private void initialize() {
+        setTitle("Reporte de Prestamos por Zona");
+        setBounds(0, 0, 1000, 650);
+        setLayout(null);
+        setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
+            new EmptyBorder(10, 10, 10, 10)
+        ));
 
-                String[] columnas = {"ID Prestamo", "Email Lector", "Email Bibliotecario", "Material", "Fecha Solicitud", "Fecha Devolucion", "Estado"};
-                Object[][] datos = new Object[prestamos.size()][columnas.length];
-                
-                for (int i = 0; i < prestamos.size(); i++) {
-                    DtPrestamo p = prestamos.get(i);
-                    datos[i][0] = p.getId();
-                    datos[i][1] = p.getLector().getEmail();
-                    datos[i][2] = p.getBibliotecario().getEmail();
-                    // Mostrar descripcion del material
+        // Panel de fondo con gradiente
+        JPanel contentPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+
+                GradientPaint gradient = new GradientPaint(
+                    0, 0, new Color(248, 249, 250),
+                    getWidth(), getHeight(), new Color(233, 236, 239)
+                );
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+
+                g2d.dispose();
+            }
+        };
+        contentPanel.setLayout(null);
+        contentPanel.setBounds(0, 0, getWidth(), getHeight());
+        add(contentPanel);
+
+        // Título
+        JLabel lblTitulo = new JLabel("Reporte de Prestamos por Zona");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitulo.setForeground(new Color(52, 73, 94));
+        lblTitulo.setBounds(280, 20, 500, 30);
+        contentPanel.add(lblTitulo);
+
+        // Panel de consulta
+        crearPanelConsulta(contentPanel);
+
+        // Crear la tabla
+        crearTabla();
+
+        // Panel con scroll para la tabla
+        JScrollPane scrollPane = new JScrollPane(tablaPrestamos);
+        scrollPane.setBounds(30, 150, 940, 400);
+        scrollPane.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 5, 5, 5)
+        ));
+        contentPanel.add(scrollPane);
+
+        // Botones
+        btnConsultar = createStyledButton("Consultar", new Color(46, 204, 113));
+        btnConsultar.setBounds(200, 570, 120, 35);
+        btnConsultar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                consultarReporteZona();
+            }
+        });
+        contentPanel.add(btnConsultar);
+
+        btnLimpiar = createStyledButton("Limpiar", new Color(52, 152, 219));
+        btnLimpiar.setBounds(350, 570, 120, 35);
+        btnLimpiar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                limpiarTabla();
+            }
+        });
+        contentPanel.add(btnLimpiar);
+
+        btnCerrar = createStyledButton("Cerrar", new Color(231, 76, 60));
+        btnCerrar.setBounds(500, 570, 120, 35);
+        btnCerrar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        });
+        contentPanel.add(btnCerrar);
+    }
+
+    private void crearPanelConsulta(JPanel parent) {
+        JPanel panelConsulta = new JPanel();
+        panelConsulta.setLayout(null);
+        panelConsulta.setBounds(30, 90, 940, 50);
+        panelConsulta.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(10, 15, 10, 15)
+        ));
+        panelConsulta.setBackground(new Color(255, 255, 255, 200));
+        parent.add(panelConsulta);
+
+        JLabel lblZona = new JLabel("Zona:");
+        lblZona.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblZona.setForeground(new Color(52, 73, 94));
+        lblZona.setBounds(20, 15, 80, 20);
+        panelConsulta.add(lblZona);
+
+        cmbZona = new JComboBox<>(Zona.values());
+        cmbZona.setBounds(100, 15, 200, 25);
+        panelConsulta.add(cmbZona);
+
+        JLabel lblInfo = new JLabel("Seleccione la zona y haga clic en 'Consultar'");
+        lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        lblInfo.setForeground(new Color(108, 117, 125));
+        lblInfo.setBounds(320, 15, 400, 20);
+        panelConsulta.add(lblInfo);
+    }
+
+    private void crearTabla() {
+        String[] columnas = {
+            "ID Prestamo", "Fecha Solicitud", "Fecha Devolucion", "Nombre/Descripcion Material", "Estado"
+        };
+
+        modeloTabla = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        tablaPrestamos = new JTable(modeloTabla);
+        tablaPrestamos.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        tablaPrestamos.setRowHeight(25);
+        tablaPrestamos.setGridColor(new Color(52, 152, 219));
+        tablaPrestamos.setSelectionBackground(new Color(52, 152, 219, 100));
+        tablaPrestamos.setSelectionForeground(Color.BLACK);
+
+        // Ordenamiento
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloTabla);
+        sorter.setComparator(1, crearComparadorFechas());
+        sorter.setComparator(2, crearComparadorFechas());
+        tablaPrestamos.setRowSorter(sorter);
+
+        // Anchos de columna
+        tablaPrestamos.getColumnModel().getColumn(0).setPreferredWidth(100);
+        tablaPrestamos.getColumnModel().getColumn(1).setPreferredWidth(120);
+        tablaPrestamos.getColumnModel().getColumn(2).setPreferredWidth(120);
+        tablaPrestamos.getColumnModel().getColumn(3).setPreferredWidth(300);
+        tablaPrestamos.getColumnModel().getColumn(4).setPreferredWidth(100);
+    }
+
+    private Comparator<String> crearComparadorFechas() {
+        return new Comparator<String>() {
+            @Override
+            public int compare(String fecha1, String fecha2) {
+                try {
+                    Date d1 = formatoFecha.parse(fecha1);
+                    Date d2 = formatoFecha.parse(fecha2);
+                    return d1.compareTo(d2);
+                } catch (Exception e) {
+                    return fecha1.compareTo(fecha2);
+                }
+            }
+        };
+    }
+
+    private void consultarReporteZona() {
+        try {
+            Zona zona = (Zona) cmbZona.getSelectedItem();
+
+            if (zona == null) {
+                JOptionPane.showMessageDialog(this,
+                    "Debe seleccionar una zona",
+                    "Error de Validacion",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            modeloTabla.setRowCount(0);
+
+            ArrayList<DtPrestamo> prestamos = controlador.ReportePrestamoZona(zona);
+
+            if (prestamos != null && !prestamos.isEmpty()) {
+                for (DtPrestamo prestamo : prestamos) {
                     String descripcionMaterial = "";
-                    if (p.getMaterial() instanceof com.pap.datatypes.DtLibro) {
-                        descripcionMaterial = ((com.pap.datatypes.DtLibro) p.getMaterial()).getTitulo();
-                    } else if (p.getMaterial() instanceof com.pap.datatypes.DtArticulo) {
-                        descripcionMaterial = ((com.pap.datatypes.DtArticulo) p.getMaterial()).getDescripcion();
+                    if (prestamo.getMaterial() instanceof DtLibro) {
+                        descripcionMaterial = ((DtLibro) prestamo.getMaterial()).getTitulo();
+                    } else if (prestamo.getMaterial() instanceof DtArticulo) {
+                        descripcionMaterial = ((DtArticulo) prestamo.getMaterial()).getDescripcion();
                     } else {
                         descripcionMaterial = "Material no identificado";
                     }
-                    datos[i][3] = descripcionMaterial;
-                    datos[i][4] = p.getFechaSolicitud();
-                    datos[i][5] = p.getFechaDevolucion();
-                    datos[i][6] = p.getEstado();
+
+                    Object[] fila = {
+                        prestamo.getId(),
+                        formatoFecha.format(prestamo.getFechaSolicitud()),
+                        formatoFecha.format(prestamo.getFechaDevolucion()),
+                        descripcionMaterial,
+                        prestamo.getEstado().toString()
+                    };
+                    modeloTabla.addRow(fila);
                 }
-                
-                javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(datos, columnas);
-                tabla.setModel(modelo);
-                
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, e.getMessage(), "Reporte de Prestamos por Zona", JOptionPane.ERROR_MESSAGE);
+
+                JOptionPane.showMessageDialog(this,
+                    "Se encontraron " + prestamos.size() + " prestamos en la zona: " + zona,
+                    "Consulta Exitosa",
+                    JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "No se encontraron prestamos en la zona: " + zona,
+                    "Sin Resultados",
+                    JOptionPane.INFORMATION_MESSAGE);
             }
+
+        } catch (ReportePrestamoZonaExcepcion ex) {
+            JOptionPane.showMessageDialog(this,
+                "Error al consultar prestamos: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                "Error inesperado: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    protected void ReportePrestamoZonaCancelarActionPerformed(ActionEvent arg0) {
-        limpiarFormulario();
-        setVisible(false);
+    private void limpiarTabla() {
+        modeloTabla.setRowCount(0);
+        cmbZona.setSelectedIndex(-1);
+        JOptionPane.showMessageDialog(this,
+            "Tabla limpiada",
+            "Informacion",
+            JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private boolean checkFormulario() {
-        String zonaSeleccionada = (String) comboZona.getSelectedItem();
-
-        if (zonaSeleccionada == null || zonaSeleccionada.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una zona", "Reporte de Prestamos por Zona", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        return true;
-    }
-
-    private void limpiarFormulario() {
-        tabla.setModel(new javax.swing.table.DefaultTableModel());
+    private JButton createStyledButton(String text, Color backgroundColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        button.setForeground(Color.BLACK);
+        button.setBackground(backgroundColor);
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setFocusPainted(false);
+        return button;
     }
 }

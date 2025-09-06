@@ -4,7 +4,7 @@ import com.pap.interfaces.IControlador;
 import com.pap.datatypes.DtPrestamo;
 import com.pap.datatypes.DtLibro;
 import com.pap.datatypes.DtArticulo;
-import com.pap.excepciones.ListarPrestamoLectorExcepcion;
+import com.pap.excepciones.HistorialPrestamoBibliotecarioExcepcion;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -108,7 +108,7 @@ public class HistorialPrestamoBibliotecario extends JInternalFrame {
         btnConsultar.setBounds(200, 570, 120, 35);
         btnConsultar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                consultarHistorialLector();
+                consultarHistorialBiblio();
             }
         });
         contentPanel.add(btnConsultar);
@@ -224,7 +224,7 @@ public class HistorialPrestamoBibliotecario extends JInternalFrame {
         tablaPrestamos.getColumnModel().getColumn(4).setPreferredWidth(100);  // Estado
         }
     
-    private void consultarHistorialLector() {
+    private void consultarHistorialBiblio() {
         try {
             String nroEmpleado = txtNumeroEmpleado.getText().trim();
             
@@ -270,17 +270,17 @@ public class HistorialPrestamoBibliotecario extends JInternalFrame {
                 
                 // Mostrar mensaje de exito
                 JOptionPane.showMessageDialog(this, 
-                    "Se encontraron " + prestamos.size() + " prestamos para el lector: " + nroEmpleado, 
+                    "Se encontraron " + prestamos.size() + " prestamos para el bibliotecario: " + nroEmpleado, 
                     "Consulta Exitosa", 
                     JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, 
-                    "No se encontraron prestamos para el lector: " + nroEmpleado, 
+                    "No se encontraron prestamos para el bibliotecario: " + nroEmpleado, 
                     "Sin Resultados", 
                     JOptionPane.INFORMATION_MESSAGE);
             }
             
-        } catch (ListarPrestamoLectorExcepcion ex) {
+        } catch (HistorialPrestamoBibliotecarioExcepcion ex) {
             JOptionPane.showMessageDialog(this, 
                 "Error al consultar prestamos: " + ex.getMessage(),
                 "Error", 

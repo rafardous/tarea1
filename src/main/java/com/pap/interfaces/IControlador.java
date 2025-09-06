@@ -51,11 +51,9 @@ public interface IControlador {
 
     public ArrayList<DtPrestamo> ListarPrestamoLector(String emailLector) throws ListarPrestamoLectorExcepcion;
     
-    public ArrayList<DtPrestamo> ListarPrestamoBiblioteacrio(String emailLector) throws ListarPrestamoLectorExcepcion;
+    public ArrayList<DtPrestamo> ListarPrestamoBiblioteacrio(String emailLector) throws HistorialPrestamoBibliotecarioExcepcion;
 
-    public ArrayList<DtPrestamo> HistorialPrestamoBibliotecario(String numeroEmpleado, Boolean funcion) throws HistorialPrestamoBibliotecarioExcepcion;
-
-    public ArrayList<DtPrestamo> ReportePrestamoZona(String zona, Boolean funcion) throws ReportePrestamoZonaExcepcion;
+    public ArrayList<DtPrestamo> ReportePrestamoZona(Zona zona) throws ReportePrestamoZonaExcepcion;
 
     public ArrayList<DtPrestamo> MaterialPendiente(String estado) throws MaterialPendienteExcepcion;
 
