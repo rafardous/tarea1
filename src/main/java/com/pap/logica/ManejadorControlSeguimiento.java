@@ -100,6 +100,7 @@ public class ManejadorControlSeguimiento {
 					}
 					
 					DtPrestamo dto = new DtPrestamo(
+						p.getId(),
 						p.getFechaSolicitud(),
 						p.getFechaDevolucion(),
 						p.getEstado(),
@@ -183,6 +184,7 @@ public class ManejadorControlSeguimiento {
 						}
 						
 						DtPrestamo dto = new DtPrestamo(
+							p.getId(),
 							p.getFechaSolicitud(),
 							p.getFechaDevolucion(),
 							p.getEstado(),
@@ -274,6 +276,7 @@ public class ManejadorControlSeguimiento {
 				}
 				
 				DtPrestamo dto = new DtPrestamo(
+					p.getId(),
 					p.getFechaSolicitud(),
 					p.getFechaDevolucion(),
 					p.getEstado(),
