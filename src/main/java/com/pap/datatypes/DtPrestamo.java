@@ -13,7 +13,7 @@ public class DtPrestamo {
 
     public DtPrestamo() {}
 
-    public DtPrestamo(Date fechaSolicitud, Date fechaDevolucion, EstadoPrestamo estado,
+    public DtPrestamo(int id,Date fechaSolicitud, Date fechaDevolucion, EstadoPrestamo estado,
                       DtLector lector, DtBibliotecario bibliotecario, DtMaterial material) {
         this.fechaSolicitud = fechaSolicitud;
         this.fechaDevolucion = fechaDevolucion;
