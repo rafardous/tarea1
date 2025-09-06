@@ -718,6 +718,8 @@ public class Controlador implements IControlador {
         }
 	}
 
+
+
 	@Override
     public ArrayList<DtPrestamo> MaterialPendiente(String estado) throws MaterialPendienteExcepcion{
 		ArrayList<DtPrestamo> prestamos = mCS.obtenerMaterialPendiente(estado);

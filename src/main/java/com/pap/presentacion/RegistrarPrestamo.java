@@ -49,7 +49,7 @@ public class RegistrarPrestamo extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Registrar Nuevo Préstamo");
+        setTitle("Registrar Nuevo Prestamo");
         setBounds(0, 0, 450, 400);
         setLayout(null);
         setBorder(BorderFactory.createCompoundBorder(
@@ -79,7 +79,7 @@ public class RegistrarPrestamo extends JInternalFrame {
         add(contentPanel);
         
         // Título con estilo moderno
-        JLabel lblTitulo = new JLabel("Registro de Nuevo Préstamo");
+        JLabel lblTitulo = new JLabel("Registro de Nuevo Prestamo");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
         lblTitulo.setForeground(new Color(52, 73, 94));
         lblTitulo.setBounds(120, 20, 250, 30);
@@ -119,7 +119,7 @@ public class RegistrarPrestamo extends JInternalFrame {
         contentPanel.add(txtIdMaterial);
         
         // Fecha de devolución
-        JLabel lblFechaDev = new JLabel("Fecha Devolución:");
+        JLabel lblFechaDev = new JLabel("Fecha Devolucion:");
         lblFechaDev.setFont(new Font("Segoe UI", Font.BOLD, 12));
         lblFechaDev.setForeground(new Color(52, 73, 94));
         lblFechaDev.setBounds(30, 230, 100, 20);
@@ -197,7 +197,7 @@ public class RegistrarPrestamo extends JInternalFrame {
             if (emailLector.isEmpty() || emailBibliotecario.isEmpty() || idMaterial.isEmpty()) {
                 JOptionPane.showMessageDialog(this, 
                     "Todos los campos son obligatorios", 
-                    "Error de Validación", 
+                    "Error de Validacion", 
                     JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -211,7 +211,7 @@ public class RegistrarPrestamo extends JInternalFrame {
             if (estado == null) {
                 JOptionPane.showMessageDialog(this, 
                     "Debe seleccionar un estado", 
-                    "Error de Validación", 
+                    "Error de Validacion", 
                     JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -228,8 +228,8 @@ public class RegistrarPrestamo extends JInternalFrame {
             
             if (resultado) {
                 JOptionPane.showMessageDialog(this, 
-                    "Préstamo registrado exitosamente", 
-                    "Éxito", 
+                    "Prestamo registrado exitosamente", 
+                    "Exito", 
                     JOptionPane.INFORMATION_MESSAGE);
                 limpiarCampos();
                 setVisible(false);

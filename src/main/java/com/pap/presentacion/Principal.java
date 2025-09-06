@@ -44,7 +44,7 @@ import com.pap.presentacion.ActualizarPrestamo;
 import com.pap.presentacion.HistorialPrestamosLector;
 import com.pap.presentacion.HistorialPrestamoBibliotecario;
 import com.pap.presentacion.ReportePrestamoZona;
-import com.pap.presentacion.MaterialPendiente;
+import com.pap.presentacion.ConsultarMaterialesPendientes;
 
 
 public class Principal {
@@ -73,7 +73,7 @@ public class Principal {
     // Internal Frames para control y seguimiento
     private HistorialPrestamoBibliotecario historialPrestamoBibliotecarioInternalFrame;
     private ReportePrestamoZona reportePrestamoZonaInternalFrame;
-    private MaterialPendiente materialPendienteInternalFrame;
+    private ConsultarMaterialesPendientes consultarMaterialesPendientesInternalFrame;
 
     private IControlador controlador; // PRUEBO EL CONTROLADOR COMO ATRIBUTO A VER SI FUNCA ACA
 
@@ -188,11 +188,11 @@ public class Principal {
         reportePrestamoZonaInternalFrame.setVisible(false);
         mainPanel.add(reportePrestamoZonaInternalFrame);
         
-        materialPendienteInternalFrame = new MaterialPendiente(controlador);
-        materialPendienteInternalFrame.setClosable(true);
-        materialPendienteInternalFrame.setLocation(200, 100);
-        materialPendienteInternalFrame.setVisible(false);
-        mainPanel.add(materialPendienteInternalFrame);
+        consultarMaterialesPendientesInternalFrame = new ConsultarMaterialesPendientes(controlador);
+        consultarMaterialesPendientesInternalFrame.setClosable(true);
+        consultarMaterialesPendientesInternalFrame.setLocation(200, 100);
+        consultarMaterialesPendientesInternalFrame.setVisible(false);
+        mainPanel.add(consultarMaterialesPendientesInternalFrame);
         
         // Panel de bienvenida con imagen de fondo
         JPanel welcomePanel = new JPanel() {
@@ -802,7 +802,7 @@ public class Principal {
         menuItemMaterialPendiente.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
         menuItemMaterialPendiente.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                abrirMaterialPendiente();
+                abrirConsultarMaterialesPendientes();
             }
         });
         menuControlSeguimiento.add(menuItemMaterialPendiente);
@@ -947,9 +947,9 @@ public class Principal {
         reportePrestamoZonaInternalFrame.toFront();
     }
     
-    public void abrirMaterialPendiente() {
-        materialPendienteInternalFrame.setLocation(200, 100);
-        materialPendienteInternalFrame.setVisible(true);
-        materialPendienteInternalFrame.toFront();
+    public void abrirConsultarMaterialesPendientes() {
+        consultarMaterialesPendientesInternalFrame.setLocation(200, 100);
+        consultarMaterialesPendientesInternalFrame.setVisible(true);
+        consultarMaterialesPendientesInternalFrame.toFront();
     }
 }
