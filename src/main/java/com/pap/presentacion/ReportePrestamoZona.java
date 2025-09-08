@@ -22,7 +22,6 @@ import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -32,7 +31,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-public class ReportePrestamoZona extends JInternalFrame {
+public class ReportePrestamoZona extends JPanel {
 
     private IControlador controlador;
 
@@ -51,13 +50,9 @@ public class ReportePrestamoZona extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Reporte de Prestamos por Zona");
-        setBounds(0, 0, 1000, 650);
         setLayout(null);
-        setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-            new EmptyBorder(10, 10, 10, 10)
-        ));
+        setBounds(0, 0, 1200, 800);
+        setBackground(new Color(74, 76, 81)); // Dark theme background
 
         // Panel de fondo con gradiente
         JPanel contentPanel = new JPanel() {
@@ -67,8 +62,8 @@ public class ReportePrestamoZona extends JInternalFrame {
                 Graphics2D g2d = (Graphics2D) g.create();
 
                 GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(248, 249, 250),
-                    getWidth(), getHeight(), new Color(233, 236, 239)
+                    0, 0, new Color(74, 76, 81),
+                    getWidth(), getHeight(), new Color(84, 86, 91)
                 );
                 g2d.setPaint(gradient);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
@@ -83,7 +78,7 @@ public class ReportePrestamoZona extends JInternalFrame {
         // Título
         JLabel lblTitulo = new JLabel("Reporte de Prestamos por Zona");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        lblTitulo.setForeground(new Color(52, 73, 94));
+        lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setBounds(280, 20, 500, 30);
         contentPanel.add(lblTitulo);
 
@@ -125,7 +120,7 @@ public class ReportePrestamoZona extends JInternalFrame {
         btnCerrar.setBounds(500, 570, 120, 35);
         btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
         contentPanel.add(btnCerrar);
@@ -144,7 +139,7 @@ public class ReportePrestamoZona extends JInternalFrame {
 
         JLabel lblZona = new JLabel("Zona:");
         lblZona.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblZona.setForeground(new Color(52, 73, 94));
+        lblZona.setForeground(Color.WHITE);
         lblZona.setBounds(20, 15, 80, 20);
         panelConsulta.add(lblZona);
 
@@ -161,7 +156,7 @@ public class ReportePrestamoZona extends JInternalFrame {
 
     private void crearTabla() {
         String[] columnas = {
-            "ID Prestamo", "Fecha Solicitud", "Fecha Devolucion", "Nombre/Descripcion Material", "Estado"
+            "ID Material", "Nombre/Descripcion", "Cantidad Prestamos Pendientes"
         };
 
         modeloTabla = new DefaultTableModel(columnas, 0) {
@@ -178,18 +173,23 @@ public class ReportePrestamoZona extends JInternalFrame {
         tablaPrestamos.setSelectionBackground(new Color(52, 152, 219, 100));
         tablaPrestamos.setSelectionForeground(Color.BLACK);
 
-        // Ordenamiento
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloTabla);
-        sorter.setComparator(1, crearComparadorFechas());
-        sorter.setComparator(2, crearComparadorFechas());
-        tablaPrestamos.setRowSorter(sorter);
+        // Header styling: bold + greyish blue text
+        java.awt.Color headerColor = new java.awt.Color(52, 73, 94);
+        javax.swing.table.JTableHeader header = tablaPrestamos.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        header.setForeground(headerColor);
+        javax.swing.table.TableCellRenderer baseHeaderRenderer = header.getDefaultRenderer();
+        header.setDefaultRenderer((table, value, isSelected, hasFocus, row, col) -> {
+            java.awt.Component c = baseHeaderRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+            c.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            c.setForeground(headerColor);
+            return c;
+        });
 
-        // Anchos de columna
-        tablaPrestamos.getColumnModel().getColumn(0).setPreferredWidth(100);
-        tablaPrestamos.getColumnModel().getColumn(1).setPreferredWidth(120);
-        tablaPrestamos.getColumnModel().getColumn(2).setPreferredWidth(120);
-        tablaPrestamos.getColumnModel().getColumn(3).setPreferredWidth(300);
-        tablaPrestamos.getColumnModel().getColumn(4).setPreferredWidth(100);
+        // Anchos de columna (3 columnas)
+        tablaPrestamos.getColumnModel().getColumn(0).setPreferredWidth(120); // ID Material
+        tablaPrestamos.getColumnModel().getColumn(1).setPreferredWidth(350); // Nombre/Descripcion
+        tablaPrestamos.getColumnModel().getColumn(2).setPreferredWidth(180); // Cantidad
     }
 
     private Comparator<String> crearComparadorFechas() {
@@ -280,9 +280,27 @@ public class ReportePrestamoZona extends JInternalFrame {
     private JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setForeground(Color.BLACK);
-        button.setBackground(backgroundColor);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setForeground(Color.WHITE);
+        Color bg = backgroundColor;
+        String label = text == null ? "" : text.toLowerCase();
+        if (label.contains("modificar") || label.contains("consultar")) {
+            bg = new Color(46, 204, 113);
+        } else if (label.contains("limpiar") || label.contains("volver")) {
+            bg = new Color(52, 152, 219);
+        } else if (label.contains("cancelar")) {
+            bg = new Color(231, 76, 60);
+        } else if (bg == null) {
+            bg = new Color(46, 49, 54);
+        }
+        final Color finalBg = bg;
+        button.setBackground(finalBg);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(finalBg.brighter(), 2, true),
+            BorderFactory.createEmptyBorder(8, 16, 8, 16)
+        ));
         button.setFocusPainted(false);
         return button;
     }

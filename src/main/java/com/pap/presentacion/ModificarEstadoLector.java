@@ -20,14 +20,13 @@ import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-public class ModificarEstadoLector extends JInternalFrame {
+public class ModificarEstadoLector extends JPanel {
     
     private IControlador controlador;
     
@@ -57,13 +56,9 @@ public class ModificarEstadoLector extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Modificar Estado de Lector");
-        setBounds(0, 0, 500, 500);
         setLayout(null);
-        setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-            new EmptyBorder(10, 10, 10, 10)
-        ));
+        setBounds(0, 0, 1200, 800);
+        setBackground(new Color(74, 76, 81)); // Slightly lighter grey
         
         // Panel de fondo con gradiente
         JPanel contentPanel = new JPanel() {
@@ -73,8 +68,8 @@ public class ModificarEstadoLector extends JInternalFrame {
                 Graphics2D g2d = (Graphics2D) g.create();
                 
                 GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(248, 249, 250),
-                    getWidth(), getHeight(), new Color(233, 236, 239)
+                    0, 0, new Color(74, 76, 81),
+                    getWidth(), getHeight(), new Color(84, 86, 91)
                 );
                 g2d.setPaint(gradient);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
@@ -89,14 +84,14 @@ public class ModificarEstadoLector extends JInternalFrame {
         // Titulo con estilo moderno
         JLabel lblTitulo = new JLabel("Modificar Estado de Lector");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTitulo.setForeground(new Color(52, 73, 94));
+        lblTitulo.setForeground(Color.WHITE); // White text for dark theme
         lblTitulo.setBounds(120, 20, 300, 30);
         contentPanel.add(lblTitulo);
         
         // Seccion de seleccion de lector
         JLabel lblSeleccionarLector = new JLabel("Seleccionar Lector:");
         lblSeleccionarLector.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblSeleccionarLector.setForeground(new Color(52, 73, 94));
+        lblSeleccionarLector.setForeground(Color.WHITE);
         lblSeleccionarLector.setBounds(30, 70, 120, 20);
         contentPanel.add(lblSeleccionarLector);
         
@@ -143,14 +138,14 @@ public class ModificarEstadoLector extends JInternalFrame {
         // Seccion de datos del lector
         JLabel lblDatosLector = new JLabel("Datos del Lector:");
         lblDatosLector.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblDatosLector.setForeground(new Color(52, 73, 94));
+        lblDatosLector.setForeground(Color.WHITE);
         lblDatosLector.setBounds(30, 110, 150, 20);
         contentPanel.add(lblDatosLector);
         
         // Nombre
         JLabel lblNombre = new JLabel("Nombre:");
         lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblNombre.setForeground(new Color(52, 73, 94));
+        lblNombre.setForeground(Color.WHITE);
         lblNombre.setBounds(30, 140, 100, 20);
         contentPanel.add(lblNombre);
         
@@ -161,7 +156,7 @@ public class ModificarEstadoLector extends JInternalFrame {
         // Email
         JLabel lblEmail = new JLabel("Email:");
         lblEmail.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblEmail.setForeground(new Color(52, 73, 94));
+        lblEmail.setForeground(Color.WHITE);
         lblEmail.setBounds(30, 175, 100, 20);
         contentPanel.add(lblEmail);
         
@@ -172,7 +167,7 @@ public class ModificarEstadoLector extends JInternalFrame {
         // Direccion
         JLabel lblDireccion = new JLabel("Direccion:");
         lblDireccion.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblDireccion.setForeground(new Color(52, 73, 94));
+        lblDireccion.setForeground(Color.WHITE);
         lblDireccion.setBounds(30, 210, 100, 20);
         contentPanel.add(lblDireccion);
         
@@ -183,7 +178,7 @@ public class ModificarEstadoLector extends JInternalFrame {
         // Fecha de Registro
         JLabel lblFechaRegistro = new JLabel("Fecha de Registro:");
         lblFechaRegistro.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblFechaRegistro.setForeground(new Color(52, 73, 94));
+        lblFechaRegistro.setForeground(Color.WHITE);
         lblFechaRegistro.setBounds(30, 245, 120, 20);
         contentPanel.add(lblFechaRegistro);
         
@@ -194,7 +189,7 @@ public class ModificarEstadoLector extends JInternalFrame {
         // Estado Actual
         JLabel lblEstadoActual = new JLabel("Estado Actual:");
         lblEstadoActual.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblEstadoActual.setForeground(new Color(52, 73, 94));
+        lblEstadoActual.setForeground(Color.WHITE);
         lblEstadoActual.setBounds(30, 280, 100, 20);
         contentPanel.add(lblEstadoActual);
         
@@ -205,7 +200,7 @@ public class ModificarEstadoLector extends JInternalFrame {
         // Zona
         JLabel lblZona = new JLabel("Zona:");
         lblZona.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblZona.setForeground(new Color(52, 73, 94));
+        lblZona.setForeground(Color.WHITE);
         lblZona.setBounds(30, 315, 100, 20);
         contentPanel.add(lblZona);
         
@@ -216,7 +211,7 @@ public class ModificarEstadoLector extends JInternalFrame {
         // Seccion de cambio de estado
         JLabel lblCambiarEstado = new JLabel("Cambiar estado a:");
         lblCambiarEstado.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblCambiarEstado.setForeground(new Color(52, 73, 94));
+        lblCambiarEstado.setForeground(Color.WHITE);
         lblCambiarEstado.setBounds(30, 360, 130, 20);
         contentPanel.add(lblCambiarEstado);
         
@@ -243,10 +238,21 @@ public class ModificarEstadoLector extends JInternalFrame {
         btnCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
+                com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
         contentPanel.add(btnCancelar);
+        
+        // Add back button
+        JButton btnVolver = createStyledButton("Volver", new Color(52, 73, 94));
+        btnVolver.setBounds(390, 400, 100, 35);
+        btnVolver.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                com.pap.presentacion.Principal.getInstance().irASubmenuUsuarios();
+            }
+        });
+        contentPanel.add(btnVolver);
         
         // Inicialmente deshabilitar campos de datos hasta que se seleccione un lector
         setCamposDatosEnabled(false);
@@ -346,7 +352,7 @@ public class ModificarEstadoLector extends JInternalFrame {
                 cmbEstado.setSelectedItem(null);
                 
                 // Cerrar la ventana
-                dispose();
+                setVisible(false);
             } else {
                 JOptionPane.showMessageDialog(this, 
                     "Error al modificar el estado", 
@@ -389,7 +395,7 @@ public class ModificarEstadoLector extends JInternalFrame {
             new EmptyBorder(5, 8, 5, 8)
         ));
         textField.setBackground(Color.WHITE);
-        textField.setForeground(new Color(52, 73, 94));
+        textField.setForeground(Color.WHITE);
         textField.setEditable(editable);
         return textField;
     }
@@ -397,22 +403,40 @@ public class ModificarEstadoLector extends JInternalFrame {
     private JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setBackground(backgroundColor);
-        button.setForeground(Color.BLACK);
+        button.setForeground(Color.WHITE);
+        // Map color by label
+        Color bg = backgroundColor;
+        String label = text == null ? "" : text.toLowerCase();
+        if (label.contains("modificar") || label.contains("consultar")) {
+            bg = new Color(46, 204, 113);
+        } else if (label.contains("limpiar") || label.contains("volver")) {
+            bg = new Color(52, 152, 219);
+        } else if (label.contains("cancelar")) {
+            bg = new Color(231, 76, 60);
+        } else if (bg == null) {
+            bg = new Color(46, 49, 54);
+        }
+        final Color finalBg = bg;
+        button.setBackground(finalBg);
         button.setOpaque(true);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setContentAreaFilled(true);
+        button.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        button.setOpaque(true);
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(finalBg.brighter(), 2, true),
+            BorderFactory.createEmptyBorder(8, 16, 8, 16)
+        ));
         button.setFocusPainted(false);
         button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         
         // Efecto hover
+        final Color hover = finalBg.darker();
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(backgroundColor.darker());
-                button.setForeground(Color.BLACK); // Mantener texto negro en hover
+                button.setBackground(hover);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(backgroundColor);
-                button.setForeground(Color.BLACK); // Mantener texto negro
+                button.setBackground(finalBg);
             }
         });
         

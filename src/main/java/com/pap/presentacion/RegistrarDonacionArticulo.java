@@ -13,14 +13,13 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-public class RegistrarDonacionArticulo extends JInternalFrame {
+public class RegistrarDonacionArticulo extends JPanel {
     
     private IControlador controlador;
     
@@ -38,13 +37,9 @@ public class RegistrarDonacionArticulo extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Registrar Donacion de Articulo");
-        setBounds(0, 0, 450, 400);
         setLayout(null);
-        setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-            new EmptyBorder(10, 10, 10, 10)
-        ));
+        setBounds(0, 0, 1200, 800);
+        setBackground(new Color(74, 76, 81)); // Slightly lighter grey
         
         // Panel de fondo con gradiente
         JPanel contentPanel = new JPanel() {
@@ -54,8 +49,8 @@ public class RegistrarDonacionArticulo extends JInternalFrame {
                 Graphics2D g2d = (Graphics2D) g.create();
                 
                 GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(248, 249, 250),
-                    getWidth(), getHeight(), new Color(233, 236, 239)
+                    0, 0, new Color(74, 76, 81),
+                    getWidth(), getHeight(), new Color(84, 86, 91)
                 );
                 g2d.setPaint(gradient);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
@@ -70,14 +65,14 @@ public class RegistrarDonacionArticulo extends JInternalFrame {
         // Titulo con estilo moderno
         JLabel lblTitulo = new JLabel("Registro de Donacion de Articulo");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTitulo.setForeground(new Color(52, 73, 94));
+        lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setBounds(100, 20, 300, 30);
         contentPanel.add(lblTitulo);
         
         // ID del Articulo
         JLabel lblIdArticulo = new JLabel("ID del Articulo:");
         lblIdArticulo.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblIdArticulo.setForeground(new Color(52, 73, 94));
+        lblIdArticulo.setForeground(Color.WHITE);
         lblIdArticulo.setBounds(30, 80, 100, 20);
         contentPanel.add(lblIdArticulo);
         
@@ -88,7 +83,7 @@ public class RegistrarDonacionArticulo extends JInternalFrame {
         // Descripcion del Articulo
         JLabel lblDescripcion = new JLabel("Descripcion:");
         lblDescripcion.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblDescripcion.setForeground(new Color(52, 73, 94));
+        lblDescripcion.setForeground(Color.WHITE);
         lblDescripcion.setBounds(30, 130, 100, 20);
         contentPanel.add(lblDescripcion);
         
@@ -99,7 +94,7 @@ public class RegistrarDonacionArticulo extends JInternalFrame {
         // Peso en Kg
         JLabel lblPesoKg = new JLabel("Peso (Kg):");
         lblPesoKg.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblPesoKg.setForeground(new Color(52, 73, 94));
+        lblPesoKg.setForeground(Color.WHITE);
         lblPesoKg.setBounds(30, 180, 100, 20);
         contentPanel.add(lblPesoKg);
         
@@ -110,7 +105,7 @@ public class RegistrarDonacionArticulo extends JInternalFrame {
         // Dimensiones
         JLabel lblDimensiones = new JLabel("Dimensiones:");
         lblDimensiones.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblDimensiones.setForeground(new Color(52, 73, 94));
+        lblDimensiones.setForeground(Color.WHITE);
         lblDimensiones.setBounds(30, 230, 100, 20);
         contentPanel.add(lblDimensiones);
         
@@ -132,10 +127,20 @@ public class RegistrarDonacionArticulo extends JInternalFrame {
         btnCancelar.setBounds(240, 300, 120, 35);
         btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
         contentPanel.add(btnCancelar);
+        
+        // Add back button
+        JButton btnVolver = createStyledButton("Volver", new Color(52, 73, 94));
+        btnVolver.setBounds(380, 300, 120, 35);
+        btnVolver.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                com.pap.presentacion.Principal.getInstance().irASubmenuMateriales();
+            }
+        });
+        contentPanel.add(btnVolver);
     }
     
     private JTextField createStyledTextField() {
@@ -151,9 +156,27 @@ public class RegistrarDonacionArticulo extends JInternalFrame {
     private JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setForeground(Color.BLACK);
-        button.setBackground(backgroundColor);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setForeground(Color.WHITE);
+        Color bg = backgroundColor;
+        String label = text == null ? "" : text.toLowerCase();
+        if (label.contains("modificar") || label.contains("consultar")) {
+            bg = new Color(46, 204, 113);
+        } else if (label.contains("limpiar") || label.contains("volver")) {
+            bg = new Color(52, 152, 219);
+        } else if (label.contains("cancelar")) {
+            bg = new Color(231, 76, 60);
+        } else if (bg == null) {
+            bg = new Color(46, 49, 54);
+        }
+        final Color finalBg = bg;
+        button.setBackground(finalBg);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(finalBg.brighter(), 2, true),
+            BorderFactory.createEmptyBorder(8, 16, 8, 16)
+        ));
         button.setFocusPainted(false);
         return button;
     }

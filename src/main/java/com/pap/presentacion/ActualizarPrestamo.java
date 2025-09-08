@@ -20,7 +20,6 @@ import java.util.Calendar;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -32,7 +31,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-public class ActualizarPrestamo extends JInternalFrame {
+public class ActualizarPrestamo extends JPanel {
     
     private IControlador controlador;
     
@@ -63,13 +62,9 @@ public class ActualizarPrestamo extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Actualizar Prestamo");
-        setBounds(0, 0, 1000, 700);
         setLayout(null);
-        setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-            new EmptyBorder(10, 10, 10, 10)
-        ));
+        setBounds(0, 0, 1200, 800);
+        setBackground(new Color(74, 76, 81)); // Dark theme background
         
         // Panel de fondo con gradiente
         JPanel contentPanel = new JPanel() {
@@ -79,8 +74,8 @@ public class ActualizarPrestamo extends JInternalFrame {
                 Graphics2D g2d = (Graphics2D) g.create();
                 
                 GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(248, 249, 250),
-                    getWidth(), getHeight(), new Color(233, 236, 239)
+                    0, 0, new Color(74, 76, 81),
+                    getWidth(), getHeight(), new Color(84, 86, 91)
                 );
                 g2d.setPaint(gradient);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
@@ -95,7 +90,7 @@ public class ActualizarPrestamo extends JInternalFrame {
         // Titulo con estilo moderno
         JLabel lblTitulo = new JLabel("Actualizar Informacion de Prestamo");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        lblTitulo.setForeground(new Color(52, 73, 94));
+        lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setBounds(250, 20, 500, 30);
         contentPanel.add(lblTitulo);
         
@@ -147,10 +142,20 @@ public class ActualizarPrestamo extends JInternalFrame {
         btnCerrar.setBounds(500, 600, 120, 35);
         btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
         contentPanel.add(btnCerrar);
+        
+        // Add back button
+        JButton btnVolver = createStyledButton("Volver", new Color(52, 73, 94));
+        btnVolver.setBounds(640, 600, 120, 35);
+        btnVolver.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                com.pap.presentacion.Principal.getInstance().irASubmenuPrestamos();
+            }
+        });
+        contentPanel.add(btnVolver);
     }
     
     private void crearPanelSeleccionPrestamo(JPanel parent) {
@@ -168,7 +173,7 @@ public class ActualizarPrestamo extends JInternalFrame {
         // Label para el combo
         JLabel lblPrestamo = new JLabel("Seleccionar Prestamo:");
         lblPrestamo.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblPrestamo.setForeground(new Color(52, 73, 94));
+        lblPrestamo.setForeground(Color.WHITE);
         lblPrestamo.setBounds(20, 15, 150, 20);
         panelSeleccion.add(lblPrestamo);
         
@@ -242,14 +247,14 @@ public class ActualizarPrestamo extends JInternalFrame {
         // Titulo del panel
         JLabel lblTituloEdicion = new JLabel("Modificar Datos del Prestamo:");
         lblTituloEdicion.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblTituloEdicion.setForeground(new Color(52, 73, 94));
+        lblTituloEdicion.setForeground(Color.WHITE);
         lblTituloEdicion.setBounds(20, 10, 250, 20);
         panelEdicion.add(lblTituloEdicion);
         
         // Fecha de solicitud
         JLabel lblFechaSolicitud = new JLabel("Nueva Fecha de Solicitud:");
         lblFechaSolicitud.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblFechaSolicitud.setForeground(new Color(52, 73, 94));
+        lblFechaSolicitud.setForeground(Color.WHITE);
         lblFechaSolicitud.setBounds(20, 40, 180, 20);
         panelEdicion.add(lblFechaSolicitud);
         
@@ -264,7 +269,7 @@ public class ActualizarPrestamo extends JInternalFrame {
         // Fecha de devolución
         JLabel lblFechaDevolucion = new JLabel("Nueva Fecha de Devolucion:");
         lblFechaDevolucion.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblFechaDevolucion.setForeground(new Color(52, 73, 94));
+        lblFechaDevolucion.setForeground(Color.WHITE);
         lblFechaDevolucion.setBounds(20, 80, 180, 20);
         panelEdicion.add(lblFechaDevolucion);
         
@@ -280,7 +285,7 @@ public class ActualizarPrestamo extends JInternalFrame {
         // Estado del préstamo
         JLabel lblEstado = new JLabel("Nuevo Estado:");
         lblEstado.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblEstado.setForeground(new Color(52, 73, 94));
+        lblEstado.setForeground(Color.WHITE);
         lblEstado.setBounds(20, 120, 180, 20);
         panelEdicion.add(lblEstado);
         
@@ -465,9 +470,27 @@ public class ActualizarPrestamo extends JInternalFrame {
     private JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setForeground(Color.BLACK);
-        button.setBackground(backgroundColor);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setForeground(Color.WHITE);
+        Color bg = backgroundColor;
+        String label = text == null ? "" : text.toLowerCase();
+        if (label.contains("modificar") || label.contains("consultar") || label.contains("actualizar")) {
+            bg = new Color(46, 204, 113);
+        } else if (label.contains("limpiar") || label.contains("volver")) {
+            bg = new Color(52, 152, 219);
+        } else if (label.contains("cancelar")) {
+            bg = new Color(231, 76, 60);
+        } else if (bg == null) {
+            bg = new Color(46, 49, 54);
+        }
+        final Color finalBg = bg;
+        button.setBackground(finalBg);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(finalBg.brighter(), 2, true),
+            BorderFactory.createEmptyBorder(8, 16, 8, 16)
+        ));
         button.setFocusPainted(false);
         return button;
     }

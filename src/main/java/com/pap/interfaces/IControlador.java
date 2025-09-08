@@ -1,7 +1,6 @@
 package com.pap.interfaces;
 import com.pap.excepciones.*;
 import com.pap.datatypes.*;
-import com.pap.logica.ManejadorControlSeguimiento;
 
 import java.util.ArrayList;
 
@@ -54,8 +53,6 @@ public interface IControlador {
     public ArrayList<DtPrestamo> ListarPrestamoBiblioteacrio(String emailLector) throws HistorialPrestamoBibliotecarioExcepcion;
 
     public ArrayList<DtPrestamo> ReportePrestamoZona(Zona zona) throws ReportePrestamoZonaExcepcion;
-
-    public ArrayList<DtPrestamo> MaterialPendiente(String estado) throws MaterialPendienteExcepcion;
 
     public ArrayList<DtPrestamo> listarTodosLosPrestamos();
 

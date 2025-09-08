@@ -19,7 +19,6 @@ import java.util.Calendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -32,7 +31,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.util.Comparator;
 
-public class ConsultarDonacionesPorFecha extends JInternalFrame {
+public class ConsultarDonacionesPorFecha extends JPanel {
     
     private IControlador controlador;
     
@@ -53,13 +52,9 @@ public class ConsultarDonacionesPorFecha extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Consultar Donaciones por Fecha");
-        setBounds(0, 0, 900, 650);
         setLayout(null);
-        setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-            new EmptyBorder(10, 10, 10, 10)
-        ));
+        setBounds(0, 0, 1200, 800);
+        setBackground(new Color(74, 76, 81)); // Dark theme background
         
         // Panel de fondo con gradiente
         JPanel contentPanel = new JPanel() {
@@ -69,8 +64,8 @@ public class ConsultarDonacionesPorFecha extends JInternalFrame {
                 Graphics2D g2d = (Graphics2D) g.create();
                 
                 GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(248, 249, 250),
-                    getWidth(), getHeight(), new Color(233, 236, 239)
+                    0, 0, new Color(74, 76, 81),
+                    getWidth(), getHeight(), new Color(84, 86, 91)
                 );
                 g2d.setPaint(gradient);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
@@ -85,7 +80,7 @@ public class ConsultarDonacionesPorFecha extends JInternalFrame {
         // Titulo con estilo moderno
         JLabel lblTitulo = new JLabel("Consultar Donaciones por Rango de Fechas");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        lblTitulo.setForeground(new Color(52, 73, 94));
+        lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setBounds(200, 20, 500, 30);
         contentPanel.add(lblTitulo);
         
@@ -134,10 +129,20 @@ public class ConsultarDonacionesPorFecha extends JInternalFrame {
         btnCerrar.setBounds(500, 550, 120, 35);
         btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
         contentPanel.add(btnCerrar);
+        
+        // Add back button
+        JButton btnVolver = createStyledButton("Volver", new Color(52, 73, 94));
+        btnVolver.setBounds(640, 550, 120, 35);
+        btnVolver.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        });
+        contentPanel.add(btnVolver);
     }
     
     private void crearPanelFechas(JPanel parent) {
@@ -155,7 +160,7 @@ public class ConsultarDonacionesPorFecha extends JInternalFrame {
         // Fecha de inicio
         JLabel lblFechaInicio = new JLabel("Fecha de Inicio:");
         lblFechaInicio.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblFechaInicio.setForeground(new Color(52, 73, 94));
+        lblFechaInicio.setForeground(Color.WHITE);
         lblFechaInicio.setBounds(20, 15, 100, 20);
         panelFechas.add(lblFechaInicio);
         
@@ -171,7 +176,7 @@ public class ConsultarDonacionesPorFecha extends JInternalFrame {
         // Fecha de fin
         JLabel lblFechaFin = new JLabel("Fecha de Fin:");
         lblFechaFin.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblFechaFin.setForeground(new Color(52, 73, 94));
+        lblFechaFin.setForeground(Color.WHITE);
         lblFechaFin.setBounds(280, 15, 100, 20);
         panelFechas.add(lblFechaFin);
         
@@ -348,9 +353,27 @@ public class ConsultarDonacionesPorFecha extends JInternalFrame {
     private JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setForeground(Color.BLACK);
-        button.setBackground(backgroundColor);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setForeground(Color.WHITE);
+        Color bg = backgroundColor;
+        String label = text == null ? "" : text.toLowerCase();
+        if (label.contains("modificar") || label.contains("consultar")) {
+            bg = new Color(46, 204, 113);
+        } else if (label.contains("limpiar") || label.contains("volver")) {
+            bg = new Color(52, 152, 219);
+        } else if (label.contains("cancelar")) {
+            bg = new Color(231, 76, 60);
+        } else if (bg == null) {
+            bg = new Color(46, 49, 54);
+        }
+        final Color finalBg = bg;
+        button.setBackground(finalBg);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(finalBg.brighter(), 2, true),
+            BorderFactory.createEmptyBorder(8, 16, 8, 16)
+        ));
         button.setFocusPainted(false);
         return button;
     }
