@@ -837,15 +837,15 @@ public class Principal {
         } else if (panel instanceof CambiarZonaLector) {
             return "Cambiar Zona de Lector";
         } else if (panel instanceof RegistrarDonacionLibro) {
-            return "Registrar Donación de Libro";
+            return "Registrar Donacion de Libro";
         } else if (panel instanceof RegistrarDonacionArticulo) {
-            return "Registrar Donación de Artículo";
+            return "Registrar Donacion de Artículo";
         } else if (panel instanceof ConsultarDonacionesRegistradas) {
             return "Consultar Donaciones Registradas";
         } else if (panel instanceof ConsultarDonacionesPorFecha) {
             return "Consultar Donaciones por Fecha";
         } else if (panel instanceof RegistrarPrestamo) {
-            return "Registrar Nuevo Préstamo";
+            return "Registrar Nuevo Prestamo";
         } else if (panel instanceof ActualizarPrestamo) {
             return "Actualizar Prestamo";
         } else if (panel instanceof HistorialPrestamosLector) {

@@ -3,11 +3,17 @@ package com.pap.presentacion;
 import com.pap.interfaces.IControlador;
 import com.pap.excepciones.RegistrarDonacionArticuloExcepcion;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -37,110 +43,143 @@ public class RegistrarDonacionArticulo extends JPanel {
     }
 
     private void initialize() {
-        setLayout(null);
-        setBounds(0, 0, 1200, 800);
-        setBackground(new Color(74, 76, 81)); // Slightly lighter grey
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81)); // Dark mode background
         
-        // Panel de fondo con gradiente
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(74, 76, 81),
-                    getWidth(), getHeight(), new Color(84, 86, 91)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                
-                g2d.dispose();
-            }
-        };
-        contentPanel.setLayout(null);
-        contentPanel.setBounds(0, 0, getWidth(), getHeight());
-        add(contentPanel);
-        
-        // Titulo con estilo moderno
+        // Título - Header
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Minimal vertical spacing
+        headerPanel.setOpaque(false);
         JLabel lblTitulo = new JLabel("Registro de Donacion de Articulo");
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setBounds(100, 20, 300, 30);
-        contentPanel.add(lblTitulo);
+        headerPanel.add(lblTitulo);
+        add(headerPanel, BorderLayout.NORTH);
+        
+        // Form Container Panel using GridBagLayout for precise control
+        JPanel formContainerPanel = new JPanel();
+        formContainerPanel.setLayout(new GridBagLayout());
+        formContainerPanel.setOpaque(false);
+        formContainerPanel.setBorder(new EmptyBorder(5, 0, 0, 0)); // Reduced top margin to bring form closer to title
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 10, 0); // Vertical spacing: 10px top, 10px bottom
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         
         // ID del Articulo
         JLabel lblIdArticulo = new JLabel("ID del Articulo:");
-        lblIdArticulo.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblIdArticulo.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblIdArticulo.setForeground(Color.WHITE);
-        lblIdArticulo.setBounds(30, 80, 100, 20);
-        contentPanel.add(lblIdArticulo);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(2, 0, 10, 10); // Reduced top margin to bring closer to title
+        formContainerPanel.add(lblIdArticulo, gbc);
         
         txtIdArticulo = createStyledTextField();
-        txtIdArticulo.setBounds(140, 80, 250, 30);
-        contentPanel.add(txtIdArticulo);
+        txtIdArticulo.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(2, 0, 10, 0); // Reduced top margin to match label
+        formContainerPanel.add(txtIdArticulo, gbc);
         
         // Descripcion del Articulo
         JLabel lblDescripcion = new JLabel("Descripcion:");
-        lblDescripcion.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblDescripcion.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblDescripcion.setForeground(Color.WHITE);
-        lblDescripcion.setBounds(30, 130, 100, 20);
-        contentPanel.add(lblDescripcion);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblDescripcion, gbc);
         
         txtDescripcion = createStyledTextField();
-        txtDescripcion.setBounds(140, 130, 250, 30);
-        contentPanel.add(txtDescripcion);
+        txtDescripcion.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtDescripcion, gbc);
         
         // Peso en Kg
         JLabel lblPesoKg = new JLabel("Peso (Kg):");
-        lblPesoKg.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblPesoKg.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblPesoKg.setForeground(Color.WHITE);
-        lblPesoKg.setBounds(30, 180, 100, 20);
-        contentPanel.add(lblPesoKg);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblPesoKg, gbc);
         
         txtPesoKg = createStyledTextField();
-        txtPesoKg.setBounds(140, 180, 250, 30);
-        contentPanel.add(txtPesoKg);
+        txtPesoKg.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtPesoKg, gbc);
         
         // Dimensiones
         JLabel lblDimensiones = new JLabel("Dimensiones:");
-        lblDimensiones.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblDimensiones.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblDimensiones.setForeground(Color.WHITE);
-        lblDimensiones.setBounds(30, 230, 100, 20);
-        contentPanel.add(lblDimensiones);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblDimensiones, gbc);
         
         txtDimensiones = createStyledTextField();
-        txtDimensiones.setBounds(140, 230, 250, 30);
-        contentPanel.add(txtDimensiones);
+        txtDimensiones.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtDimensiones, gbc);
         
-        // Botones modernos
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        buttonPanel.setOpaque(false);
+
+        // Add buttons to the button panel
         btnRegistrar = createStyledButton("Registrar", new Color(46, 204, 113));
-        btnRegistrar.setBounds(100, 300, 120, 35);
+        btnRegistrar.setPreferredSize(new Dimension(120, 35));
         btnRegistrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 registrarDonacionArticulo();
             }
         });
-        contentPanel.add(btnRegistrar);
+        buttonPanel.add(btnRegistrar);
         
         btnCancelar = createStyledButton("Cancelar", new Color(231, 76, 60));
-        btnCancelar.setBounds(240, 300, 120, 35);
+        btnCancelar.setPreferredSize(new Dimension(120, 35));
         btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
-        contentPanel.add(btnCancelar);
+        buttonPanel.add(btnCancelar);
         
         // Add back button
         JButton btnVolver = createStyledButton("Volver", new Color(52, 73, 94));
-        btnVolver.setBounds(380, 300, 120, 35);
+        btnVolver.setPreferredSize(new Dimension(120, 35));
         btnVolver.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 com.pap.presentacion.Principal.getInstance().irASubmenuMateriales();
             }
         });
-        contentPanel.add(btnVolver);
+        buttonPanel.add(btnVolver);
+        
+        // Add button panel to form container with minimal spacing
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(15, 0, 0, 0); // Increased spacing above buttons
+        formContainerPanel.add(buttonPanel, gbc);
+
+        add(formContainerPanel, BorderLayout.CENTER);
     }
     
     private JTextField createStyledTextField() {

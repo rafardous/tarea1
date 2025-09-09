@@ -1,10 +1,16 @@
 package com.pap.presentacion;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -36,100 +42,126 @@ public class AltaBibliotecario extends JPanel {
     }
 
     private void initialize() {
-        setLayout(null);
-        setBounds(0, 0, 1200, 800);
-        setBackground(new Color(66, 69, 73)); // Dark mode background
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81)); // Dark mode background
         
-        // Panel de fondo con gradiente
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(66, 69, 73),
-                    getWidth(), getHeight(), new Color(76, 79, 83)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                
-                g2d.dispose();
-            }
-        };
-        contentPanel.setLayout(null);
-        contentPanel.setBounds(0, 0, getWidth(), getHeight());
-        add(contentPanel);
+        // Título - Header
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Minimal vertical spacing
+        headerPanel.setOpaque(false);
+        JLabel lblTitulo = new JLabel("Ingrese los datos del nuevo bibliotecario");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitulo.setForeground(Color.WHITE);
+        headerPanel.add(lblTitulo);
+        add(headerPanel, BorderLayout.NORTH);
         
-        // Título con estilo moderno
-        JLabel lblTitulo = new JLabel("Registro de Nuevo Bibliotecario");
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTitulo.setForeground(Color.WHITE); // White text for dark mode
-        lblTitulo.setBounds(120, 20, 350, 30);
-        contentPanel.add(lblTitulo);
+        // Form Container Panel using GridBagLayout for precise control
+        JPanel formContainerPanel = new JPanel();
+        formContainerPanel.setLayout(new GridBagLayout());
+        formContainerPanel.setOpaque(false);
+        formContainerPanel.setBorder(new EmptyBorder(5, 0, 0, 0)); // Reduced top margin to bring form closer to title
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 10, 0); // Vertical spacing: 10px top, 10px bottom
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         
         // Nombre
         JLabel lblNombre = new JLabel("Nombre:");
-        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblNombre.setForeground(Color.WHITE);
-        lblNombre.setBounds(30, 80, 100, 20);
-        contentPanel.add(lblNombre);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(2, 0, 10, 10); // Reduced top margin to bring closer to title
+        formContainerPanel.add(lblNombre, gbc);
         
         txtNombre = createStyledTextField();
-        txtNombre.setBounds(140, 80, 250, 30);
-        contentPanel.add(txtNombre);
+        txtNombre.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(2, 0, 10, 0); // Reduced top margin to match label
+        formContainerPanel.add(txtNombre, gbc);
         
         // Email
         JLabel lblEmail = new JLabel("Email:");
-        lblEmail.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblEmail.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblEmail.setForeground(Color.WHITE);
-        lblEmail.setBounds(30, 130, 100, 20);
-        contentPanel.add(lblEmail);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblEmail, gbc);
         
         txtEmail = createStyledTextField();
-        txtEmail.setBounds(140, 130, 250, 30);
-        contentPanel.add(txtEmail);
+        txtEmail.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtEmail, gbc);
         
         // Número de Empleado
         JLabel lblNumeroEmpleado = new JLabel("Numero de Empleado:");
-        lblNumeroEmpleado.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblNumeroEmpleado.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblNumeroEmpleado.setForeground(Color.WHITE);
-        lblNumeroEmpleado.setBounds(30, 180, 100, 20);
-        contentPanel.add(lblNumeroEmpleado);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblNumeroEmpleado, gbc);
         
         txtNumeroEmpleado = createStyledTextField();
-        txtNumeroEmpleado.setBounds(140, 180, 250, 30);
-        contentPanel.add(txtNumeroEmpleado);
+        txtNumeroEmpleado.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtNumeroEmpleado, gbc);
         
-        // Botones modernos
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        buttonPanel.setOpaque(false);
+
+        // Add buttons to the button panel
         btnRegistrar = createStyledButton("Registrar", new Color(46, 204, 113));
-        btnRegistrar.setBounds(100, 250, 120, 35);
+        btnRegistrar.setPreferredSize(new Dimension(120, 35));
         btnRegistrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 registrarBibliotecario();
             }
         });
-        contentPanel.add(btnRegistrar);
+        buttonPanel.add(btnRegistrar);
         
         btnCancelar = createStyledButton("Cancelar", new Color(231, 76, 60));
-        btnCancelar.setBounds(240, 250, 120, 35);
+        btnCancelar.setPreferredSize(new Dimension(120, 35));
         btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 limpiarCampos();
                 com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
-        contentPanel.add(btnCancelar);
+        buttonPanel.add(btnCancelar);
         
         // Add back button
         JButton btnVolver = createStyledButton("Volver", new Color(52, 73, 94));
-        btnVolver.setBounds(380, 250, 120, 35);
+        btnVolver.setPreferredSize(new Dimension(120, 35));
         btnVolver.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 com.pap.presentacion.Principal.getInstance().irASubmenuUsuarios();
             }
         });
-        contentPanel.add(btnVolver);
+        buttonPanel.add(btnVolver);
+        
+        // Add button panel to form container with minimal spacing
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(15, 0, 0, 0); // Increased spacing above buttons
+        formContainerPanel.add(buttonPanel, gbc);
+
+        add(formContainerPanel, BorderLayout.CENTER);
     }
     
     private JTextField createStyledTextField() {

@@ -4,11 +4,17 @@ import com.pap.datatypes.DtLector;
 import com.pap.datatypes.EstadoLector;
 import com.pap.interfaces.IControlador;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -56,48 +62,46 @@ public class ModificarEstadoLector extends JPanel {
     }
 
     private void initialize() {
-        setLayout(null);
-        setBounds(0, 0, 1200, 800);
-        setBackground(new Color(74, 76, 81)); // Slightly lighter grey
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81)); // Dark mode background
         
-        // Panel de fondo con gradiente
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(74, 76, 81),
-                    getWidth(), getHeight(), new Color(84, 86, 91)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                
-                g2d.dispose();
-            }
-        };
-        contentPanel.setLayout(null);
-        contentPanel.setBounds(0, 0, getWidth(), getHeight());
-        add(contentPanel);
+        // Título - Header
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Minimal vertical spacing
+        headerPanel.setOpaque(false);
+        JLabel lblTitulo = new JLabel("Seleccione un lector para cambiar su estado");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitulo.setForeground(Color.WHITE);
+        headerPanel.add(lblTitulo);
+        add(headerPanel, BorderLayout.NORTH);
         
-        // Titulo con estilo moderno
-        JLabel lblTitulo = new JLabel("Modificar Estado de Lector");
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTitulo.setForeground(Color.WHITE); // White text for dark theme
-        lblTitulo.setBounds(120, 20, 300, 30);
-        contentPanel.add(lblTitulo);
+        // Form Container Panel using GridBagLayout for precise control
+        JPanel formContainerPanel = new JPanel();
+        formContainerPanel.setLayout(new GridBagLayout());
+        formContainerPanel.setOpaque(false);
+        formContainerPanel.setBorder(new EmptyBorder(5, 0, 0, 0)); // Reduced top margin to bring form closer to title
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 10, 0); // Vertical spacing: 10px top, 10px bottom
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         
         // Seccion de seleccion de lector
         JLabel lblSeleccionarLector = new JLabel("Seleccionar Lector:");
-        lblSeleccionarLector.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblSeleccionarLector.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblSeleccionarLector.setForeground(Color.WHITE);
-        lblSeleccionarLector.setBounds(30, 70, 120, 20);
-        contentPanel.add(lblSeleccionarLector);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(2, 0, 10, 10); // Reduced top margin to bring closer to title
+        formContainerPanel.add(lblSeleccionarLector, gbc);
         
         cmbLector = new JComboBox<>();
-        cmbLector.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        cmbLector.setBounds(160, 70, 280, 25);
+        cmbLector.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        cmbLector.setPreferredSize(new Dimension(300, 30));
+        cmbLector.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
         
         // Renderer personalizado para mostrar toda la información del lector sin etiquetas
         cmbLector.setRenderer(new javax.swing.DefaultListCellRenderer() {
@@ -133,126 +137,202 @@ public class ModificarEstadoLector extends JPanel {
                 }
             }
         });
-        contentPanel.add(cmbLector);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(2, 0, 10, 0); // Reduced top margin to match label
+        formContainerPanel.add(cmbLector, gbc);
         
         // Seccion de datos del lector
         JLabel lblDatosLector = new JLabel("Datos del Lector:");
-        lblDatosLector.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblDatosLector.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblDatosLector.setForeground(Color.WHITE);
-        lblDatosLector.setBounds(30, 110, 150, 20);
-        contentPanel.add(lblDatosLector);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(20, 0, 10, 0); // Extra spacing for section header
+        formContainerPanel.add(lblDatosLector, gbc);
         
         // Nombre
         JLabel lblNombre = new JLabel("Nombre:");
-        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblNombre.setForeground(Color.WHITE);
-        lblNombre.setBounds(30, 140, 100, 20);
-        contentPanel.add(lblNombre);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblNombre, gbc);
         
         txtNombre = createStyledTextField(false);
-        txtNombre.setBounds(140, 140, 300, 25);
-        contentPanel.add(txtNombre);
+        txtNombre.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtNombre, gbc);
         
         // Email
         JLabel lblEmail = new JLabel("Email:");
-        lblEmail.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblEmail.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblEmail.setForeground(Color.WHITE);
-        lblEmail.setBounds(30, 175, 100, 20);
-        contentPanel.add(lblEmail);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblEmail, gbc);
         
         txtEmail = createStyledTextField(false);
-        txtEmail.setBounds(140, 175, 300, 25);
-        contentPanel.add(txtEmail);
+        txtEmail.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtEmail, gbc);
         
         // Direccion
         JLabel lblDireccion = new JLabel("Direccion:");
-        lblDireccion.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblDireccion.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblDireccion.setForeground(Color.WHITE);
-        lblDireccion.setBounds(30, 210, 100, 20);
-        contentPanel.add(lblDireccion);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblDireccion, gbc);
         
         txtDireccion = createStyledTextField(false);
-        txtDireccion.setBounds(140, 210, 300, 25);
-        contentPanel.add(txtDireccion);
+        txtDireccion.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtDireccion, gbc);
         
         // Fecha de Registro
         JLabel lblFechaRegistro = new JLabel("Fecha de Registro:");
-        lblFechaRegistro.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblFechaRegistro.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblFechaRegistro.setForeground(Color.WHITE);
-        lblFechaRegistro.setBounds(30, 245, 120, 20);
-        contentPanel.add(lblFechaRegistro);
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblFechaRegistro, gbc);
         
         txtFechaRegistro = createStyledTextField(false);
-        txtFechaRegistro.setBounds(160, 245, 280, 25);
-        contentPanel.add(txtFechaRegistro);
+        txtFechaRegistro.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 5;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtFechaRegistro, gbc);
         
         // Estado Actual
         JLabel lblEstadoActual = new JLabel("Estado Actual:");
-        lblEstadoActual.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblEstadoActual.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblEstadoActual.setForeground(Color.WHITE);
-        lblEstadoActual.setBounds(30, 280, 100, 20);
-        contentPanel.add(lblEstadoActual);
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblEstadoActual, gbc);
         
         txtEstadoActual = createStyledTextField(false);
-        txtEstadoActual.setBounds(140, 280, 300, 25);
-        contentPanel.add(txtEstadoActual);
+        txtEstadoActual.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 6;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtEstadoActual, gbc);
         
         // Zona
         JLabel lblZona = new JLabel("Zona:");
-        lblZona.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblZona.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblZona.setForeground(Color.WHITE);
-        lblZona.setBounds(30, 315, 100, 20);
-        contentPanel.add(lblZona);
+        gbc.gridx = 0;
+        gbc.gridy = 7;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblZona, gbc);
         
         txtZona = createStyledTextField(false);
-        txtZona.setBounds(140, 315, 300, 25);
-        contentPanel.add(txtZona);
+        txtZona.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 7;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtZona, gbc);
         
         // Seccion de cambio de estado
         JLabel lblCambiarEstado = new JLabel("Cambiar estado a:");
-        lblCambiarEstado.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblCambiarEstado.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblCambiarEstado.setForeground(Color.WHITE);
-        lblCambiarEstado.setBounds(30, 360, 130, 20);
-        contentPanel.add(lblCambiarEstado);
+        gbc.gridx = 0;
+        gbc.gridy = 8;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(20, 0, 10, 10); // Extra spacing for new section
+        formContainerPanel.add(lblCambiarEstado, gbc);
         
         cmbEstado = new JComboBox<>(EstadoLector.values());
-        cmbEstado.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        cmbEstado.setBounds(170, 360, 270, 25);
+        cmbEstado.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        cmbEstado.setPreferredSize(new Dimension(200, 30));
+        cmbEstado.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
         // Inicialmente sin seleccion
         cmbEstado.setSelectedItem(null);
-        contentPanel.add(cmbEstado);
+        gbc.gridx = 1;
+        gbc.gridy = 8;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(20, 0, 10, 0);
+        formContainerPanel.add(cmbEstado, gbc);
         
-        // Botones
-        btnModificar = createStyledButton("Modificar", new Color(52, 152, 219));
-        btnModificar.setBounds(150, 400, 100, 35);
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        buttonPanel.setOpaque(false);
+
+        // Add buttons to the button panel
+        btnModificar = createStyledButton("Modificar", new Color(46, 204, 113));
+        btnModificar.setPreferredSize(new Dimension(120, 35));
         btnModificar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 modificarEstado();
             }
         });
-        contentPanel.add(btnModificar);
+        buttonPanel.add(btnModificar);
         
         btnCancelar = createStyledButton("Cancelar", new Color(231, 76, 60));
-        btnCancelar.setBounds(270, 400, 100, 35);
+        btnCancelar.setPreferredSize(new Dimension(120, 35));
         btnCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
-        contentPanel.add(btnCancelar);
+        buttonPanel.add(btnCancelar);
         
         // Add back button
         JButton btnVolver = createStyledButton("Volver", new Color(52, 73, 94));
-        btnVolver.setBounds(390, 400, 100, 35);
+        btnVolver.setPreferredSize(new Dimension(120, 35));
         btnVolver.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 com.pap.presentacion.Principal.getInstance().irASubmenuUsuarios();
             }
         });
-        contentPanel.add(btnVolver);
+        buttonPanel.add(btnVolver);
+        
+        // Add button panel to form container with minimal spacing
+        gbc.gridx = 0;
+        gbc.gridy = 9;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(15, 0, 0, 0); // Increased spacing above buttons
+        formContainerPanel.add(buttonPanel, gbc);
+
+        add(formContainerPanel, BorderLayout.CENTER);
         
         // Inicialmente deshabilitar campos de datos hasta que se seleccione un lector
         setCamposDatosEnabled(false);
