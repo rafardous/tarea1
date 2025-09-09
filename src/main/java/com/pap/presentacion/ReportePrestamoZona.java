@@ -7,11 +7,14 @@ import com.pap.datatypes.DtArticulo;
 import com.pap.datatypes.Zona;
 import com.pap.excepciones.ReportePrestamoZonaExcepcion;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
@@ -27,11 +30,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.BoxLayout;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 
 public class ReportePrestamoZona extends JPanel {
@@ -54,85 +56,91 @@ public class ReportePrestamoZona extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBackground(new Color(74, 76, 81));
-
-        // Panel fondo con gradiente y BorderLayout
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(74, 76, 81),
-                    getWidth(), getHeight(), new Color(84, 86, 91)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                g2d.dispose();
-            }
-        };
-        contentPanel.setLayout(new BorderLayout(0, 10));
-        add(contentPanel, BorderLayout.CENTER);
-
-        // Top stacked panel (titulo + consulta)
-        JPanel topPanel = new JPanel();
-        topPanel.setOpaque(false);
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-
-        JPanel tituloPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        tituloPanel.setOpaque(false);
+        setBackground(new Color(74, 76, 81)); // Dark theme background
+        
+        // Header panel
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        headerPanel.setBackground(new Color(74, 76, 81));
+        
         JLabel lblTitulo = new JLabel("Reporte de Prestamos por Zona");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblTitulo.setForeground(Color.WHITE);
-        tituloPanel.add(lblTitulo);
-        topPanel.add(tituloPanel);
-
-        JPanel consulta = crearPanelConsulta();
-        consulta.setAlignmentX(LEFT_ALIGNMENT);
-        topPanel.add(consulta);
-        contentPanel.add(topPanel, BorderLayout.NORTH);
-
-        // Tabla en el centro
+        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        headerPanel.add(lblTitulo);
+        
+        add(headerPanel, BorderLayout.NORTH);
+        
+        // Main content panel
+        JPanel formContainerPanel = new JPanel(new GridBagLayout());
+        formContainerPanel.setBackground(new Color(74, 76, 81));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 20, 10, 20);
+        
+        // Panel de consulta
+        JPanel panelConsulta = crearPanelConsulta();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        formContainerPanel.add(panelConsulta, gbc);
+        
+        // Crear la tabla
         crearTabla();
+        
+        // Panel con scroll para la tabla
         JScrollPane scrollPane = new JScrollPane(tablaPrestamos);
+        scrollPane.setPreferredSize(new Dimension(800, 200));
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 5, 5, 5)
         ));
-        contentPanel.add(scrollPane, BorderLayout.CENTER);
-
-        // Botonera en el sur
-        JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        botones.setOpaque(false);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        formContainerPanel.add(scrollPane, gbc);
+        
+        add(formContainerPanel, BorderLayout.CENTER);
+        
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        buttonPanel.setBackground(new Color(74, 76, 81));
+        
         btnConsultar = createStyledButton("Consultar", new Color(46, 204, 113));
         btnConsultar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) { consultarReporteZona(); }
-        });
-        botones.add(btnConsultar);
-
-        btnLimpiar = createStyledButton("Limpiar", new Color(52, 152, 219));
-        btnLimpiar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) { limpiarTabla(); }
-        });
-        botones.add(btnLimpiar);
-
-        btnCerrar = createStyledButton("Cerrar", new Color(231, 76, 60));
-        btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
+                consultarReporteZona();
             }
         });
-        botones.add(btnCerrar);
-        contentPanel.add(botones, BorderLayout.SOUTH);
+        buttonPanel.add(btnConsultar);
+        
+        btnLimpiar = createStyledButton("Limpiar", new Color(52, 152, 219));
+        btnLimpiar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                limpiarTabla();
+            }
+        });
+        buttonPanel.add(btnLimpiar);
+        
+        btnCerrar = createStyledButton("Volver", new Color(52, 152, 219));
+        btnCerrar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                com.pap.presentacion.Principal.getInstance().irASubmenuPrestamos();
+            }
+        });
+        buttonPanel.add(btnCerrar);
+        
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     private JPanel crearPanelConsulta() {
-        JPanel panelConsulta = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
+        JPanel panelConsulta = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         panelConsulta.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(10, 15, 10, 15)
         ));
-        panelConsulta.setOpaque(false);
+        panelConsulta.setBackground(new Color(255, 255, 255, 200));
 
         JLabel lblZona = new JLabel("Zona:");
         lblZona.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -140,12 +148,16 @@ public class ReportePrestamoZona extends JPanel {
         panelConsulta.add(lblZona);
 
         cmbZona = new JComboBox<>(Zona.values());
-        cmbZona.setPreferredSize(new java.awt.Dimension(200, 25));
+        cmbZona.setPreferredSize(new Dimension(200, 25));
+        cmbZona.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
         panelConsulta.add(cmbZona);
 
         JLabel lblInfo = new JLabel("Seleccione la zona y haga clic en 'Consultar'");
         lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-        lblInfo.setForeground(new Color(200, 200, 200));
+        lblInfo.setForeground(new Color(108, 117, 125));
         panelConsulta.add(lblInfo);
 
         return panelConsulta;
@@ -169,19 +181,14 @@ public class ReportePrestamoZona extends JPanel {
         tablaPrestamos.setGridColor(new Color(52, 152, 219));
         tablaPrestamos.setSelectionBackground(new Color(52, 152, 219, 100));
         tablaPrestamos.setSelectionForeground(Color.BLACK);
+        tablaPrestamos.setBackground(new Color(74, 76, 81));
+        tablaPrestamos.setForeground(Color.WHITE);
 
-        // Header styling: bold + greyish blue text
-        java.awt.Color headerColor = new java.awt.Color(52, 73, 94);
-        javax.swing.table.JTableHeader header = tablaPrestamos.getTableHeader();
+        // Style table header
+        JTableHeader header = tablaPrestamos.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        header.setForeground(headerColor);
-        javax.swing.table.TableCellRenderer baseHeaderRenderer = header.getDefaultRenderer();
-        header.setDefaultRenderer((table, value, isSelected, hasFocus, row, col) -> {
-            java.awt.Component c = baseHeaderRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-            c.setFont(new Font("Segoe UI", Font.BOLD, 12));
-            c.setForeground(headerColor);
-            return c;
-        });
+        header.setForeground(new Color(52, 73, 94));
+        header.setBackground(new Color(200, 200, 200));
 
         // Anchos de columna (3 columnas)
         tablaPrestamos.getColumnModel().getColumn(0).setPreferredWidth(120); // ID Material
@@ -233,10 +240,8 @@ public class ReportePrestamoZona extends JPanel {
 
                     Object[] fila = {
                         prestamo.getId(),
-                        formatoFecha.format(prestamo.getFechaSolicitud()),
-                        formatoFecha.format(prestamo.getFechaDevolucion()),
                         descripcionMaterial,
-                        prestamo.getEstado().toString()
+                        "1" // Cantidad de prestamos pendientes
                     };
                     modeloTabla.addRow(fila);
                 }

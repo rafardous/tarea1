@@ -5,11 +5,17 @@ import com.pap.datatypes.DtLibro;
 import com.pap.datatypes.DtArticulo;
 import com.pap.excepciones.RegistroDonacionExcepcion;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
@@ -29,6 +35,7 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.table.JTableHeader;
 import java.util.Comparator;
 
 public class ConsultarDonacionesPorFecha extends JPanel {
@@ -52,116 +59,131 @@ public class ConsultarDonacionesPorFecha extends JPanel {
     }
 
     private void initialize() {
-        setLayout(null);
-        setBounds(0, 0, 1200, 800);
-        setBackground(new Color(74, 76, 81)); // Dark theme background
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81)); // Dark mode background
         
-        // Panel de fondo con gradiente
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(74, 76, 81),
-                    getWidth(), getHeight(), new Color(84, 86, 91)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                
-                g2d.dispose();
-            }
-        };
-        contentPanel.setLayout(null);
-        contentPanel.setBounds(0, 0, getWidth(), getHeight());
-        add(contentPanel);
-        
-        // Titulo con estilo moderno
+        // Título - Header
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Minimal vertical spacing
+        headerPanel.setOpaque(false);
         JLabel lblTitulo = new JLabel("Consultar Donaciones por Rango de Fechas");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setBounds(200, 20, 500, 30);
-        contentPanel.add(lblTitulo);
+        headerPanel.add(lblTitulo);
+        add(headerPanel, BorderLayout.NORTH);
+        
+        // Form Container Panel using GridBagLayout for precise control
+        JPanel formContainerPanel = new JPanel();
+        formContainerPanel.setLayout(new GridBagLayout());
+        formContainerPanel.setOpaque(false);
+        formContainerPanel.setBorder(new EmptyBorder(5, 0, 0, 0)); // Reduced top margin to bring form closer to title
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 10, 0); // Vertical spacing: 10px top, 10px bottom
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically for table
         
         // Subtitulo explicativo
         JLabel lblSubtitulo = new JLabel("Selecciona un rango de fechas para consultar las donaciones registradas");
-        lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        lblSubtitulo.setForeground(new Color(108, 117, 125));
-        lblSubtitulo.setBounds(250, 50, 400, 20);
-        contentPanel.add(lblSubtitulo);
+        lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        lblSubtitulo.setForeground(new Color(200, 200, 200));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(2, 0, 10, 0); // Reduced top margin to bring closer to title
+        formContainerPanel.add(lblSubtitulo, gbc);
         
         // Panel de selección de fechas
-        crearPanelFechas(contentPanel);
+        crearPanelFechas(formContainerPanel, gbc);
         
         // Crear la tabla
         crearTabla();
         
         // Panel con scroll para la tabla
         JScrollPane scrollPane = new JScrollPane(tablaDonaciones);
-        scrollPane.setBounds(30, 180, 840, 350);
+        scrollPane.setPreferredSize(new Dimension(800, 200));
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 5, 5, 5)
         ));
-        contentPanel.add(scrollPane);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(scrollPane, gbc);
         
-        // Botones modernos
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        buttonPanel.setOpaque(false);
+
+        // Add buttons to the button panel
         btnConsultar = createStyledButton("Consultar", new Color(46, 204, 113));
-        btnConsultar.setBounds(200, 550, 120, 35);
+        btnConsultar.setPreferredSize(new Dimension(120, 35));
         btnConsultar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 consultarDonacionesPorFecha();
             }
         });
-        contentPanel.add(btnConsultar);
+        buttonPanel.add(btnConsultar);
         
         btnLimpiar = createStyledButton("Limpiar", new Color(52, 152, 219));
-        btnLimpiar.setBounds(350, 550, 120, 35);
+        btnLimpiar.setPreferredSize(new Dimension(120, 35));
         btnLimpiar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 limpiarTabla();
             }
         });
-        contentPanel.add(btnLimpiar);
+        buttonPanel.add(btnLimpiar);
         
         btnCerrar = createStyledButton("Cerrar", new Color(231, 76, 60));
-        btnCerrar.setBounds(500, 550, 120, 35);
+        btnCerrar.setPreferredSize(new Dimension(120, 35));
         btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
-        contentPanel.add(btnCerrar);
+        buttonPanel.add(btnCerrar);
         
         // Add back button
         JButton btnVolver = createStyledButton("Volver", new Color(52, 73, 94));
-        btnVolver.setBounds(640, 550, 120, 35);
+        btnVolver.setPreferredSize(new Dimension(120, 35));
         btnVolver.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                com.pap.presentacion.Principal.getInstance().irASubmenuMateriales();
             }
         });
-        contentPanel.add(btnVolver);
+        buttonPanel.add(btnVolver);
+        
+        // Add button panel to form container with minimal spacing
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0; // Don't expand buttons vertically
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.NONE; // Don't fill buttons
+        gbc.insets = new Insets(15, 0, 0, 0); // Increased spacing above buttons
+        formContainerPanel.add(buttonPanel, gbc);
+
+        add(formContainerPanel, BorderLayout.CENTER);
     }
     
-    private void crearPanelFechas(JPanel parent) {
+    private void crearPanelFechas(JPanel parent, GridBagConstraints gbc) {
         // Panel de fechas con borde
         JPanel panelFechas = new JPanel();
-        panelFechas.setLayout(null);
-        panelFechas.setBounds(30, 90, 840, 70);
+        panelFechas.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
         panelFechas.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(10, 15, 10, 15)
         ));
-        panelFechas.setBackground(new Color(255, 255, 255, 200));
-        parent.add(panelFechas);
+        panelFechas.setBackground(new Color(84, 86, 91));
         
         // Fecha de inicio
         JLabel lblFechaInicio = new JLabel("Fecha de Inicio:");
-        lblFechaInicio.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblFechaInicio.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblFechaInicio.setForeground(Color.WHITE);
-        lblFechaInicio.setBounds(20, 15, 100, 20);
         panelFechas.add(lblFechaInicio);
         
         // Spinner para fecha de inicio (últimos 30 días por defecto)
@@ -170,14 +192,17 @@ public class ConsultarDonacionesPorFecha extends JPanel {
         SpinnerDateModel modelInicio = new SpinnerDateModel(calInicio.getTime(), null, null, Calendar.DAY_OF_MONTH);
         spinnerFechaInicio = new JSpinner(modelInicio);
         spinnerFechaInicio.setEditor(new JSpinner.DateEditor(spinnerFechaInicio, "dd/MM/yyyy"));
-        spinnerFechaInicio.setBounds(130, 15, 120, 25);
+        spinnerFechaInicio.setPreferredSize(new Dimension(120, 30));
+        spinnerFechaInicio.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
         panelFechas.add(spinnerFechaInicio);
         
         // Fecha de fin
         JLabel lblFechaFin = new JLabel("Fecha de Fin:");
-        lblFechaFin.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblFechaFin.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblFechaFin.setForeground(Color.WHITE);
-        lblFechaFin.setBounds(280, 15, 100, 20);
         panelFechas.add(lblFechaFin);
         
         // Spinner para fecha de fin (hoy por defecto)
@@ -185,15 +210,28 @@ public class ConsultarDonacionesPorFecha extends JPanel {
         SpinnerDateModel modelFin = new SpinnerDateModel(calFin.getTime(), null, null, Calendar.DAY_OF_MONTH);
         spinnerFechaFin = new JSpinner(modelFin);
         spinnerFechaFin.setEditor(new JSpinner.DateEditor(spinnerFechaFin, "dd/MM/yyyy"));
-        spinnerFechaFin.setBounds(390, 15, 120, 25);
+        spinnerFechaFin.setPreferredSize(new Dimension(120, 30));
+        spinnerFechaFin.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
         panelFechas.add(spinnerFechaFin);
         
         // Información adicional
         JLabel lblInfo = new JLabel("Selecciona el rango de fechas y haz clic en 'Consultar' para ver las donaciones");
-        lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-        lblInfo.setForeground(new Color(108, 117, 125));
-        lblInfo.setBounds(20, 40, 400, 20);
+        lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        lblInfo.setForeground(new Color(200, 200, 200));
         panelFechas.add(lblInfo);
+        
+        // Add to parent with GridBagConstraints
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0; // Don't expand vertically
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        parent.add(panelFechas, gbc);
     }
     
     private void crearTabla() {
@@ -210,11 +248,19 @@ public class ConsultarDonacionesPorFecha extends JPanel {
         };
         
         tablaDonaciones = new JTable(modeloTabla);
-        tablaDonaciones.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        tablaDonaciones.setRowHeight(25);
+        tablaDonaciones.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tablaDonaciones.setRowHeight(30);
         tablaDonaciones.setGridColor(new Color(52, 152, 219));
         tablaDonaciones.setSelectionBackground(new Color(52, 152, 219, 100));
         tablaDonaciones.setSelectionForeground(Color.BLACK);
+        tablaDonaciones.setBackground(new Color(74, 76, 81));
+        tablaDonaciones.setForeground(Color.WHITE);
+        
+        // Style table header
+        JTableHeader header = tablaDonaciones.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setForeground(new Color(52, 73, 94));
+        header.setBackground(new Color(200, 200, 200));
         
         // Configurar el ordenador de filas para permitir ordenamiento
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloTabla);

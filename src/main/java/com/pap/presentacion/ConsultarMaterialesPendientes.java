@@ -6,8 +6,14 @@ import com.pap.datatypes.DtLibro;
 import com.pap.datatypes.DtArticulo;
 import com.pap.datatypes.EstadoPrestamo;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -21,8 +27,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 
 public class ConsultarMaterialesPendientes extends JPanel {
@@ -40,79 +48,104 @@ public class ConsultarMaterialesPendientes extends JPanel {
     }
 
     private void initialize() {
-        setLayout(null);
-        setBackground(new Color(66, 69, 73)); // Dark mode background
-        setBounds(0, 0, 1200, 800); // Tamaño fijo para que sea visible
-
-        // Crear contenido directamente en este panel
-
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81)); // Dark theme background
+        
+        // Header panel
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        headerPanel.setBackground(new Color(74, 76, 81));
+        
+        JLabel lblTitulo = new JLabel("Consultar Materiales Pendientes");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitulo.setForeground(Color.WHITE);
+        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        headerPanel.add(lblTitulo);
+        
+        add(headerPanel, BorderLayout.NORTH);
+        
+        // Main content panel
+        JPanel formContainerPanel = new JPanel(new GridBagLayout());
+        formContainerPanel.setBackground(new Color(74, 76, 81));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 20, 10, 20);
+        
         // Panel de información
-        crearPanelInformacion();
-
+        JPanel panelInfo = crearPanelInformacion();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        formContainerPanel.add(panelInfo, gbc);
+        
         // Crear la tabla
         crearTabla();
-
+        
         // Panel con scroll para la tabla
         JScrollPane scrollPane = new JScrollPane(tablaMateriales);
-        scrollPane.setBounds(50, 120, getWidth() - 100, getHeight() - 220);
+        scrollPane.setPreferredSize(new Dimension(800, 200));
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-            new EmptyBorder(10, 10, 10, 10)
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 5, 5, 5)
         ));
-        scrollPane.setBackground(Color.WHITE);
-        add(scrollPane);
-
-        // Botones con diseño moderno
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        formContainerPanel.add(scrollPane, gbc);
+        
+        add(formContainerPanel, BorderLayout.CENTER);
+        
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        buttonPanel.setBackground(new Color(74, 76, 81));
+        
         btnConsultar = createStyledButton("Consultar", new Color(46, 204, 113));
-        btnConsultar.setBounds(50, getHeight() - 80, 150, 50);
         btnConsultar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 consultarMaterialesPendientes();
             }
         });
-        add(btnConsultar);
-
+        buttonPanel.add(btnConsultar);
+        
         btnLimpiar = createStyledButton("Limpiar", new Color(52, 152, 219));
-        btnLimpiar.setBounds(220, getHeight() - 80, 150, 50);
         btnLimpiar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 limpiarTabla();
             }
         });
-        add(btnLimpiar);
-
+        buttonPanel.add(btnLimpiar);
+        
         btnCerrar = createStyledButton("Volver", new Color(52, 152, 219));
-        btnCerrar.setBounds(390, getHeight() - 80, 150, 50);
         btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 com.pap.presentacion.Principal.getInstance().irASubmenuControlSeguimiento();
             }
         });
-        add(btnCerrar);
+        buttonPanel.add(btnCerrar);
+        
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    private void crearPanelInformacion() {
-        JPanel panelInfo = new JPanel();
-        panelInfo.setLayout(null);
-        panelInfo.setBounds(50, 20, getWidth() - 100, 80);
+    private JPanel crearPanelInformacion() {
+        JPanel panelInfo = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         panelInfo.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(15, 20, 15, 20)
         ));
-        panelInfo.setBackground(new Color(76, 79, 83)); // Dark mode
-        add(panelInfo);
+        panelInfo.setBackground(new Color(255, 255, 255, 200));
 
         JLabel lblInfo = new JLabel("Esta consulta muestra los materiales que tienen prestamos en estado PENDIENTE");
-        lblInfo.setFont(new Font("Segoe UI", Font.BOLD, 16)); // Texto mas grande
+        lblInfo.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblInfo.setForeground(Color.WHITE);
-        lblInfo.setBounds(20, 10, panelInfo.getWidth() - 40, 25);
         panelInfo.add(lblInfo);
 
         JLabel lblInfo2 = new JLabel("Haga clic en 'Consultar' para ver los resultados");
-        lblInfo2.setFont(new Font("Segoe UI", Font.ITALIC, 14)); // Texto mas grande
-        lblInfo2.setForeground(new Color(200, 200, 200)); // Light gray for dark mode
-        lblInfo2.setBounds(20, 35, panelInfo.getWidth() - 40, 25);
+        lblInfo2.setFont(new Font("Segoe UI", Font.ITALIC, 14));
+        lblInfo2.setForeground(new Color(108, 117, 125));
         panelInfo.add(lblInfo2);
+        
+        return panelInfo;
     }
 
     private void crearTabla() {
@@ -135,30 +168,21 @@ public class ConsultarMaterialesPendientes extends JPanel {
         };
         
         // Estilo moderno para la tabla
-        tablaMateriales.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tablaMateriales.setRowHeight(40); // Filas más altas
-        tablaMateriales.setGridColor(new Color(230, 230, 230));
-        tablaMateriales.setSelectionBackground(new Color(52, 152, 219));
-        tablaMateriales.setSelectionForeground(Color.WHITE);
-        tablaMateriales.setBackground(new Color(250, 250, 250));
+        tablaMateriales.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        tablaMateriales.setRowHeight(25);
+        tablaMateriales.setGridColor(new Color(52, 152, 219));
+        tablaMateriales.setSelectionBackground(new Color(52, 152, 219, 100));
+        tablaMateriales.setSelectionForeground(Color.BLACK);
+        tablaMateriales.setBackground(new Color(74, 76, 81));
+        tablaMateriales.setForeground(Color.WHITE);
         tablaMateriales.setFillsViewportHeight(true);
         tablaMateriales.setShowGrid(true);
-        tablaMateriales.setIntercellSpacing(new java.awt.Dimension(0, 0));
         
-        // Personalizar header de la tabla: negrita + color gris azulado oscuro
-        java.awt.Color headerColor = new java.awt.Color(52, 73, 94);
-        javax.swing.table.JTableHeader header = tablaMateriales.getTableHeader();
-        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        header.setForeground(headerColor);
-        javax.swing.table.TableCellRenderer baseHeaderRenderer = header.getDefaultRenderer();
-        header.setDefaultRenderer((table, value, isSelected, hasFocus, row, col) -> {
-            java.awt.Component c = baseHeaderRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-            c.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            c.setForeground(headerColor);
-            return c;
-        });
-        tablaMateriales.getTableHeader().setForeground(Color.WHITE);
-        tablaMateriales.getTableHeader().setPreferredSize(new java.awt.Dimension(0, 45));
+        // Style table header
+        JTableHeader header = tablaMateriales.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        header.setForeground(new Color(52, 73, 94));
+        header.setBackground(new Color(200, 200, 200));
 
         // Ordenamiento por cantidad de prestamos pendientes (columna 2)
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloTabla);
