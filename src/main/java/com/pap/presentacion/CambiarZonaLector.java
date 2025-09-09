@@ -82,7 +82,7 @@ public class CambiarZonaLector extends JPanel {
         add(contentPanel);
         
         // Titulo con estilo moderno
-        JLabel lblTitulo = new JLabel("Cambiar Zona de Lector");
+        JLabel lblTitulo = new JLabel("Seleccione un lector para cambiar su zona");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setBounds(120, 20, 300, 30);

@@ -8,9 +8,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.BorderLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import javax.swing.BoxLayout;
+import javax.swing.Box;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
@@ -46,118 +52,134 @@ public class AltaLector extends JPanel {
     }
 
     private void initialize() {
-        setLayout(null);
-        setBounds(0, 0, 1200, 800);
-        setBackground(new Color(66, 69, 73)); // Dark mode background
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81)); // Dark mode background
         
-        // Panel de fondo con gradiente
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(66, 69, 73),
-                    getWidth(), getHeight(), new Color(76, 79, 83)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                
-                g2d.dispose();
-            }
-        };
-        contentPanel.setLayout(null);
-        contentPanel.setBounds(0, 0, getWidth(), getHeight());
-        add(contentPanel);
-        
-        // Título con estilo moderno - Centered at top
-        JLabel lblTitulo = new JLabel("Registro de Nuevo Lector");
+        // Título - Header
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Minimal vertical spacing
+        headerPanel.setOpaque(false);
+        JLabel lblTitulo = new JLabel("Ingrese los datos del lector");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-        lblTitulo.setBounds(0, 30, getWidth(), 40);
-        contentPanel.add(lblTitulo);
+        headerPanel.add(lblTitulo);
+        add(headerPanel, BorderLayout.NORTH);
         
-        // Create main form panel - centered
-        JPanel formPanel = new JPanel();
-        formPanel.setLayout(null);
-        formPanel.setOpaque(false);
-        formPanel.setBounds((getWidth() - 400) / 2, 100, 400, 300);
-        contentPanel.add(formPanel);
+        // Form Container Panel using GridBagLayout for precise control
+        JPanel formContainerPanel = new JPanel();
+        formContainerPanel.setLayout(new GridBagLayout());
+        formContainerPanel.setOpaque(false);
+        formContainerPanel.setBorder(new EmptyBorder(5, 0, 0, 0)); // Reduced top margin to bring form closer to title
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 10, 0); // Doubled vertical spacing: 10px top, 10px bottom
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         
         // Nombre
         JLabel lblNombre = new JLabel("Nombre:");
-        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblNombre.setForeground(Color.WHITE);
-        lblNombre.setBounds(20, 20, 100, 25);
-        formPanel.add(lblNombre);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(2, 0, 10, 10); // Reduced top margin to bring closer to title
+        formContainerPanel.add(lblNombre, gbc);
         
         txtNombre = createStyledTextField();
-        txtNombre.setBounds(130, 20, 250, 30);
-        formPanel.add(txtNombre);
+        txtNombre.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(2, 0, 10, 0); // Reduced top margin to match label
+        formContainerPanel.add(txtNombre, gbc);
         
         // Email
         JLabel lblEmail = new JLabel("Email:");
-        lblEmail.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblEmail.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblEmail.setForeground(Color.WHITE);
-        lblEmail.setBounds(20, 70, 100, 25);
-        formPanel.add(lblEmail);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblEmail, gbc);
         
         txtEmail = createStyledTextField();
-        txtEmail.setBounds(130, 70, 250, 30);
-        formPanel.add(txtEmail);
+        txtEmail.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtEmail, gbc);
         
         // Dirección
-        JLabel lblDireccion = new JLabel("Dirección:");
-        lblDireccion.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        JLabel lblDireccion = new JLabel("Direccion:");
+        lblDireccion.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblDireccion.setForeground(Color.WHITE);
-        lblDireccion.setBounds(20, 120, 100, 25);
-        formPanel.add(lblDireccion);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblDireccion, gbc);
         
         txtDireccion = createStyledTextField();
-        txtDireccion.setBounds(130, 120, 250, 30);
-        formPanel.add(txtDireccion);
+        txtDireccion.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtDireccion, gbc);
         
         // Estado
         JLabel lblEstado = new JLabel("Estado:");
-        lblEstado.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblEstado.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblEstado.setForeground(Color.WHITE);
-        lblEstado.setBounds(20, 170, 100, 25);
-        formPanel.add(lblEstado);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblEstado, gbc);
         
         cmbEstado = new JComboBox<>(EstadoLector.values());
-        cmbEstado.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        cmbEstado.setBounds(130, 170, 250, 30);
+        cmbEstado.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        cmbEstado.setPreferredSize(new Dimension(200, 30));
         cmbEstado.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 10, 5, 10)
         ));
-        formPanel.add(cmbEstado);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(cmbEstado, gbc);
         
         // Zona
         JLabel lblZona = new JLabel("Zona:");
-        lblZona.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblZona.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblZona.setForeground(Color.WHITE);
-        lblZona.setBounds(20, 220, 100, 25);
-        formPanel.add(lblZona);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblZona, gbc);
         
         cmbZona = new JComboBox<>(Zona.values());
-        cmbZona.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        cmbZona.setBounds(130, 220, 250, 30);
+        cmbZona.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        cmbZona.setPreferredSize(new Dimension(200, 30));
         cmbZona.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 10, 5, 10)
         ));
-        formPanel.add(cmbZona);
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(cmbZona, gbc);
         
-        // Botones - Centered at bottom
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         buttonPanel.setOpaque(false);
-        buttonPanel.setBounds(0, 450, getWidth(), 50);
-        contentPanel.add(buttonPanel);
-        
+
+        // Add buttons to the button panel
         btnRegistrar = createStyledButton("Registrar", new Color(46, 204, 113));
         btnRegistrar.setPreferredSize(new Dimension(120, 35));
         btnRegistrar.addActionListener(new ActionListener() {
@@ -186,11 +208,21 @@ public class AltaLector extends JPanel {
             }
         });
         buttonPanel.add(btnVolver);
+        
+        // Add button panel to form container with minimal spacing
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(15, 0, 0, 0); // Increased spacing above buttons
+        formContainerPanel.add(buttonPanel, gbc);
+
+        add(formContainerPanel, BorderLayout.CENTER);
     }
     
     private JTextField createStyledTextField() {
         JTextField field = new JTextField();
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         field.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 10, 5, 10)

@@ -165,8 +165,9 @@ public class Principal {
     private void initialize() {
         frame = new JFrame("Lectores.uy - Sistema de Biblioteca");
         
-        // Configurar pantalla completa
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        // Tamaño inicial y redimensionable
+        frame.setSize(new Dimension(1200, 800));
+        frame.setMinimumSize(new Dimension(1000, 700));
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setResizable(true);
         
@@ -181,12 +182,13 @@ public class Principal {
         // Panel principal con layout absoluto para mejor control de posicionamiento
         mainPanel = new JPanel();
         mainPanel.setLayout(null);
+        mainPanel.setBackground(new Color(66, 69, 73));
         frame.setContentPane(mainPanel);
         
         // Crear panel de contenido principal primero
         contentPanel = new JPanel();
-        contentPanel.setLayout(null);
-        contentPanel.setBackground(Color.WHITE);
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.setBackground(new Color(66, 69, 73));
         
         // Crear panel lateral izquierdo
         crearPanelLateral();
@@ -251,7 +253,7 @@ public class Principal {
         mainPanel.add(rightPanel);
         
         // Set initial bounds for content panel and add it to main panel
-        contentPanel.setBounds(300, 0, frame.getWidth() - 300, frame.getHeight());
+        contentPanel.setBounds(300, 0, Math.max(600, frame.getWidth() - 300), Math.max(400, frame.getHeight()));
         mainPanel.add(contentPanel);
     }
 
@@ -316,7 +318,7 @@ public class Principal {
     }
 
     private JButton crearBotonInicio() {
-        JButton boton = new JButton("Inicio");
+        JButton boton = new JButton("Volver");
         boton.setFont(new Font("Segoe UI", Font.BOLD, 16));
         boton.setForeground(Color.WHITE);
         boton.setBackground(new Color(52, 152, 219));
@@ -723,10 +725,9 @@ public class Principal {
         contentPanel.removeAll();
         
         // Crear un panel contenedor para la función
-        JPanel funcionPanel = new JPanel();
-        funcionPanel.setLayout(null);
-        funcionPanel.setBounds(0, 0, contentPanel.getWidth(), contentPanel.getHeight());
-        funcionPanel.setBackground(new Color(245, 240, 235)); // Mismo color que panel secundario
+        JPanel funcionPanel = new JPanel(new BorderLayout());
+        funcionPanel.setBackground(new Color(66, 69, 73));
+        funcionPanel.setOpaque(true);
         
         // Crear panel de título
         JPanel tituloPanel = new JPanel() {
@@ -746,15 +747,13 @@ public class Principal {
                 g2d.dispose();
             }
         };
-        tituloPanel.setLayout(null);
-        tituloPanel.setBounds(0, 0, funcionPanel.getWidth(), 80);
-        funcionPanel.add(tituloPanel);
+        tituloPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 20));
+        funcionPanel.add(tituloPanel, BorderLayout.NORTH);
         
         // Título de la función
         JLabel lblTitulo = new JLabel(internalFrame.getTitle());
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setBounds(50, 25, funcionPanel.getWidth() - 100, 35);
         tituloPanel.add(lblTitulo);
         
         // Botón Volver
@@ -783,11 +782,10 @@ public class Principal {
         // Ocultar panel de bienvenida
         contentPanel.removeAll();
         
-        // Crear un panel contenedor para la función
+        // Crear un panel contenedor para la función con BorderLayout
         JPanel funcionPanel = new JPanel();
-        funcionPanel.setLayout(null);
-        funcionPanel.setBounds(0, 0, contentPanel.getWidth(), contentPanel.getHeight());
-        funcionPanel.setBackground(new Color(245, 240, 235)); // Mismo color que panel secundario
+        funcionPanel.setLayout(new BorderLayout());
+        funcionPanel.setBackground(new Color(66, 69, 73)); // Dark background
         
         // Crear panel de título
         JPanel tituloPanel = new JPanel() {
@@ -807,24 +805,24 @@ public class Principal {
                 g2d.dispose();
             }
         };
-        tituloPanel.setLayout(null);
-        tituloPanel.setBounds(0, 0, funcionPanel.getWidth(), 80);
-        funcionPanel.add(tituloPanel);
+        tituloPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        tituloPanel.setPreferredSize(new Dimension(0, 80));
         
         // Título de la función (dinámico basado en el tipo de panel)
         String titulo = obtenerTituloPanel(panel);
         JLabel lblTitulo = new JLabel(titulo);
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setBounds(50, 25, funcionPanel.getWidth() - 100, 35);
         tituloPanel.add(lblTitulo);
         
-        // Agregar el contenido de la función
-        panel.setBounds(0, 80, funcionPanel.getWidth(), funcionPanel.getHeight() - 80);
-        panel.setVisible(true);
-        funcionPanel.add(panel);
+        // Add title panel to NORTH
+        funcionPanel.add(tituloPanel, BorderLayout.NORTH);
         
-        contentPanel.add(funcionPanel);
+        // Agregar el contenido de la función
+        panel.setVisible(true);
+        funcionPanel.add(panel, BorderLayout.CENTER);
+        
+        contentPanel.add(funcionPanel, BorderLayout.CENTER);
         contentPanel.revalidate();
         contentPanel.repaint();
     }

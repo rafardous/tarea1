@@ -28,6 +28,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
+import javax.swing.BoxLayout;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -50,108 +53,102 @@ public class ReportePrestamoZona extends JPanel {
     }
 
     private void initialize() {
-        setLayout(null);
-        setBounds(0, 0, 1200, 800);
-        setBackground(new Color(74, 76, 81)); // Dark theme background
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81));
 
-        // Panel de fondo con gradiente
+        // Panel fondo con gradiente y BorderLayout
         JPanel contentPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g.create();
-
                 GradientPaint gradient = new GradientPaint(
                     0, 0, new Color(74, 76, 81),
                     getWidth(), getHeight(), new Color(84, 86, 91)
                 );
                 g2d.setPaint(gradient);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
-
                 g2d.dispose();
             }
         };
-        contentPanel.setLayout(null);
-        contentPanel.setBounds(0, 0, getWidth(), getHeight());
-        add(contentPanel);
+        contentPanel.setLayout(new BorderLayout(0, 10));
+        add(contentPanel, BorderLayout.CENTER);
 
-        // Título
+        // Top stacked panel (titulo + consulta)
+        JPanel topPanel = new JPanel();
+        topPanel.setOpaque(false);
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+
+        JPanel tituloPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        tituloPanel.setOpaque(false);
         JLabel lblTitulo = new JLabel("Reporte de Prestamos por Zona");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setBounds(280, 20, 500, 30);
-        contentPanel.add(lblTitulo);
+        tituloPanel.add(lblTitulo);
+        topPanel.add(tituloPanel);
 
-        // Panel de consulta
-        crearPanelConsulta(contentPanel);
+        JPanel consulta = crearPanelConsulta();
+        consulta.setAlignmentX(LEFT_ALIGNMENT);
+        topPanel.add(consulta);
+        contentPanel.add(topPanel, BorderLayout.NORTH);
 
-        // Crear la tabla
+        // Tabla en el centro
         crearTabla();
-
-        // Panel con scroll para la tabla
         JScrollPane scrollPane = new JScrollPane(tablaPrestamos);
-        scrollPane.setBounds(30, 150, 940, 400);
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 5, 5, 5)
         ));
-        contentPanel.add(scrollPane);
+        contentPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Botones
+        // Botonera en el sur
+        JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        botones.setOpaque(false);
         btnConsultar = createStyledButton("Consultar", new Color(46, 204, 113));
-        btnConsultar.setBounds(200, 570, 120, 35);
         btnConsultar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                consultarReporteZona();
-            }
+            public void actionPerformed(ActionEvent e) { consultarReporteZona(); }
         });
-        contentPanel.add(btnConsultar);
+        botones.add(btnConsultar);
 
         btnLimpiar = createStyledButton("Limpiar", new Color(52, 152, 219));
-        btnLimpiar.setBounds(350, 570, 120, 35);
         btnLimpiar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                limpiarTabla();
-            }
+            public void actionPerformed(ActionEvent e) { limpiarTabla(); }
         });
-        contentPanel.add(btnLimpiar);
+        botones.add(btnLimpiar);
 
         btnCerrar = createStyledButton("Cerrar", new Color(231, 76, 60));
-        btnCerrar.setBounds(500, 570, 120, 35);
         btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
-        contentPanel.add(btnCerrar);
+        botones.add(btnCerrar);
+        contentPanel.add(botones, BorderLayout.SOUTH);
     }
 
-    private void crearPanelConsulta(JPanel parent) {
-        JPanel panelConsulta = new JPanel();
-        panelConsulta.setLayout(null);
-        panelConsulta.setBounds(30, 90, 940, 50);
+    private JPanel crearPanelConsulta() {
+        JPanel panelConsulta = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         panelConsulta.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(10, 15, 10, 15)
         ));
-        panelConsulta.setBackground(new Color(255, 255, 255, 200));
-        parent.add(panelConsulta);
+        panelConsulta.setOpaque(false);
 
         JLabel lblZona = new JLabel("Zona:");
         lblZona.setFont(new Font("Segoe UI", Font.BOLD, 12));
         lblZona.setForeground(Color.WHITE);
-        lblZona.setBounds(20, 15, 80, 20);
         panelConsulta.add(lblZona);
 
         cmbZona = new JComboBox<>(Zona.values());
-        cmbZona.setBounds(100, 15, 200, 25);
+        cmbZona.setPreferredSize(new java.awt.Dimension(200, 25));
         panelConsulta.add(cmbZona);
 
         JLabel lblInfo = new JLabel("Seleccione la zona y haga clic en 'Consultar'");
         lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-        lblInfo.setForeground(new Color(108, 117, 125));
-        lblInfo.setBounds(320, 15, 400, 20);
+        lblInfo.setForeground(new Color(200, 200, 200));
         panelConsulta.add(lblInfo);
+
+        return panelConsulta;
     }
 
     private void crearTabla() {
