@@ -5,11 +5,17 @@ import com.pap.datatypes.EstadoPrestamo;
 import com.pap.excepciones.ActualizarPrestamoExcepcion;
 import com.pap.datatypes.*;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
@@ -20,7 +26,6 @@ import java.util.Calendar;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -31,8 +36,9 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.table.JTableHeader;
 
-public class ActualizarPrestamo extends JInternalFrame {
+public class ActualizarPrestamo extends JPanel {
     
     private IControlador controlador;
     
@@ -63,118 +69,144 @@ public class ActualizarPrestamo extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Actualizar Prestamo");
-        setBounds(0, 0, 1000, 700);
-        setLayout(null);
-        setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-            new EmptyBorder(10, 10, 10, 10)
-        ));
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81)); // Dark mode background
         
-        // Panel de fondo con gradiente
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(248, 249, 250),
-                    getWidth(), getHeight(), new Color(233, 236, 239)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                
-                g2d.dispose();
-            }
-        };
-        contentPanel.setLayout(null);
-        contentPanel.setBounds(0, 0, getWidth(), getHeight());
-        add(contentPanel);
-        
-        // Titulo con estilo moderno
+        // Título - Header
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Minimal vertical spacing
+        headerPanel.setOpaque(false);
         JLabel lblTitulo = new JLabel("Actualizar Informacion de Prestamo");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        lblTitulo.setForeground(new Color(52, 73, 94));
-        lblTitulo.setBounds(250, 20, 500, 30);
-        contentPanel.add(lblTitulo);
+        lblTitulo.setForeground(Color.WHITE);
+        headerPanel.add(lblTitulo);
+        add(headerPanel, BorderLayout.NORTH);
+        
+        // Form Container Panel using GridBagLayout for precise control
+        JPanel formContainerPanel = new JPanel();
+        formContainerPanel.setLayout(new GridBagLayout());
+        formContainerPanel.setOpaque(false);
+        formContainerPanel.setBorder(new EmptyBorder(5, 0, 0, 0)); // Reduced top margin to bring form closer to title
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 10, 0); // Vertical spacing: 10px top, 10px bottom
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically for table
         
         // Subtitulo explicativo
         JLabel lblSubtitulo = new JLabel("Selecciona un prestamo del combo y modifica sus datos");
-        lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        lblSubtitulo.setForeground(new Color(108, 117, 125));
-        lblSubtitulo.setBounds(300, 50, 400, 20);
-        contentPanel.add(lblSubtitulo);
+        lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        lblSubtitulo.setForeground(new Color(200, 200, 200));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(2, 0, 10, 0); // Reduced top margin to bring closer to title
+        formContainerPanel.add(lblSubtitulo, gbc);
         
         // Panel de selección de préstamo
-        crearPanelSeleccionPrestamo(contentPanel);
+        crearPanelSeleccionPrestamo(formContainerPanel, gbc);
         
         // Crear la tabla
         crearTabla();
         
         // Panel con scroll para la tabla
         JScrollPane scrollPane = new JScrollPane(tablaPrestamo);
-        scrollPane.setBounds(30, 180, 940, 200);
+        scrollPane.setPreferredSize(new Dimension(800, 200));
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 5, 5, 5)
         ));
-        contentPanel.add(scrollPane);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(scrollPane, gbc);
         
         // Panel de edición
-        crearPanelEdicion(contentPanel);
+        crearPanelEdicion(formContainerPanel, gbc);
         
-        // Botones modernos
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        buttonPanel.setOpaque(false);
+
+        // Add buttons to the button panel
         btnActualizar = createStyledButton("Actualizar", new Color(46, 204, 113));
-        btnActualizar.setBounds(200, 600, 120, 35);
+        btnActualizar.setPreferredSize(new Dimension(120, 35));
         btnActualizar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 actualizarPrestamo();
             }
         });
-        contentPanel.add(btnActualizar);
+        buttonPanel.add(btnActualizar);
         
         btnLimpiar = createStyledButton("Limpiar", new Color(52, 152, 219));
-        btnLimpiar.setBounds(350, 600, 120, 35);
+        btnLimpiar.setPreferredSize(new Dimension(120, 35));
         btnLimpiar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 limpiarFormulario();
             }
         });
-        contentPanel.add(btnLimpiar);
+        buttonPanel.add(btnLimpiar);
         
         btnCerrar = createStyledButton("Cerrar", new Color(231, 76, 60));
-        btnCerrar.setBounds(500, 600, 120, 35);
+        btnCerrar.setPreferredSize(new Dimension(120, 35));
         btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
-        contentPanel.add(btnCerrar);
+        buttonPanel.add(btnCerrar);
+        
+        // Add back button
+        JButton btnVolver = createStyledButton("Volver", new Color(52, 73, 94));
+        btnVolver.setPreferredSize(new Dimension(120, 35));
+        btnVolver.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                com.pap.presentacion.Principal.getInstance().irASubmenuPrestamos();
+            }
+        });
+        buttonPanel.add(btnVolver);
+        
+        // Add button panel to form container with minimal spacing
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0; // Don't expand buttons vertically
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.NONE; // Don't fill buttons
+        gbc.insets = new Insets(15, 0, 0, 0); // Increased spacing above buttons
+        formContainerPanel.add(buttonPanel, gbc);
+
+        add(formContainerPanel, BorderLayout.CENTER);
     }
     
-    private void crearPanelSeleccionPrestamo(JPanel parent) {
+    private void crearPanelSeleccionPrestamo(JPanel parent, GridBagConstraints gbc) {
         // Panel de selección con borde
         JPanel panelSeleccion = new JPanel();
-        panelSeleccion.setLayout(null);
-        panelSeleccion.setBounds(30, 90, 940, 70);
+        panelSeleccion.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
         panelSeleccion.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(10, 15, 10, 15)
         ));
-        panelSeleccion.setBackground(new Color(255, 255, 255, 200));
-        parent.add(panelSeleccion);
+        panelSeleccion.setBackground(new Color(84, 86, 91));
         
         // Label para el combo
         JLabel lblPrestamo = new JLabel("Seleccionar Prestamo:");
-        lblPrestamo.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblPrestamo.setForeground(new Color(52, 73, 94));
-        lblPrestamo.setBounds(20, 15, 150, 20);
+        lblPrestamo.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblPrestamo.setForeground(Color.WHITE);
         panelSeleccion.add(lblPrestamo);
         
         // Combo de préstamos
         comboPrestamos = new JComboBox<>();
-        comboPrestamos.setBounds(180, 15, 400, 25);
+        comboPrestamos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        comboPrestamos.setPreferredSize(new Dimension(300, 30));
+        comboPrestamos.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
         comboPrestamos.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (comboPrestamos.getSelectedIndex() >= 0) {
@@ -186,10 +218,19 @@ public class ActualizarPrestamo extends JInternalFrame {
         
         // Información adicional
         JLabel lblInfo = new JLabel("info prestamo: ID | Email Lector | Email Bibliotecario | Titulo/Descripcion del Material");
-        lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-        lblInfo.setForeground(new Color(108, 117, 125));
-        lblInfo.setBounds(20, 40, 500, 20);
+        lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        lblInfo.setForeground(new Color(200, 200, 200));
         panelSeleccion.add(lblInfo);
+        
+        // Add to parent with GridBagConstraints
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0; // Don't expand vertically
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        parent.add(panelSeleccion, gbc);
     }
     
     private void crearTabla() {
@@ -206,11 +247,19 @@ public class ActualizarPrestamo extends JInternalFrame {
         };
         
         tablaPrestamo = new JTable(modeloTabla);
-        tablaPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        tablaPrestamo.setRowHeight(25);
+        tablaPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tablaPrestamo.setRowHeight(30);
         tablaPrestamo.setGridColor(new Color(52, 152, 219));
         tablaPrestamo.setSelectionBackground(new Color(52, 152, 219, 100));
         tablaPrestamo.setSelectionForeground(Color.BLACK);
+        tablaPrestamo.setBackground(new Color(74, 76, 81));
+        tablaPrestamo.setForeground(Color.WHITE);
+        
+        // Style table header
+        JTableHeader header = tablaPrestamo.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setForeground(new Color(52, 73, 94));
+        header.setBackground(new Color(200, 200, 200));
         
         // Configurar el ordenador de filas para permitir ordenamiento
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloTabla);
@@ -227,46 +276,62 @@ public class ActualizarPrestamo extends JInternalFrame {
          tablaPrestamo.getColumnModel().getColumn(7).setPreferredWidth(100);  // Estado
     }
     
-    private void crearPanelEdicion(JPanel parent) {
+    private void crearPanelEdicion(JPanel parent, GridBagConstraints gbc) {
         // Panel de edición con borde
         JPanel panelEdicion = new JPanel();
-        panelEdicion.setLayout(null);
-        panelEdicion.setBounds(30, 400, 940, 180);
+        panelEdicion.setLayout(new GridBagLayout());
         panelEdicion.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(15, 15, 15, 15)
         ));
-        panelEdicion.setBackground(new Color(255, 255, 255, 200));
-        parent.add(panelEdicion);
+        panelEdicion.setBackground(new Color(84, 86, 91));
+        
+        GridBagConstraints panelGbc = new GridBagConstraints();
+        panelGbc.insets = new Insets(5, 5, 5, 5);
+        panelGbc.anchor = GridBagConstraints.WEST;
+        panelGbc.fill = GridBagConstraints.HORIZONTAL;
         
         // Titulo del panel
         JLabel lblTituloEdicion = new JLabel("Modificar Datos del Prestamo:");
-        lblTituloEdicion.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblTituloEdicion.setForeground(new Color(52, 73, 94));
-        lblTituloEdicion.setBounds(20, 10, 250, 20);
-        panelEdicion.add(lblTituloEdicion);
+        lblTituloEdicion.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblTituloEdicion.setForeground(Color.WHITE);
+        panelGbc.gridx = 0;
+        panelGbc.gridy = 0;
+        panelGbc.gridwidth = 2;
+        panelGbc.anchor = GridBagConstraints.CENTER;
+        panelEdicion.add(lblTituloEdicion, panelGbc);
         
         // Fecha de solicitud
         JLabel lblFechaSolicitud = new JLabel("Nueva Fecha de Solicitud:");
-        lblFechaSolicitud.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblFechaSolicitud.setForeground(new Color(52, 73, 94));
-        lblFechaSolicitud.setBounds(20, 40, 180, 20);
-        panelEdicion.add(lblFechaSolicitud);
+        lblFechaSolicitud.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblFechaSolicitud.setForeground(Color.WHITE);
+        panelGbc.gridx = 0;
+        panelGbc.gridy = 1;
+        panelGbc.gridwidth = 1;
+        panelGbc.anchor = GridBagConstraints.WEST;
+        panelEdicion.add(lblFechaSolicitud, panelGbc);
         
         // Spinner para fecha de solicitud
         Calendar calSolicitud = Calendar.getInstance();
         SpinnerDateModel modelSolicitud = new SpinnerDateModel(calSolicitud.getTime(), null, null, Calendar.DAY_OF_MONTH);
         spinnerFechaSolicitud = new JSpinner(modelSolicitud);
         spinnerFechaSolicitud.setEditor(new JSpinner.DateEditor(spinnerFechaSolicitud, "dd/MM/yyyy"));
-        spinnerFechaSolicitud.setBounds(210, 40, 120, 25);
-        panelEdicion.add(spinnerFechaSolicitud);
+        spinnerFechaSolicitud.setPreferredSize(new Dimension(120, 30));
+        spinnerFechaSolicitud.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
+        panelGbc.gridx = 1;
+        panelGbc.gridy = 1;
+        panelEdicion.add(spinnerFechaSolicitud, panelGbc);
         
         // Fecha de devolución
         JLabel lblFechaDevolucion = new JLabel("Nueva Fecha de Devolucion:");
-        lblFechaDevolucion.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblFechaDevolucion.setForeground(new Color(52, 73, 94));
-        lblFechaDevolucion.setBounds(20, 80, 180, 20);
-        panelEdicion.add(lblFechaDevolucion);
+        lblFechaDevolucion.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblFechaDevolucion.setForeground(Color.WHITE);
+        panelGbc.gridx = 0;
+        panelGbc.gridy = 2;
+        panelEdicion.add(lblFechaDevolucion, panelGbc);
         
         // Spinner para fecha de devolución
         Calendar calDevolucion = Calendar.getInstance();
@@ -274,27 +339,54 @@ public class ActualizarPrestamo extends JInternalFrame {
         SpinnerDateModel modelDevolucion = new SpinnerDateModel(calDevolucion.getTime(), null, null, Calendar.DAY_OF_MONTH);
         spinnerFechaDevolucion = new JSpinner(modelDevolucion);
         spinnerFechaDevolucion.setEditor(new JSpinner.DateEditor(spinnerFechaDevolucion, "dd/MM/yyyy"));
-        spinnerFechaDevolucion.setBounds(210, 80, 120, 25);
-        panelEdicion.add(spinnerFechaDevolucion);
+        spinnerFechaDevolucion.setPreferredSize(new Dimension(120, 30));
+        spinnerFechaDevolucion.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
+        panelGbc.gridx = 1;
+        panelGbc.gridy = 2;
+        panelEdicion.add(spinnerFechaDevolucion, panelGbc);
         
         // Estado del préstamo
         JLabel lblEstado = new JLabel("Nuevo Estado:");
-        lblEstado.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblEstado.setForeground(new Color(52, 73, 94));
-        lblEstado.setBounds(20, 120, 180, 20);
-        panelEdicion.add(lblEstado);
+        lblEstado.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblEstado.setForeground(Color.WHITE);
+        panelGbc.gridx = 0;
+        panelGbc.gridy = 3;
+        panelEdicion.add(lblEstado, panelGbc);
         
         // Combo de estados
         comboEstado = new JComboBox<>(EstadoPrestamo.values());
-        comboEstado.setBounds(210, 120, 120, 25);
-        panelEdicion.add(comboEstado);
+        comboEstado.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        comboEstado.setPreferredSize(new Dimension(120, 30));
+        comboEstado.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
+        panelGbc.gridx = 1;
+        panelGbc.gridy = 3;
+        panelEdicion.add(comboEstado, panelGbc);
         
         // Informacion adicional
         JLabel lblInfo = new JLabel("Modifica los campos necesarios y haz clic en 'Actualizar'");
-        lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-        lblInfo.setForeground(new Color(108, 117, 125));
-        lblInfo.setBounds(20, 150, 400, 20);
-        panelEdicion.add(lblInfo);
+        lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        lblInfo.setForeground(new Color(200, 200, 200));
+        panelGbc.gridx = 0;
+        panelGbc.gridy = 4;
+        panelGbc.gridwidth = 2;
+        panelGbc.anchor = GridBagConstraints.CENTER;
+        panelEdicion.add(lblInfo, panelGbc);
+        
+        // Add to parent with GridBagConstraints
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0; // Don't expand vertically
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        parent.add(panelEdicion, gbc);
     }
     
     public void cargarPrestamos() {
@@ -465,9 +557,27 @@ public class ActualizarPrestamo extends JInternalFrame {
     private JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setForeground(Color.BLACK);
-        button.setBackground(backgroundColor);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setForeground(Color.WHITE);
+        Color bg = backgroundColor;
+        String label = text == null ? "" : text.toLowerCase();
+        if (label.contains("modificar") || label.contains("consultar") || label.contains("actualizar")) {
+            bg = new Color(46, 204, 113);
+        } else if (label.contains("limpiar") || label.contains("volver")) {
+            bg = new Color(52, 152, 219);
+        } else if (label.contains("cancelar")) {
+            bg = new Color(231, 76, 60);
+        } else if (bg == null) {
+            bg = new Color(46, 49, 54);
+        }
+        final Color finalBg = bg;
+        button.setBackground(finalBg);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(finalBg.brighter(), 2, true),
+            BorderFactory.createEmptyBorder(8, 16, 8, 16)
+        ));
         button.setFocusPainted(false);
         return button;
     }

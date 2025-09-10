@@ -21,13 +21,11 @@ public class Controlador implements IControlador {
     private final ManejadorUsuarios manejadorUsuarios;
     private final ManejadorPrestamos manejadorPrestamos;
     private final ManejadorGestionMaterial manejadorMaterial;
-    private final ManejadorControlSeguimiento mCS;
     
     public Controlador() {
         this.manejadorUsuarios = ManejadorUsuarios.getInstancia();
         this.manejadorPrestamos = ManejadorPrestamos.getInstancia();
         this.manejadorMaterial = ManejadorGestionMaterial.getInstancia();
-        this.mCS = ManejadorControlSeguimiento.getInstancia();
     }
     
 
@@ -717,17 +715,5 @@ public class Controlador implements IControlador {
             return new ArrayList<>();
         }
 	}
-
-
-
-	@Override
-    public ArrayList<DtPrestamo> MaterialPendiente(String estado) throws MaterialPendienteExcepcion{
-		ArrayList<DtPrestamo> prestamos = mCS.obtenerMaterialPendiente(estado);
-		
-		return prestamos;
-	}
-
-
-
-          
+         
 }

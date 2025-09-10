@@ -6,11 +6,14 @@ import com.pap.datatypes.DtLibro;
 import com.pap.datatypes.DtArticulo;
 import com.pap.excepciones.HistorialPrestamoBibliotecarioExcepcion;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
@@ -20,18 +23,19 @@ import java.util.Comparator;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 
-public class HistorialPrestamoBibliotecario extends JInternalFrame {
+public class HistorialPrestamoBibliotecario extends JPanel {
     
     private IControlador controlador;
     
@@ -51,117 +55,122 @@ public class HistorialPrestamoBibliotecario extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Historial de Prestamos bibliotecario");
-        setBounds(0, 0, 1000, 650);
-        setLayout(null);
-        setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-            new EmptyBorder(10, 10, 10, 10)
-        ));
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81)); // Dark theme background
         
-        // Panel de fondo con gradiente
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(248, 249, 250),
-                    getWidth(), getHeight(), new Color(233, 236, 239)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                
-                g2d.dispose();
-            }
-        };
-        contentPanel.setLayout(null);
-        contentPanel.setBounds(0, 0, getWidth(), getHeight());
-        add(contentPanel);
+        // Header panel
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        headerPanel.setBackground(new Color(74, 76, 81));
         
-        // Titulo con estilo moderno
         JLabel lblTitulo = new JLabel("Historial de Prestamos bibliotecario");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        lblTitulo.setForeground(new Color(52, 73, 94));
-        lblTitulo.setBounds(250, 20, 500, 30);
-        contentPanel.add(lblTitulo);
+        lblTitulo.setForeground(Color.WHITE);
+        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        headerPanel.add(lblTitulo);
         
+        add(headerPanel, BorderLayout.NORTH);
+        
+        // Main content panel
+        JPanel formContainerPanel = new JPanel(new GridBagLayout());
+        formContainerPanel.setBackground(new Color(74, 76, 81));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 20, 10, 20);
         
         // Panel de consulta
-        crearPanelConsulta(contentPanel);
+        JPanel panelConsulta = crearPanelConsulta();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        formContainerPanel.add(panelConsulta, gbc);
         
         // Crear la tabla
         crearTabla();
         
         // Panel con scroll para la tabla
         JScrollPane scrollPane = new JScrollPane(tablaPrestamos);
-        scrollPane.setBounds(30, 150, 940, 400);
+        scrollPane.setPreferredSize(new Dimension(800, 200));
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 5, 5, 5)
         ));
-        contentPanel.add(scrollPane);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        formContainerPanel.add(scrollPane, gbc);
         
-        // Botones modernos
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        buttonPanel.setOpaque(false);
+
+        // Add buttons to the button panel
         btnConsultar = createStyledButton("Consultar", new Color(46, 204, 113));
-        btnConsultar.setBounds(200, 570, 120, 35);
+        btnConsultar.setPreferredSize(new Dimension(120, 35));
         btnConsultar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 consultarHistorialBiblio();
             }
         });
-        contentPanel.add(btnConsultar);
+        buttonPanel.add(btnConsultar);
         
         btnLimpiar = createStyledButton("Limpiar", new Color(52, 152, 219));
-        btnLimpiar.setBounds(350, 570, 120, 35);
+        btnLimpiar.setPreferredSize(new Dimension(120, 35));
         btnLimpiar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 limpiarTabla();
             }
         });
-        contentPanel.add(btnLimpiar);
+        buttonPanel.add(btnLimpiar);
         
-        btnCerrar = createStyledButton("Cerrar", new Color(231, 76, 60));
-        btnCerrar.setBounds(500, 570, 120, 35);
+        btnCerrar = createStyledButton("Volver", new Color(52, 152, 219));
+        btnCerrar.setPreferredSize(new Dimension(120, 35));
         btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                com.pap.presentacion.Principal.getInstance().irASubmenuPrestamos();
             }
         });
-        contentPanel.add(btnCerrar);
+        buttonPanel.add(btnCerrar);
+        
+        // Add button panel to form container
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        gbc.insets = new Insets(10, 0, 0, 0);
+        formContainerPanel.add(buttonPanel, gbc);
+        
+        add(formContainerPanel, BorderLayout.CENTER);
     }
     
-    private void crearPanelConsulta(JPanel parent) {
-        // Panel de consulta con borde
-        JPanel panelConsulta = new JPanel();
-        panelConsulta.setLayout(null);
-        panelConsulta.setBounds(30, 90, 940, 50);
+    private JPanel crearPanelConsulta() {
+        JPanel panelConsulta = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         panelConsulta.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(10, 15, 10, 15)
         ));
         panelConsulta.setBackground(new Color(255, 255, 255, 200));
-        parent.add(panelConsulta);
         
         // Label para el nro empleado
         JLabel lblLector = new JLabel("Bibliotecario a consultar:");
         lblLector.setFont(new Font("Segoe UI", Font.BOLD, 12));
         lblLector.setForeground(new Color(52, 73, 94));
-        lblLector.setBounds(20, 15, 120, 20);
         panelConsulta.add(lblLector);
         
         // Campo de texto para el nroEmp
         txtNumeroEmpleado = createStyledTextField();
-        txtNumeroEmpleado.setBounds(150, 15, 300, 25);
+        txtNumeroEmpleado.setPreferredSize(new Dimension(300, 25));
         panelConsulta.add(txtNumeroEmpleado);
         
         // Informacion adicional
-        JLabel lblInfo = new JLabel("Ingresa numero de empleado del biblitoecario y haz clic en 'Consultar'");
+        JLabel lblInfo = new JLabel("Ingresa numero de empleado del bibliotecario y haz clic en 'Consultar'");
         lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
         lblInfo.setForeground(new Color(108, 117, 125));
-        lblInfo.setBounds(470, 15, 400, 20);
         panelConsulta.add(lblInfo);
+        
+        return panelConsulta;
     }
     
     private void crearTabla() {
@@ -183,6 +192,8 @@ public class HistorialPrestamoBibliotecario extends JInternalFrame {
         tablaPrestamos.setGridColor(new Color(52, 152, 219));
         tablaPrestamos.setSelectionBackground(new Color(52, 152, 219, 100));
         tablaPrestamos.setSelectionForeground(Color.BLACK);
+        tablaPrestamos.setBackground(new Color(74, 76, 81));
+        tablaPrestamos.setForeground(Color.WHITE);
         
         // Configurar el ordenador de filas para permitir ordenamiento
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloTabla);
@@ -222,7 +233,13 @@ public class HistorialPrestamoBibliotecario extends JInternalFrame {
         tablaPrestamos.getColumnModel().getColumn(2).setPreferredWidth(120);  // Fecha Devolucion
         tablaPrestamos.getColumnModel().getColumn(3).setPreferredWidth(300);  // Nombre/Descripcion Material
         tablaPrestamos.getColumnModel().getColumn(4).setPreferredWidth(100);  // Estado
-        }
+        
+        // Style table header
+        JTableHeader header = tablaPrestamos.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        header.setForeground(new Color(52, 73, 94));
+        header.setBackground(new Color(200, 200, 200));
+    }
     
     private void consultarHistorialBiblio() {
         try {
@@ -315,9 +332,27 @@ public class HistorialPrestamoBibliotecario extends JInternalFrame {
     private JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setForeground(Color.BLACK);
-        button.setBackground(backgroundColor);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setForeground(Color.WHITE);
+        Color bg = backgroundColor;
+        String label = text == null ? "" : text.toLowerCase();
+        if (label.contains("modificar") || label.contains("consultar")) {
+            bg = new Color(46, 204, 113);
+        } else if (label.contains("limpiar") || label.contains("volver")) {
+            bg = new Color(52, 152, 219);
+        } else if (label.contains("cancelar")) {
+            bg = new Color(231, 76, 60);
+        } else if (bg == null) {
+            bg = new Color(46, 49, 54);
+        }
+        final Color finalBg = bg;
+        button.setBackground(finalBg);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(finalBg.brighter(), 2, true),
+            BorderFactory.createEmptyBorder(8, 16, 8, 16)
+        ));
         button.setFocusPainted(false);
         return button;
     }

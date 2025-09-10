@@ -3,24 +3,29 @@ package com.pap.presentacion;
 import com.pap.interfaces.IControlador;
 import com.pap.excepciones.RegistrarDonacionLibroExcepcion;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-public class RegistrarDonacionLibro extends JInternalFrame {
+public class RegistrarDonacionLibro extends JPanel {
     
     private IControlador controlador;
     
@@ -37,93 +42,126 @@ public class RegistrarDonacionLibro extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Registrar Donación de Libro");
-        setBounds(0, 0, 450, 350);
-        setLayout(null);
-        setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-            new EmptyBorder(10, 10, 10, 10)
-        ));
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81)); // Dark mode background
         
-        // Panel de fondo con gradiente
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(248, 249, 250),
-                    getWidth(), getHeight(), new Color(233, 236, 239)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                
-                g2d.dispose();
-            }
-        };
-        contentPanel.setLayout(null);
-        contentPanel.setBounds(0, 0, getWidth(), getHeight());
-        add(contentPanel);
-        
-        // Título con estilo moderno
+        // Título - Header
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Minimal vertical spacing
+        headerPanel.setOpaque(false);
         JLabel lblTitulo = new JLabel("Registro de Donacion de Libro");
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTitulo.setForeground(new Color(52, 73, 94));
-        lblTitulo.setBounds(100, 20, 300, 30);
-        contentPanel.add(lblTitulo);
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitulo.setForeground(Color.WHITE);
+        headerPanel.add(lblTitulo);
+        add(headerPanel, BorderLayout.NORTH);
+        
+        // Form Container Panel using GridBagLayout for precise control
+        JPanel formContainerPanel = new JPanel();
+        formContainerPanel.setLayout(new GridBagLayout());
+        formContainerPanel.setOpaque(false);
+        formContainerPanel.setBorder(new EmptyBorder(5, 0, 0, 0)); // Reduced top margin to bring form closer to title
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 10, 0); // Vertical spacing: 10px top, 10px bottom
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         
         // ID del Libro
         JLabel lblIdLibro = new JLabel("ID del Libro:");
-        lblIdLibro.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblIdLibro.setForeground(new Color(52, 73, 94));
-        lblIdLibro.setBounds(30, 80, 100, 20);
-        contentPanel.add(lblIdLibro);
+        lblIdLibro.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblIdLibro.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(2, 0, 10, 10); // Reduced top margin to bring closer to title
+        formContainerPanel.add(lblIdLibro, gbc);
         
         txtIdLibro = createStyledTextField();
-        txtIdLibro.setBounds(140, 80, 250, 30);
-        contentPanel.add(txtIdLibro);
+        txtIdLibro.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(2, 0, 10, 0); // Reduced top margin to match label
+        formContainerPanel.add(txtIdLibro, gbc);
         
         // Título del Libro
         JLabel lblTituloLibro = new JLabel("Titulo:");
-        lblTituloLibro.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblTituloLibro.setForeground(new Color(52, 73, 94));
-        lblTituloLibro.setBounds(30, 130, 100, 20);
-        contentPanel.add(lblTituloLibro);
+        lblTituloLibro.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblTituloLibro.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblTituloLibro, gbc);
         
         txtTitulo = createStyledTextField();
-        txtTitulo.setBounds(140, 130, 250, 30);
-        contentPanel.add(txtTitulo);
+        txtTitulo.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtTitulo, gbc);
         
         // Cantidad de Páginas
         JLabel lblCantidadPaginas = new JLabel("Paginas:");
-        lblCantidadPaginas.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblCantidadPaginas.setForeground(new Color(52, 73, 94));
-        lblCantidadPaginas.setBounds(30, 180, 100, 20);
-        contentPanel.add(lblCantidadPaginas);
+        lblCantidadPaginas.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblCantidadPaginas.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblCantidadPaginas, gbc);
         
         txtCantidadPaginas = createStyledTextField();
-        txtCantidadPaginas.setBounds(140, 180, 250, 30);
-        contentPanel.add(txtCantidadPaginas);
+        txtCantidadPaginas.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtCantidadPaginas, gbc);
         
-        // Botones modernos
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        buttonPanel.setOpaque(false);
+
+        // Add buttons to the button panel
         btnRegistrar = createStyledButton("Registrar", new Color(46, 204, 113));
-        btnRegistrar.setBounds(100, 250, 120, 35);
+        btnRegistrar.setPreferredSize(new Dimension(120, 35));
         btnRegistrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 registrarDonacionLibro();
             }
         });
-        contentPanel.add(btnRegistrar);
+        buttonPanel.add(btnRegistrar);
         
         btnCancelar = createStyledButton("Cancelar", new Color(231, 76, 60));
-        btnCancelar.setBounds(240, 250, 120, 35);
+        btnCancelar.setPreferredSize(new Dimension(120, 35));
         btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                limpiarCampos();
+                com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
-        contentPanel.add(btnCancelar);
+        buttonPanel.add(btnCancelar);
+        
+        // Add back button
+        JButton btnVolver = createStyledButton("Volver", new Color(52, 73, 94));
+        btnVolver.setPreferredSize(new Dimension(120, 35));
+        btnVolver.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                com.pap.presentacion.Principal.getInstance().irASubmenuMateriales();
+            }
+        });
+        buttonPanel.add(btnVolver);
+        
+        // Add button panel to form container with minimal spacing
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(15, 0, 0, 0); // Increased spacing above buttons
+        formContainerPanel.add(buttonPanel, gbc);
+
+        add(formContainerPanel, BorderLayout.CENTER);
     }
     
     private JTextField createStyledTextField() {
@@ -139,9 +177,27 @@ public class RegistrarDonacionLibro extends JInternalFrame {
     private JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setForeground(Color.BLACK);
-        button.setBackground(backgroundColor);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setForeground(Color.WHITE);
+        Color bg = backgroundColor;
+        String label = text == null ? "" : text.toLowerCase();
+        if (label.contains("modificar") || label.contains("consultar")) {
+            bg = new Color(46, 204, 113);
+        } else if (label.contains("limpiar") || label.contains("volver")) {
+            bg = new Color(52, 152, 219);
+        } else if (label.contains("cancelar")) {
+            bg = new Color(231, 76, 60);
+        } else if (bg == null) {
+            bg = new Color(46, 49, 54);
+        }
+        final Color finalBg = bg;
+        button.setBackground(finalBg);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(finalBg.brighter(), 2, true),
+            BorderFactory.createEmptyBorder(8, 16, 8, 16)
+        ));
         button.setFocusPainted(false);
         return button;
     }

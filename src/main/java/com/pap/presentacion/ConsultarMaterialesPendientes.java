@@ -6,11 +6,14 @@ import com.pap.datatypes.DtLibro;
 import com.pap.datatypes.DtArticulo;
 import com.pap.datatypes.EstadoPrestamo;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -19,17 +22,18 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 
-public class ConsultarMaterialesPendientes extends JInternalFrame {
+public class ConsultarMaterialesPendientes extends JPanel {
 
     private IControlador controlador;
     private JTable tablaMateriales;
@@ -44,108 +48,115 @@ public class ConsultarMaterialesPendientes extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Consultar Prestamos pendientes por Material");
-        setBounds(0, 0, 1000, 650);
-        setLayout(null);
-        setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-            new EmptyBorder(10, 10, 10, 10)
-        ));
-
-        // Panel de fondo con gradiente
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(248, 249, 250),
-                    getWidth(), getHeight(), new Color(233, 236, 239)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-
-                g2d.dispose();
-            }
-        };
-        contentPanel.setLayout(null);
-        contentPanel.setBounds(0, 0, getWidth(), getHeight());
-        add(contentPanel);
-
-        // Título
-        JLabel lblTitulo = new JLabel("Materiales con Prestamos Pendientes");
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81)); // Dark theme background
+        
+        // Header panel
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
+        headerPanel.setBackground(new Color(74, 76, 81));
+        
+        JLabel lblTitulo = new JLabel("Consultar Materiales Pendientes");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        lblTitulo.setForeground(new Color(52, 73, 94));
-        lblTitulo.setBounds(280, 20, 500, 30);
-        contentPanel.add(lblTitulo);
-
+        lblTitulo.setForeground(Color.WHITE);
+        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        headerPanel.add(lblTitulo);
+        
+        add(headerPanel, BorderLayout.NORTH);
+        
+        // Main content panel
+        JPanel formContainerPanel = new JPanel(new GridBagLayout());
+        formContainerPanel.setBackground(new Color(74, 76, 81));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 20, 10, 20);
+        
         // Panel de información
-        crearPanelInformacion(contentPanel);
-
+        JPanel panelInfo = crearPanelInformacion();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        formContainerPanel.add(panelInfo, gbc);
+        
         // Crear la tabla
         crearTabla();
-
+        
         // Panel con scroll para la tabla
         JScrollPane scrollPane = new JScrollPane(tablaMateriales);
-        scrollPane.setBounds(30, 150, 940, 400);
+        scrollPane.setPreferredSize(new Dimension(800, 400));
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 5, 5, 5)
         ));
-        contentPanel.add(scrollPane);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        formContainerPanel.add(scrollPane, gbc);
+        
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        buttonPanel.setOpaque(false);
 
-        // Botones
+        // Add buttons to the button panel
         btnConsultar = createStyledButton("Consultar", new Color(46, 204, 113));
-        btnConsultar.setBounds(200, 570, 120, 35);
+        btnConsultar.setPreferredSize(new Dimension(120, 35));
         btnConsultar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 consultarMaterialesPendientes();
             }
         });
-        contentPanel.add(btnConsultar);
-
+        buttonPanel.add(btnConsultar);
+        
         btnLimpiar = createStyledButton("Limpiar", new Color(52, 152, 219));
-        btnLimpiar.setBounds(350, 570, 120, 35);
+        btnLimpiar.setPreferredSize(new Dimension(120, 35));
         btnLimpiar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 limpiarTabla();
             }
         });
-        contentPanel.add(btnLimpiar);
-
-        btnCerrar = createStyledButton("Cerrar", new Color(231, 76, 60));
-        btnCerrar.setBounds(500, 570, 120, 35);
+        buttonPanel.add(btnLimpiar);
+        
+        btnCerrar = createStyledButton("Volver", new Color(52, 152, 219));
+        btnCerrar.setPreferredSize(new Dimension(120, 35));
         btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                com.pap.presentacion.Principal.getInstance().irASubmenuControlSeguimiento();
             }
         });
-        contentPanel.add(btnCerrar);
+        buttonPanel.add(btnCerrar);
+        
+        // Add button panel to form container
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        gbc.insets = new Insets(10, 0, 0, 0);
+        formContainerPanel.add(buttonPanel, gbc);
+        
+        add(formContainerPanel, BorderLayout.CENTER);
     }
 
-    private void crearPanelInformacion(JPanel parent) {
-        JPanel panelInfo = new JPanel();
-        panelInfo.setLayout(null);
-        panelInfo.setBounds(30, 90, 940, 50);
+    private JPanel crearPanelInformacion() {
+        JPanel panelInfo = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelInfo.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
-            new EmptyBorder(10, 15, 10, 15)
+            new EmptyBorder(10, 20, 10, 20)
         ));
         panelInfo.setBackground(new Color(255, 255, 255, 200));
-        parent.add(panelInfo);
 
-        JLabel lblInfo = new JLabel("Esta consulta muestra los materiales que tienen prestamos en estado PENDIENTE");
-        lblInfo.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblInfo.setForeground(new Color(52, 73, 94));
-        lblInfo.setBounds(20, 15, 600, 20);
+        JLabel lblInfo = new JLabel("Materiales que tienen prestamos en estado PENDIENTE");
+        lblInfo.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblInfo.setForeground(Color.WHITE);
         panelInfo.add(lblInfo);
 
         JLabel lblInfo2 = new JLabel("Haga clic en 'Consultar' para ver los resultados");
-        lblInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-        lblInfo.setForeground(new Color(108, 117, 125));
-        lblInfo.setBounds(20, 30, 400, 20);
+        lblInfo2.setFont(new Font("Segoe UI", Font.ITALIC, 14));
+        lblInfo2.setForeground(new Color(108, 117, 125));
         panelInfo.add(lblInfo2);
+        
+        return panelInfo;
     }
 
     private void crearTabla() {
@@ -160,14 +171,31 @@ public class ConsultarMaterialesPendientes extends JInternalFrame {
             }
         };
 
-        tablaMateriales = new JTable(modeloTabla);
+        tablaMateriales = new JTable(modeloTabla) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        
+        // Estilo moderno para la tabla
         tablaMateriales.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         tablaMateriales.setRowHeight(25);
         tablaMateriales.setGridColor(new Color(52, 152, 219));
         tablaMateriales.setSelectionBackground(new Color(52, 152, 219, 100));
         tablaMateriales.setSelectionForeground(Color.BLACK);
+        tablaMateriales.setBackground(new Color(74, 76, 81));
+        tablaMateriales.setForeground(Color.WHITE);
+        tablaMateriales.setFillsViewportHeight(true);
+        tablaMateriales.setShowGrid(true);
+        
+        // Style table header
+        JTableHeader header = tablaMateriales.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        header.setForeground(new Color(52, 73, 94));
+        header.setBackground(new Color(200, 200, 200));
 
-        // Ordenamiento por cantidad de préstamos pendientes (columna 2)
+        // Ordenamiento por cantidad de prestamos pendientes (columna 2)
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloTabla);
         sorter.setComparator(2, (o1, o2) -> {
             try {
@@ -180,7 +208,7 @@ public class ConsultarMaterialesPendientes extends JInternalFrame {
         });
         tablaMateriales.setRowSorter(sorter);
 
-        // Anchos de columna
+        // Anchos de columna optimizados
         tablaMateriales.getColumnModel().getColumn(0).setPreferredWidth(120);
         tablaMateriales.getColumnModel().getColumn(1).setPreferredWidth(500);
         tablaMateriales.getColumnModel().getColumn(2).setPreferredWidth(200);
@@ -190,7 +218,7 @@ public class ConsultarMaterialesPendientes extends JInternalFrame {
         try {
             modeloTabla.setRowCount(0);
 
-            // Obtener todos los préstamos
+            // Obtener todos los prestamos
             ArrayList<DtPrestamo> todosLosPrestamos = controlador.listarTodosLosPrestamos();
 
             if (todosLosPrestamos == null || todosLosPrestamos.isEmpty()) {
@@ -201,7 +229,7 @@ public class ConsultarMaterialesPendientes extends JInternalFrame {
                 return;
             }
 
-            // Filtrar solo los préstamos pendientes y contar por material
+            // Filtrar solo los prestamos pendientes y contar por material
             Map<String, MaterialInfo> materialesPendientes = new HashMap<>();
 
             for (DtPrestamo prestamo : todosLosPrestamos) {
@@ -267,11 +295,30 @@ public class ConsultarMaterialesPendientes extends JInternalFrame {
 
     private JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setForeground(Color.BLACK);
-        button.setBackground(backgroundColor);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14)); // Texto mas grande
+        button.setForeground(Color.WHITE);
+        Color bg = backgroundColor;
+        String label = text == null ? "" : text.toLowerCase();
+        if (label.contains("modificar") || label.contains("consultar")) {
+            bg = new Color(46, 204, 113);
+        } else if (label.contains("limpiar") || label.contains("volver")) {
+            bg = new Color(52, 152, 219);
+        } else if (label.contains("cancelar")) {
+            bg = new Color(231, 76, 60);
+        } else if (bg == null) {
+            bg = new Color(46, 49, 54);
+        }
+        final Color finalBg = bg;
+        button.setBackground(finalBg);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(finalBg.brighter(), 2, true),
+            BorderFactory.createEmptyBorder(12, 20, 12, 20)
+        ));
         button.setFocusPainted(false);
+        button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         return button;
     }
 

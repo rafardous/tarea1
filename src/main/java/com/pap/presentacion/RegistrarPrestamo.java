@@ -5,11 +5,17 @@ import com.pap.datatypes.Zona;
 import com.pap.interfaces.IControlador;
 import com.pap.datatypes.EstadoPrestamo;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
@@ -18,7 +24,6 @@ import java.util.Calendar;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -30,7 +35,7 @@ import javax.swing.SpinnerDateModel;
 
 
 
-public class RegistrarPrestamo extends JInternalFrame {
+public class RegistrarPrestamo extends JPanel {
     
     private IControlador controlador;
     
@@ -49,124 +54,174 @@ public class RegistrarPrestamo extends JInternalFrame {
     }
 
     private void initialize() {
-        setTitle("Registrar Nuevo Prestamo");
-        setBounds(0, 0, 450, 400);
-        setLayout(null);
-        setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
-            new EmptyBorder(10, 10, 10, 10)
-        ));
+        setLayout(new BorderLayout());
+        setBackground(new Color(74, 76, 81)); // Dark mode background
         
-        // Panel de fondo con gradiente
-        JPanel contentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                
-                GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(248, 249, 250),
-                    getWidth(), getHeight(), new Color(233, 236, 239)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                
-                g2d.dispose();
-            }
-        };
-        contentPanel.setLayout(null);
-        contentPanel.setBounds(0, 0, getWidth(), getHeight());
-        add(contentPanel);
-        
-        // Título con estilo moderno
+        // Título - Header
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Minimal vertical spacing
+        headerPanel.setOpaque(false);
         JLabel lblTitulo = new JLabel("Registro de Nuevo Prestamo");
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTitulo.setForeground(new Color(52, 73, 94));
-        lblTitulo.setBounds(120, 20, 250, 30);
-        contentPanel.add(lblTitulo);
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitulo.setForeground(Color.WHITE);
+        headerPanel.add(lblTitulo);
+        add(headerPanel, BorderLayout.NORTH);
+        
+        // Form Container Panel using GridBagLayout for precise control
+        JPanel formContainerPanel = new JPanel();
+        formContainerPanel.setLayout(new GridBagLayout());
+        formContainerPanel.setOpaque(false);
+        formContainerPanel.setBorder(new EmptyBorder(5, 0, 0, 0)); // Reduced top margin to bring form closer to title
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 10, 0); // Vertical spacing: 10px top, 10px bottom
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         
         // Email del lector
         JLabel lblLector = new JLabel("Email Lector:");
-        lblLector.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblLector.setForeground(new Color(52, 73, 94));
-        lblLector.setBounds(30, 80, 100, 20);
-        contentPanel.add(lblLector);
+        lblLector.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblLector.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(2, 0, 10, 10); // Reduced top margin to bring closer to title
+        formContainerPanel.add(lblLector, gbc);
         
         txtEmailLector = createStyledTextField();
-        txtEmailLector.setBounds(140, 80, 250, 30);
-        contentPanel.add(txtEmailLector);
+        txtEmailLector.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(2, 0, 10, 0); // Reduced top margin to match label
+        formContainerPanel.add(txtEmailLector, gbc);
         
         // Email del bibliotecario
         JLabel lblBibliotecario = new JLabel("Email Bibliotecario:");
-        lblBibliotecario.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblBibliotecario.setForeground(new Color(52, 73, 94));
-        lblBibliotecario.setBounds(30, 130, 100, 20);
-        contentPanel.add(lblBibliotecario);
+        lblBibliotecario.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblBibliotecario.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblBibliotecario, gbc);
         
         txtEmailBibliotecario = createStyledTextField();
-        txtEmailBibliotecario.setBounds(140, 130, 250, 30);
-        contentPanel.add(txtEmailBibliotecario);
+        txtEmailBibliotecario.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtEmailBibliotecario, gbc);
         
         // ID del material
         JLabel lblMaterial = new JLabel("ID Material:");
-        lblMaterial.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblMaterial.setForeground(new Color(52, 73, 94));
-        lblMaterial.setBounds(30, 180, 100, 20);
-        contentPanel.add(lblMaterial);
+        lblMaterial.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblMaterial.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblMaterial, gbc);
         
         txtIdMaterial = createStyledTextField();
-        txtIdMaterial.setBounds(140, 180, 250, 30);
-        contentPanel.add(txtIdMaterial);
+        txtIdMaterial.setPreferredSize(new Dimension(200, 30));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(txtIdMaterial, gbc);
         
         // Fecha de devolución
         JLabel lblFechaDev = new JLabel("Fecha Devolucion:");
-        lblFechaDev.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblFechaDev.setForeground(new Color(52, 73, 94));
-        lblFechaDev.setBounds(30, 230, 100, 20);
-        contentPanel.add(lblFechaDev);
+        lblFechaDev.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblFechaDev.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblFechaDev, gbc);
         
         Calendar calFin = Calendar.getInstance();
         calFin.add(Calendar.DAY_OF_MONTH, 7); // Por defecto 7 días
         SpinnerDateModel modelFin = new SpinnerDateModel(calFin.getTime(), null, null, Calendar.DAY_OF_MONTH);
         spinnerFechaDev = new JSpinner(modelFin);
         spinnerFechaDev.setEditor(new JSpinner.DateEditor(spinnerFechaDev, "dd/MM/yyyy"));
-        spinnerFechaDev.setBounds(140, 230, 250, 30);
-        contentPanel.add(spinnerFechaDev);
+        spinnerFechaDev.setPreferredSize(new Dimension(200, 30));
+        spinnerFechaDev.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(52, 152, 219)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(spinnerFechaDev, gbc);
         
         // Estado del préstamo
         JLabel lblEstado = new JLabel("Estado:");
-        lblEstado.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblEstado.setForeground(new Color(52, 73, 94));
-        lblEstado.setBounds(30, 280, 100, 20);
-        contentPanel.add(lblEstado);
+        lblEstado.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblEstado.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(10, 0, 10, 10);
+        formContainerPanel.add(lblEstado, gbc);
         
         cmbEstadoPrestamo = new JComboBox<>(EstadoPrestamo.values());
-        cmbEstadoPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        cmbEstadoPrestamo.setBounds(140, 280, 250, 30);
+        cmbEstadoPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        cmbEstadoPrestamo.setPreferredSize(new Dimension(200, 30));
         cmbEstadoPrestamo.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 10, 5, 10)
         ));
-        contentPanel.add(cmbEstadoPrestamo);
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        formContainerPanel.add(cmbEstadoPrestamo, gbc);
         
-        // Botones modernos
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        buttonPanel.setOpaque(false);
+
+        // Add buttons to the button panel
         btnRegistrar = createStyledButton("Registrar", new Color(46, 204, 113));
-        btnRegistrar.setBounds(100, 330, 120, 35);
+        btnRegistrar.setPreferredSize(new Dimension(120, 35));
         btnRegistrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 registrarPrestamo();
             }
         });
-        contentPanel.add(btnRegistrar);
+        buttonPanel.add(btnRegistrar);
         
         btnCancelar = createStyledButton("Cancelar", new Color(231, 76, 60));
-        btnCancelar.setBounds(240, 330, 120, 35);
+        btnCancelar.setPreferredSize(new Dimension(120, 35));
         btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                com.pap.presentacion.Principal.getInstance().volverAPantallaInicialPublic();
             }
         });
-        contentPanel.add(btnCancelar);
+        buttonPanel.add(btnCancelar);
+        
+        // Add back button
+        JButton btnVolver = createStyledButton("Volver", new Color(52, 73, 94));
+        btnVolver.setPreferredSize(new Dimension(120, 35));
+        btnVolver.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                com.pap.presentacion.Principal.getInstance().irASubmenuPrestamos();
+            }
+        });
+        buttonPanel.add(btnVolver);
+        
+        // Add button panel to form container with minimal spacing
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(15, 0, 0, 0); // Increased spacing above buttons
+        formContainerPanel.add(buttonPanel, gbc);
+
+        add(formContainerPanel, BorderLayout.CENTER);
     }
     
     private JTextField createStyledTextField() {
@@ -182,7 +237,27 @@ public class RegistrarPrestamo extends JInternalFrame {
     private JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setForeground(Color.WHITE); // White text for dark theme
+        Color bg = backgroundColor;
+        String label = text == null ? "" : text.toLowerCase();
+        if (label.contains("modificar") || label.contains("consultar")) {
+            bg = new Color(46, 204, 113);
+        } else if (label.contains("limpiar") || label.contains("volver")) {
+            bg = new Color(52, 152, 219);
+        } else if (label.contains("cancelar")) {
+            bg = new Color(231, 76, 60);
+        } else if (bg == null) {
+            bg = new Color(46, 49, 54);
+        }
+        final Color finalBg = bg;
+        button.setBackground(finalBg);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(finalBg.brighter(), 2, true),
+            BorderFactory.createEmptyBorder(8, 16, 8, 16)
+        ));
         button.setFocusPainted(false);
         return button;
     }

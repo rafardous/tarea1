@@ -4,7 +4,6 @@ import java.awt.Image;
 import java.awt.MediaTracker;
 import javax.swing.ImageIcon;
 
-
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -18,7 +17,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -28,9 +31,12 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
+import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import javax.swing.UIManager;
-
 
 import com.pap.interfaces.Fabrica;
 import com.pap.interfaces.IControlador;
@@ -46,11 +52,14 @@ import com.pap.presentacion.HistorialPrestamoBibliotecario;
 import com.pap.presentacion.ReportePrestamoZona;
 import com.pap.presentacion.ConsultarMaterialesPendientes;
 
-
 public class Principal {
 
     private JFrame frame;
+    private static Principal INSTANCE;
     private JPanel mainPanel;
+    private JPanel leftPanel;
+    private JPanel rightPanel;
+    private JPanel contentPanel;
     
     // Internal Frames para las funcionalidades
     private AltaLector altaLectorInternalFrame;
@@ -58,14 +67,13 @@ public class Principal {
     private ModificarEstadoLector modificarEstadoLectorInternalFrame;
     private CambiarZonaLector cambiarZonaLectorInternalFrame;
     
-    // Internal Frames para gestión de materiales
-
+    // Internal Frames para gestion de materiales
     private RegistrarDonacionLibro registrarDonacionLibroInternalFrame;
     private RegistrarDonacionArticulo registrarDonacionArticuloInternalFrame;
     private ConsultarDonacionesRegistradas consultarDonacionesRegistradasInternalFrame;
     private ConsultarDonacionesPorFecha consultarDonacionesPorFechaInternalFrame;
     
-    // Internal Frames para gestión de préstamos
+    // Internal Frames para gestion de prestamos
     private RegistrarPrestamo registrarPrestamoInternalFrame;
     private ActualizarPrestamo actualizarPrestamoInternalFrame;
     private HistorialPrestamosLector historialPrestamosLectorInternalFrame;
@@ -75,12 +83,31 @@ public class Principal {
     private ReportePrestamoZona reportePrestamoZonaInternalFrame;
     private ConsultarMaterialesPendientes consultarMaterialesPendientesInternalFrame;
 
-    private IControlador controlador; // PRUEBO EL CONTROLADOR COMO ATRIBUTO A VER SI FUNCA ACA
+    private IControlador controlador;
 
     public static void main(String[] args) {
         try {
             // Aplicar look and feel moderno
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            
+            // Personalizar colores de la barra de titulo con esquinas menos redondeadas
+            UIManager.put("InternalFrame.titleBackground", new Color(46, 49, 54));
+            UIManager.put("InternalFrame.titleForeground", Color.WHITE);
+            UIManager.put("InternalFrame.border", BorderFactory.createLineBorder(new Color(46, 49, 54), 1));
+            
+            // Configuraciones para una barra de titulo más moderna
+            UIManager.put("TitlePane.background", new Color(46, 49, 54));
+            UIManager.put("TitlePane.foreground", Color.WHITE);
+            UIManager.put("TitlePane.inactiveBackground", new Color(46, 49, 54));
+            UIManager.put("TitlePane.inactiveForeground", new Color(200, 200, 200));
+            
+            // Reducir el radio de las esquinas redondeadas
+            UIManager.put("TitlePane.border", BorderFactory.createEmptyBorder(0, 0, 0, 0));
+            
+            // Configurar el frame principal para esquinas menos redondeadas
+            UIManager.put("RootPane.background", new Color(46, 49, 54));
+            UIManager.put("RootPane.border", BorderFactory.createLineBorder(new Color(46, 49, 54), 1));
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -99,101 +126,505 @@ public class Principal {
 
     public Principal() {
         initialize();
+        INSTANCE = this;
         
         // Obtener instancia del controlador
         Fabrica fabrica = Fabrica.getInstancia();
         controlador = fabrica.crearControlador();
         
         // Crear los Internal Frames
+        crearInternalFrames();
+        
+        // Crear panel de bienvenida
+        crearPanelBienvenida();
+        
+        // Actualizar posiciones iniciales
+        actualizarPosicionPaneles();
+    }
+
+    // Acceso global controlado
+    public static Principal getInstance() { return INSTANCE; }
+
+    public void volverAPantallaInicialPublic() { volverAPantallaInicial(); }
+
+    public void irASubmenuUsuarios() {
+        contentPanel.removeAll();
+        crearPanelBienvenida();
+        mostrarSubmenuUsuarios();
+        actualizarPosicionPaneles();
+    }
+
+    public void irASubmenuMateriales() {
+        contentPanel.removeAll();
+        crearPanelBienvenida();
+        mostrarSubmenuMateriales();
+        actualizarPosicionPaneles();
+    }
+
+    public void irASubmenuPrestamos() {
+        contentPanel.removeAll();
+        crearPanelBienvenida();
+        mostrarSubmenuPrestamos();
+        actualizarPosicionPaneles();
+    }
+
+    public void irASubmenuControlSeguimiento() {
+        contentPanel.removeAll();
+        crearPanelBienvenida();
+        mostrarSubmenuControlSeguimiento();
+        actualizarPosicionPaneles();
+    }
+
+    private void initialize() {
+        frame = new JFrame("Lectores.uy - Sistema de Biblioteca");
+        
+        // Configurar frame para aspecto moderno
+        frame.setUndecorated(false); // Mantener la barra de título pero personalizada
+        frame.getRootPane().setBackground(new Color(46, 49, 54));
+        
+        // Tamaño inicial y redimensionable
+        frame.setSize(new Dimension(1200, 800));
+        frame.setMinimumSize(new Dimension(1000, 700));
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.setResizable(true);
+        
+        // Agregar WindowListener para manejar el cierre de la ventana
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        
+        // Panel principal con layout absoluto para mejor control de posicionamiento
+        mainPanel = new JPanel();
+        mainPanel.setLayout(null);
+        mainPanel.setBackground(new Color(66, 69, 73));
+        frame.setContentPane(mainPanel);
+        
+        // Crear panel de contenido principal primero
+        contentPanel = new JPanel();
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.setBackground(new Color(66, 69, 73));
+        
+        // Crear panel lateral izquierdo
+        crearPanelLateral();
+        
+        // Crear panel lateral derecho
+        crearPanelDerecho();
+        
+        // Add component listener to handle window resizing
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                actualizarPosicionPaneles();
+            }
+        });
+    }
+
+    private void crearPanelLateral() {
+        leftPanel = new JPanel();
+        leftPanel.setLayout(new BorderLayout());
+        leftPanel.setBackground(new Color(66, 69, 73)); // Dark mode color
+        leftPanel.setBounds(0, 0, 300, frame.getHeight()); // Posición fija en el lado izquierdo
+        
+        // Panel para los botones de menu
+        JPanel menuPanel = new JPanel();
+        menuPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 30));
+        menuPanel.setBackground(new Color(66, 69, 73));
+        menuPanel.setBorder(new EmptyBorder(30, 20, 30, 20));
+        
+        // Crear botones de menu con iconos (sin bordes)
+        JButton btnGestionUsuarios = crearBotonMenu("Gestion de Usuarios", "Gestion_usuarios.png");
+        btnGestionUsuarios.addActionListener(e -> mostrarSubmenuUsuarios());
+        
+        JButton btnGestionMateriales = crearBotonMenu("Gestion de Materiales", "Gestion_materiales.png");
+        btnGestionMateriales.addActionListener(e -> mostrarSubmenuMateriales());
+        
+        JButton btnGestionPrestamos = crearBotonMenu("Gestion de Prestamos", "Gestion_prestamos.png");
+        btnGestionPrestamos.addActionListener(e -> mostrarSubmenuPrestamos());
+        
+        JButton btnControlSeguimiento = crearBotonMenu("Control y Seguimiento", "Control_y_seguimiento.png");
+        btnControlSeguimiento.addActionListener(e -> mostrarSubmenuControlSeguimiento());
+        
+        JButton btnSalir = crearBotonMenu("Salir", "Salir.png");
+        btnSalir.addActionListener(e -> System.exit(0));
+        
+        menuPanel.add(btnGestionUsuarios);
+        menuPanel.add(btnGestionMateriales);
+        menuPanel.add(btnGestionPrestamos);
+        menuPanel.add(btnControlSeguimiento);
+        menuPanel.add(btnSalir);
+        
+        leftPanel.add(menuPanel, BorderLayout.CENTER);
+        mainPanel.add(leftPanel);
+    }
+
+    private void crearPanelDerecho() {
+        rightPanel = new JPanel();
+        rightPanel.setLayout(new BorderLayout());
+        rightPanel.setBackground(new Color(83, 104, 120)); // Color ligeramente mas claro
+        rightPanel.setBounds(300, 0, 255, frame.getHeight()); // Posicionado justo al lado derecho del panel izquierdo
+        rightPanel.setVisible(false); // Inicialmente oculto
+        
+        mainPanel.add(rightPanel);
+        
+        // Set initial bounds for content panel and add it to main panel
+        contentPanel.setBounds(300, 0, Math.max(600, frame.getWidth() - 300), Math.max(400, frame.getHeight()));
+        mainPanel.add(contentPanel);
+    }
+
+    private JButton crearBotonMenu(String texto, String nombreIcono) {
+        JButton boton = new JButton();
+        boton.setText(texto);
+        boton.setHorizontalAlignment(SwingConstants.LEFT);
+        boton.setFont(new Font("Segoe UI", Font.BOLD, 18)); // Aumentado de 14 a 18 (1.5x)
+        boton.setForeground(Color.WHITE); // White text for dark background
+        boton.setBackground(new Color(66, 69, 73)); // Dark mode color
+        boton.setBorder(null); // Sin borde
+        boton.setFocusPainted(false);
+        boton.setPreferredSize(new Dimension(260, 80)); // Aumentado para texto mas grande
+        
+        // Cargar y establecer icono
+        try {
+            ImageIcon icono = new ImageIcon(getClass().getResource("/iconos/" + nombreIcono));
+            if (icono.getImageLoadStatus() == MediaTracker.COMPLETE) {
+                // Redimensionar icono con mejor calidad
+                Image img = icono.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH); // Mayor resolución
+                boton.setIcon(new ImageIcon(img));
+            }
+        } catch (Exception e) {
+            System.err.println("Error al cargar icono: " + nombreIcono);
+        }
+        
+        // Efecto hover sutil
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                boton.setBackground(new Color(76, 79, 83)); // Color ligeramente mas claro
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                boton.setBackground(new Color(66, 69, 73)); // Color original
+            }
+        });
+        
+        return boton;
+    }
+
+    private JButton crearBotonOpcion(String texto) {
+        JButton boton = new JButton();
+        boton.setText(texto);
+        boton.setHorizontalAlignment(SwingConstants.LEFT);
+        boton.setFont(new Font("Segoe UI", Font.BOLD, 16)); // Bold text
+        boton.setForeground(Color.WHITE); // White text
+        boton.setBackground(new Color(83, 104, 120)); // Match panel background
+        boton.setBorder(null); // Sin borde
+        boton.setFocusPainted(false);
+        boton.setPreferredSize(new Dimension(190, 50)); // Adjusted for narrower panel (220 * 0.85 ≈ 190)
+        
+        // Efecto hover sutil
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                boton.setBackground(new Color(100, 120, 140)); // Slightly lighter on hover
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                boton.setBackground(new Color(83, 104, 120)); // Back to original
+            }
+        });
+        
+        return boton;
+    }
+
+    private JButton crearBotonInicio() {
+        JButton boton = new JButton("Volver");
+        boton.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        boton.setForeground(Color.WHITE);
+        boton.setBackground(new Color(52, 152, 219));
+        boton.setBorder(null);
+        boton.setFocusPainted(false);
+        boton.setPreferredSize(new Dimension(190, 50));
+        boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        
+        boton.addActionListener(e -> volverAPantallaInicial());
+        
+        // Efecto hover
+        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                boton.setBackground(new Color(41, 128, 185));
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                boton.setBackground(new Color(52, 152, 219));
+            }
+        });
+        
+        return boton;
+    }
+
+    private void agregarListenerCerrarPanel() {
+        // Agregar listener al contentPanel para cerrar el panel derecho al hacer clic
+        contentPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (rightPanel.isVisible()) {
+                    ocultarPanelDerecho();
+                }
+            }
+        });
+    }
+
+    private void mostrarSubmenuUsuarios() {
+        rightPanel.removeAll();
+        rightPanel.setVisible(true);
+        
+        // Ajustar posiciones de los paneles
+        actualizarPosicionPaneles();
+        
+        JPanel opcionesPanel = new JPanel();
+        opcionesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        opcionesPanel.setBackground(new Color(83, 104, 120));
+        opcionesPanel.setBorder(new EmptyBorder(30, 20, 30, 20));
+        
+        JLabel titulo = new JLabel("Gestion de Usuarios");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titulo.setForeground(Color.WHITE);
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        titulo.setPreferredSize(new Dimension(190, 40));
+        opcionesPanel.add(titulo);
+        
+        JButton btnRegistrarLector = crearBotonOpcion("Registrar Lector");
+        btnRegistrarLector.addActionListener(e -> abrirAltaLector());
+        
+        JButton btnRegistrarBibliotecario = crearBotonOpcion("Registrar Bibliotecario");
+        btnRegistrarBibliotecario.addActionListener(e -> abrirAltaBibliotecario());
+        
+        JButton btnListarLectores = crearBotonOpcion("Listar Lectores");
+        btnListarLectores.addActionListener(e -> abrirListaDeLectores());
+        
+        JButton btnListarBibliotecarios = crearBotonOpcion("Listar Bibliotecarios");
+        btnListarBibliotecarios.addActionListener(e -> abrirListaDeBibliotecarios());
+        
+        JButton btnModificarEstado = crearBotonOpcion("Modificar Estado de Lector");
+        btnModificarEstado.addActionListener(e -> abrirModificarEstadoLector());
+        
+        JButton btnCambiarZona = crearBotonOpcion("Cambiar Zona de Lector");
+        btnCambiarZona.addActionListener(e -> abrirCambiarZonaLector());
+        
+        opcionesPanel.add(btnRegistrarLector);
+        opcionesPanel.add(btnRegistrarBibliotecario);
+        opcionesPanel.add(btnListarLectores);
+        opcionesPanel.add(btnListarBibliotecarios);
+        opcionesPanel.add(btnModificarEstado);
+        opcionesPanel.add(btnCambiarZona);
+        
+        // Botón Inicio al final
+        JButton btnInicio = crearBotonInicio();
+        opcionesPanel.add(btnInicio);
+        
+        rightPanel.add(opcionesPanel, BorderLayout.CENTER);
+        rightPanel.revalidate();
+        rightPanel.repaint();
+        
+        // Agregar listener para cerrar panel al hacer clic afuera
+        agregarListenerCerrarPanel();
+    }
+
+    private void mostrarSubmenuMateriales() {
+        rightPanel.removeAll();
+        rightPanel.setVisible(true);
+        
+        // Ajustar posiciones de los paneles
+        actualizarPosicionPaneles();
+        
+        JPanel opcionesPanel = new JPanel();
+        opcionesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        opcionesPanel.setBackground(new Color(83, 104, 120));
+        opcionesPanel.setBorder(new EmptyBorder(30, 20, 30, 20));
+        
+        JLabel titulo = new JLabel("Gestion de Materiales");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titulo.setForeground(Color.WHITE);
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        titulo.setPreferredSize(new Dimension(190, 40));
+        opcionesPanel.add(titulo);
+        
+        JButton btnRegistrarLibro = crearBotonOpcion("Registrar Donacion de Libro");
+        btnRegistrarLibro.addActionListener(e -> abrirRegistrarDonacionLibro());
+        
+        JButton btnRegistrarArticulo = crearBotonOpcion("Registrar Donacion de Articulo");
+        btnRegistrarArticulo.addActionListener(e -> abrirRegistrarDonacionArticulo());
+        
+        JButton btnConsultarDonaciones = crearBotonOpcion("Consultar Donaciones Registradas");
+        btnConsultarDonaciones.addActionListener(e -> abrirConsultarDonacionesRegistradas());
+        
+        JButton btnConsultarPorFecha = crearBotonOpcion("Consultar Donaciones por Fecha");
+        btnConsultarPorFecha.addActionListener(e -> abrirConsultarDonacionesPorFecha());
+        
+        opcionesPanel.add(btnRegistrarLibro);
+        opcionesPanel.add(btnRegistrarArticulo);
+        opcionesPanel.add(btnConsultarDonaciones);
+        opcionesPanel.add(btnConsultarPorFecha);
+        
+        // Botón Inicio al final
+        JButton btnInicio = crearBotonInicio();
+        opcionesPanel.add(btnInicio);
+        
+        rightPanel.add(opcionesPanel, BorderLayout.CENTER);
+        rightPanel.revalidate();
+        rightPanel.repaint();
+        
+        // Agregar listener para cerrar panel al hacer clic afuera
+        agregarListenerCerrarPanel();
+    }
+
+    private void mostrarSubmenuPrestamos() {
+        rightPanel.removeAll();
+        rightPanel.setVisible(true);
+        
+        // Ajustar posiciones de los paneles
+        actualizarPosicionPaneles();
+        
+        JPanel opcionesPanel = new JPanel();
+        opcionesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        opcionesPanel.setBackground(new Color(83, 104, 120));
+        opcionesPanel.setBorder(new EmptyBorder(30, 20, 30, 20));
+        
+        JLabel titulo = new JLabel("Gestion de Prestamos");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titulo.setForeground(Color.WHITE);
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        titulo.setPreferredSize(new Dimension(190, 40));
+        opcionesPanel.add(titulo);
+        
+        JButton btnRegistrarPrestamo = crearBotonOpcion("Registrar Prestamo");
+        btnRegistrarPrestamo.addActionListener(e -> abrirRegistrarPrestamo());
+        
+        JButton btnActualizarPrestamo = crearBotonOpcion("Actualizar Prestamo");
+        btnActualizarPrestamo.addActionListener(e -> abrirActualizarPrestamo());
+        
+        JButton btnHistorialLector = crearBotonOpcion("Historial Prestamos Lector");
+        btnHistorialLector.addActionListener(e -> abrirHistorialPrestamosLector());
+        
+        opcionesPanel.add(btnRegistrarPrestamo);
+        opcionesPanel.add(btnActualizarPrestamo);
+        opcionesPanel.add(btnHistorialLector);
+        
+        // Botón Inicio al final
+        JButton btnInicio = crearBotonInicio();
+        opcionesPanel.add(btnInicio);
+        
+        rightPanel.add(opcionesPanel, BorderLayout.CENTER);
+        rightPanel.revalidate();
+        rightPanel.repaint();
+        
+        // Agregar listener para cerrar panel al hacer clic afuera
+        agregarListenerCerrarPanel();
+    }
+
+    private void mostrarSubmenuControlSeguimiento() {
+        rightPanel.removeAll();
+        rightPanel.setVisible(true);
+        
+        // Ajustar posiciones de los paneles
+        actualizarPosicionPaneles();
+        
+        JPanel opcionesPanel = new JPanel();
+        opcionesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        opcionesPanel.setBackground(new Color(83, 104, 120));
+        opcionesPanel.setBorder(new EmptyBorder(30, 20, 30, 20));
+        
+        JLabel titulo = new JLabel("Control y Seguimiento");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titulo.setForeground(Color.WHITE);
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        titulo.setPreferredSize(new Dimension(190, 40));
+        opcionesPanel.add(titulo);
+        
+        JButton btnHistorialBibliotecario = crearBotonOpcion("Historial Prestamos Bibliotecario");
+        btnHistorialBibliotecario.addActionListener(e -> abrirHistorialPrestamoBibliotecario());
+        
+        JButton btnReporteZona = crearBotonOpcion("Reporte Prestamos por Zona");
+        btnReporteZona.addActionListener(e -> abrirReportePrestamoZona());
+        
+        JButton btnMaterialesSolicitados = crearBotonOpcion("Materiales mas Solicitados");
+        btnMaterialesSolicitados.addActionListener(e -> abrirConsultarMaterialesPendientes());
+        
+        opcionesPanel.add(btnHistorialBibliotecario);
+        opcionesPanel.add(btnReporteZona);
+        opcionesPanel.add(btnMaterialesSolicitados);
+        
+        // Botón Inicio al final
+        JButton btnInicio = crearBotonInicio();
+        opcionesPanel.add(btnInicio);
+        
+        rightPanel.add(opcionesPanel, BorderLayout.CENTER);
+        rightPanel.revalidate();
+        rightPanel.repaint();
+        
+        // Agregar listener para cerrar panel al hacer clic afuera
+        agregarListenerCerrarPanel();
+    }
+
+    private void crearInternalFrames() {
+        // Crear los Internal Frames para gestion de usuarios
         altaLectorInternalFrame = new AltaLector(controlador);
-        altaLectorInternalFrame.setClosable(true);
-        altaLectorInternalFrame.setLocation(200, 100);
-        altaLectorInternalFrame.setVisible(false);
-        mainPanel.add(altaLectorInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
         altaBibliotecarioInternalFrame = new AltaBibliotecario(controlador);
-        altaBibliotecarioInternalFrame.setClosable(true);
-        altaBibliotecarioInternalFrame.setLocation(200, 100);
-        altaBibliotecarioInternalFrame.setVisible(false);
-        mainPanel.add(altaBibliotecarioInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
         modificarEstadoLectorInternalFrame = new ModificarEstadoLector(controlador);
-        modificarEstadoLectorInternalFrame.setClosable(true);
-        modificarEstadoLectorInternalFrame.setLocation(200, 100);
-        modificarEstadoLectorInternalFrame.setVisible(false);
-        mainPanel.add(modificarEstadoLectorInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
         cambiarZonaLectorInternalFrame = new CambiarZonaLector(controlador);
-        cambiarZonaLectorInternalFrame.setClosable(true);
-        cambiarZonaLectorInternalFrame.setLocation(200, 100);
-        cambiarZonaLectorInternalFrame.setVisible(false);
-        mainPanel.add(cambiarZonaLectorInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
-
-        // Crear los Internal Frames para gestión de materiales
-        
+        // Crear los Internal Frames para gestion de materiales
         registrarDonacionLibroInternalFrame = new RegistrarDonacionLibro(controlador);
-        registrarDonacionLibroInternalFrame.setClosable(true);
-        registrarDonacionLibroInternalFrame.setLocation(200, 100);
-        registrarDonacionLibroInternalFrame.setVisible(false);
-        mainPanel.add(registrarDonacionLibroInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
         registrarDonacionArticuloInternalFrame = new RegistrarDonacionArticulo(controlador);
-        registrarDonacionArticuloInternalFrame.setClosable(true);
-        registrarDonacionArticuloInternalFrame.setLocation(200, 100);
-        registrarDonacionArticuloInternalFrame.setVisible(false);
-        mainPanel.add(registrarDonacionArticuloInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
         consultarDonacionesRegistradasInternalFrame = new ConsultarDonacionesRegistradas(controlador);
-        consultarDonacionesRegistradasInternalFrame.setClosable(true);
-        consultarDonacionesRegistradasInternalFrame.setLocation(200, 100);
-        consultarDonacionesRegistradasInternalFrame.setVisible(false);
-        mainPanel.add(consultarDonacionesRegistradasInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
         consultarDonacionesPorFechaInternalFrame = new ConsultarDonacionesPorFecha(controlador);
-        consultarDonacionesPorFechaInternalFrame.setClosable(true);
-        consultarDonacionesPorFechaInternalFrame.setLocation(200, 100);
-        consultarDonacionesPorFechaInternalFrame.setVisible(false);
-        mainPanel.add(consultarDonacionesPorFechaInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
-        // Crear los Internal Frames para gestión de préstamos
+        // Crear los Internal Frames para gestion de prestamos
         registrarPrestamoInternalFrame = new RegistrarPrestamo(controlador);
-        registrarPrestamoInternalFrame.setClosable(true);
-        registrarPrestamoInternalFrame.setLocation(200, 100);
-        registrarPrestamoInternalFrame.setVisible(false);
-        mainPanel.add(registrarPrestamoInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
         actualizarPrestamoInternalFrame = new ActualizarPrestamo(controlador);
-        actualizarPrestamoInternalFrame.setClosable(true);
-        actualizarPrestamoInternalFrame.setLocation(200, 100);
-        actualizarPrestamoInternalFrame.setVisible(false);
-        mainPanel.add(actualizarPrestamoInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
         historialPrestamosLectorInternalFrame = new HistorialPrestamosLector(controlador);
-        historialPrestamosLectorInternalFrame.setClosable(true);
-        historialPrestamosLectorInternalFrame.setLocation(200, 100);
-        historialPrestamosLectorInternalFrame.setVisible(false);
-        mainPanel.add(historialPrestamosLectorInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
         // Crear los Internal Frames para control y seguimiento
         historialPrestamoBibliotecarioInternalFrame = new HistorialPrestamoBibliotecario(controlador);
-        historialPrestamoBibliotecarioInternalFrame.setClosable(true);
-        historialPrestamoBibliotecarioInternalFrame.setLocation(200, 100);
-        historialPrestamoBibliotecarioInternalFrame.setVisible(false);
-        mainPanel.add(historialPrestamoBibliotecarioInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
         reportePrestamoZonaInternalFrame = new ReportePrestamoZona(controlador);
-        reportePrestamoZonaInternalFrame.setClosable(true);
-        reportePrestamoZonaInternalFrame.setLocation(200, 100);
-        reportePrestamoZonaInternalFrame.setVisible(false);
-        mainPanel.add(reportePrestamoZonaInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
         
         consultarMaterialesPendientesInternalFrame = new ConsultarMaterialesPendientes(controlador);
-        consultarMaterialesPendientesInternalFrame.setClosable(true);
-        consultarMaterialesPendientesInternalFrame.setLocation(200, 100);
-        consultarMaterialesPendientesInternalFrame.setVisible(false);
-        mainPanel.add(consultarMaterialesPendientesInternalFrame);
+        // No es necesario configurar como InternalFrame ya que es un JPanel
+    }
+
+    private void configurarInternalFrame(javax.swing.JInternalFrame internalFrame) {
+        internalFrame.setClosable(true);
+        internalFrame.setResizable(true);
+        internalFrame.setMaximizable(true);
+        internalFrame.setIconifiable(true);
+        internalFrame.setLocation(50, 50);
+        internalFrame.setVisible(false);
         
+        // Configurar bordes y colores
+        internalFrame.setBorder(BorderFactory.createLineBorder(new Color(34, 51, 59), 1));
+        
+        contentPanel.add(internalFrame);
+    }
+
+    private void crearPanelBienvenida() {
         // Panel de bienvenida con imagen de fondo
         JPanel welcomePanel = new JPanel() {
             @Override
@@ -223,7 +654,7 @@ public class Principal {
                     g2d.fillRect(0, 0, getWidth(), getHeight());
                 }
                 
-                // Círculo decorativo
+                // Circulo decorativo
                 g2d.setColor(new Color(255, 255, 255, 30));
                 g2d.fillOval(getWidth() - 150, getHeight() - 150, 200, 200);
                 
@@ -231,632 +662,259 @@ public class Principal {
             }
         };
         welcomePanel.setLayout(null);
-        // Hacer que el panel de bienvenida ocupe toda la ventana
-        welcomePanel.setBounds(0, 0, frame.getWidth(), frame.getHeight());
+        welcomePanel.setBounds(0, 0, contentPanel.getWidth(), contentPanel.getHeight());
         
-        // Título principal con sombra
+        // Titulo principal centrado
         JLabel lblBienvenida = new JLabel("Lectores.uy");
-        lblBienvenida.setFont(new Font("Segoe UI", Font.BOLD, 64));
+        lblBienvenida.setFont(new Font("Century Gothic", Font.BOLD, 92));
         lblBienvenida.setForeground(Color.WHITE);
-        lblBienvenida.setBounds(200, 150, 400, 80);
+        lblBienvenida.setHorizontalAlignment(SwingConstants.CENTER);
+        lblBienvenida.setBounds(0, 120, contentPanel.getWidth(), 100);
         welcomePanel.add(lblBienvenida);
         
-        // Subtitulo
+        // Subtitulo centrado
         JLabel lblSubtitulo = new JLabel("Sistema de Gestion de Biblioteca Comunitaria");
-        lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 20));
+        lblSubtitulo.setFont(new Font("Century Gothic", Font.PLAIN, 32));
         lblSubtitulo.setForeground(new Color(255, 255, 255));
-        lblSubtitulo.setBounds(200, 250, 400, 30);
+        lblSubtitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        lblSubtitulo.setBounds(0, 220, contentPanel.getWidth(), 40);
         welcomePanel.add(lblSubtitulo);
         
-        // Descripcion
-        JLabel lblDescripcion = new JLabel("<html><div style='text-align: center; width: 400px;'>" +
+        // Descripcion centrada y más abajo
+        JLabel lblDescripcion = new JLabel("<html><div style='text-align: center; width: 800px;'>" +
             "Bienvenido al sistema de gestion integral para bibliotecas comunitarias.<br>" +
             "Desde aqui podras administrar usuarios, materiales y prestamos de manera eficiente.</div></html>");
-        lblDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblDescripcion.setFont(new Font("Century Gothic", Font.PLAIN, 16));
         lblDescripcion.setForeground(new Color(255, 255, 255));
-        lblDescripcion.setBounds(200, 300, 400, 60);
+        lblDescripcion.setHorizontalAlignment(SwingConstants.CENTER);
+        lblDescripcion.setBounds((contentPanel.getWidth() - 800) / 2, 320, 800, 100);
         welcomePanel.add(lblDescripcion);
         
-        mainPanel.add(welcomePanel);
+        contentPanel.add(welcomePanel);
         
-        // Listener para cambios de tamaño de la ventana
+        // Listener para cambios de tamano de la ventana
         frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                welcomePanel.setBounds(0, 0, frame.getWidth(), frame.getHeight());
+                welcomePanel.setBounds(0, 0, contentPanel.getWidth(), contentPanel.getHeight());
+                
+                // Actualizar posiciones de los labels para mantener el centrado
+                lblBienvenida.setBounds(0, 120, contentPanel.getWidth(), 100);
+                lblSubtitulo.setBounds(0, 220, contentPanel.getWidth(), 40);
+                lblDescripcion.setBounds((contentPanel.getWidth() - 800) / 2, 320, 800, 100);
+                
                 welcomePanel.repaint();
             }
         });
     }
 
-    private void initialize() {
-        frame = new JFrame("Lectores.uy - Sistema de Biblioteca");
-        frame.setBounds(100, 100, 1000, 700);
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.setResizable(true);
+    private void ocultarPanelDerecho() {
+        if (rightPanel != null) {
+            rightPanel.setVisible(false);
+        }
+        // Ajustar el panel de contenido para ocupar todo el espacio disponible
+        if (contentPanel != null) {
+            contentPanel.setBounds(300, 0, frame.getWidth() - 300, frame.getHeight());
+        }
+        if (mainPanel != null) {
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        }
+    }
+    
+    private void actualizarPosicionPaneles() {
+        // Actualizar posiciones cuando la ventana cambia de tamaño
+        if (leftPanel != null) {
+            leftPanel.setBounds(0, 0, 300, frame.getHeight());
+        }
         
-        // Agregar WindowListener para manejar el cierre de la ventana
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
+        if (rightPanel != null && contentPanel != null) {
+            rightPanel.setBounds(300, 0, 255, frame.getHeight());
+            
+            if (rightPanel.isVisible()) {
+                // Si el panel derecho está visible, el contenido empieza después de él
+                contentPanel.setBounds(555, 0, frame.getWidth() - 555, frame.getHeight());
+            } else {
+                // Si el panel derecho está oculto, el contenido empieza después del panel izquierdo
+                contentPanel.setBounds(300, 0, frame.getWidth() - 300, frame.getHeight());
             }
-        });
+        }
         
-        // Panel principal sin fondo (asi se ve la imagen completa mas linda )
-        mainPanel = new JPanel();
-        mainPanel.setLayout(null);
-        frame.setContentPane(mainPanel);
+        if (mainPanel != null) {
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        }
+    }
+
+    private void mostrarFuncionEnEspacioPrincipal(javax.swing.JInternalFrame internalFrame) {
+        // Ocultar panel de bienvenida
+        contentPanel.removeAll();
         
-        // Crear barra de menu 
-        JMenuBar menuBar = new JMenuBar() {
+        // Crear un panel contenedor para la función
+        JPanel funcionPanel = new JPanel(new BorderLayout());
+        funcionPanel.setBackground(new Color(66, 69, 73));
+        funcionPanel.setOpaque(true);
+        
+        // Crear panel de título
+        JPanel tituloPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
-                // Fondo con gradiente moderno (tipo Steam)
+                // Fondo con gradiente moderno
                 GradientPaint gradient = new GradientPaint(
-                    0, 0, new Color(45, 45, 45),
-                    0, getHeight(), new Color(60, 60, 60)
+                    0, 0, new Color(34, 51, 59),
+                    getWidth(), getHeight(), new Color(52, 73, 94)
                 );
                 g2d.setPaint(gradient);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                
-                // Borde superior sutil
-                g2d.setColor(new Color(80, 80, 80));
-                g2d.drawLine(0, 0, getWidth(), 0);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
                 
                 g2d.dispose();
             }
         };
-        menuBar.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        frame.setJMenuBar(menuBar);
+        tituloPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 20));
+        funcionPanel.add(tituloPanel, BorderLayout.NORTH);
         
-        // Menú "Gestión de Usuarios" con estilo moderno
-        JMenu menuUsuarios = new JMenu("Gestion de Usuarios") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuUsuarios.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        menuUsuarios.setForeground(new Color(220, 220, 220));
-        menuUsuarios.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-        menuBar.add(menuUsuarios);
+        // Título de la función
+        JLabel lblTitulo = new JLabel(internalFrame.getTitle());
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lblTitulo.setForeground(Color.WHITE);
+        tituloPanel.add(lblTitulo);
         
-        // Submenú "Registrar" con estilo moderno
-        JMenu menuRegistrar = new JMenu("Registrar") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuRegistrar.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        menuRegistrar.setForeground(Color.BLACK);
-        menuRegistrar.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
-        menuUsuarios.add(menuRegistrar);
+        // Botón Volver
+        JButton btnVolver = new JButton("Volver");
+        btnVolver.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnVolver.setForeground(Color.WHITE);
+        btnVolver.setBackground(new Color(231, 76, 60));
+        btnVolver.setBorder(null);
+        btnVolver.setFocusPainted(false);
+        btnVolver.setBounds(funcionPanel.getWidth() - 150, 25, 100, 35);
+        btnVolver.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnVolver.addActionListener(e -> volverAPantallaInicial());
+        tituloPanel.add(btnVolver);
         
-        // Item para registrar Lector con estilo moderno
-        JMenuItem menuItemLector = new JMenuItem("Nuevo Lector") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemLector.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemLector.setForeground(Color.BLACK);
-        menuItemLector.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemLector.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                altaLectorInternalFrame.setVisible(true);
-                altaLectorInternalFrame.toFront();
-            }
-        });
-        menuRegistrar.add(menuItemLector);
+        // Agregar el contenido de la función
+        internalFrame.setBounds(0, 80, funcionPanel.getWidth(), funcionPanel.getHeight() - 80);
+        internalFrame.setVisible(true);
+        funcionPanel.add(internalFrame);
         
-        // Item para registrar Bibliotecario con estilo moderno
-        JMenuItem menuItemBibliotecario = new JMenuItem("Nuevo Bibliotecario") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemBibliotecario.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemBibliotecario.setForeground(Color.BLACK);
-        menuItemBibliotecario.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemBibliotecario.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                altaBibliotecarioInternalFrame.setVisible(true);
-                altaBibliotecarioInternalFrame.toFront();
-            }
-        });
-        menuRegistrar.add(menuItemBibliotecario);
-        
-        // Separador visual
-        menuUsuarios.addSeparator();
-        
-        // Item para listar Lectores
-        JMenuItem menuItemListarLectores = new JMenuItem("Listar Lectores") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemListarLectores.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemListarLectores.setForeground(Color.BLACK);
-        menuItemListarLectores.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemListarLectores.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirListaDeLectores();
-            }
-        });
-        menuUsuarios.add(menuItemListarLectores);
+        contentPanel.add(funcionPanel);
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
 
-        // -------------------------------------------------------
-        // Item para listar Bibliotecarios
-        JMenuItem menuItemListarBibliotecarios = new JMenuItem("Listar Bibliotecarios") {
+    private void mostrarFuncionEnEspacioPrincipalPanel(JPanel panel) {
+        // Ocultar panel de bienvenida
+        contentPanel.removeAll();
+        
+        // Crear un panel contenedor para la función con BorderLayout
+        JPanel funcionPanel = new JPanel();
+        funcionPanel.setLayout(new BorderLayout());
+        funcionPanel.setBackground(new Color(66, 69, 73)); // Dark background
+        
+        // Crear panel de título
+        JPanel tituloPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
+                Graphics2D g2d = (Graphics2D) g.create();
+                
+                // Fondo con gradiente moderno
+                GradientPaint gradient = new GradientPaint(
+                    0, 0, new Color(34, 51, 59),
+                    getWidth(), getHeight(), new Color(52, 73, 94)
+                );
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+                
+                g2d.dispose();
             }
         };
-        menuItemListarBibliotecarios.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemListarBibliotecarios.setForeground(Color.BLACK);
-        menuItemListarBibliotecarios.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemListarBibliotecarios.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirListaDeBibliotecarios();
-            }
-        });
-        menuUsuarios.add(menuItemListarBibliotecarios);
+        tituloPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        tituloPanel.setPreferredSize(new Dimension(0, 80));
         
-        // -------------------------------------------------------
-        // Item para modificar estado de lector
-        JMenuItem menuItemModificarEstadoLector = new JMenuItem("Modificar Estado de Lector") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemModificarEstadoLector.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemModificarEstadoLector.setForeground(Color.BLACK);
-        menuItemModificarEstadoLector.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemModificarEstadoLector.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirModificarEstadoLector();
-            }
-        });
-        menuUsuarios.add(menuItemModificarEstadoLector);
+        // Título de la función (dinámico basado en el tipo de panel)
+        String titulo = obtenerTituloPanel(panel);
+        JLabel lblTitulo = new JLabel(titulo);
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lblTitulo.setForeground(Color.WHITE);
+        tituloPanel.add(lblTitulo);
         
-        // -------------------------------------------------------
-        // Item para cambiar zona de lector
-        JMenuItem menuItemCambiarZonaLector = new JMenuItem("Cambiar Zona de Lector") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemCambiarZonaLector.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemCambiarZonaLector.setForeground(Color.BLACK);
-        menuItemCambiarZonaLector.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemCambiarZonaLector.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirCambiarZonaLector();
-            }
-        });
-        menuUsuarios.add(menuItemCambiarZonaLector);
-        // -------------------------------------------------------
+        // Add title panel to NORTH
+        funcionPanel.add(tituloPanel, BorderLayout.NORTH);
         
-        // Menú "Gestión de Materiales" con estilo moderno
-        JMenu menuMateriales = new JMenu("Gestion de Materiales") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuMateriales.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        menuMateriales.setForeground(new Color(220, 220, 220));
-        menuMateriales.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-        menuBar.add(menuMateriales);
+        // Agregar el contenido de la función
+        panel.setVisible(true);
+        funcionPanel.add(panel, BorderLayout.CENTER);
         
-        // Item para registrar donación de libro con estilo moderno
-        JMenuItem menuItemRegistrarLibro = new JMenuItem("Registrar donacion de libro") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemRegistrarLibro.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemRegistrarLibro.setForeground(Color.BLACK);
-        menuItemRegistrarLibro.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemRegistrarLibro.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirRegistrarDonacionLibro();
-            }
-        });
-        menuMateriales.add(menuItemRegistrarLibro);
+        contentPanel.add(funcionPanel, BorderLayout.CENTER);
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+    
+    private String obtenerTituloPanel(JPanel panel) {
+        if (panel instanceof AltaLector) {
+            return "Registrar Nuevo Lector";
+        } else if (panel instanceof AltaBibliotecario) {
+            return "Registrar Nuevo Bibliotecario";
+        } else if (panel instanceof ModificarEstadoLector) {
+            return "Modificar Estado de Lector";
+        } else if (panel instanceof CambiarZonaLector) {
+            return "Cambiar Zona de Lector";
+        } else if (panel instanceof RegistrarDonacionLibro) {
+            return "Registrar Donacion de Libro";
+        } else if (panel instanceof RegistrarDonacionArticulo) {
+            return "Registrar Donacion de Articulo";
+        } else if (panel instanceof ConsultarDonacionesRegistradas) {
+            return "Consultar Donaciones Registradas";
+        } else if (panel instanceof ConsultarDonacionesPorFecha) {
+            return "Consultar Donaciones por Fecha";
+        } else if (panel instanceof RegistrarPrestamo) {
+            return "Registrar Nuevo Prestamo";
+        } else if (panel instanceof ActualizarPrestamo) {
+            return "Actualizar Prestamo";
+        } else if (panel instanceof HistorialPrestamosLector) {
+            return "Historial de Prestamos por Lector";
+        } else if (panel instanceof HistorialPrestamoBibliotecario) {
+            return "Historial de Prestamos por Bibliotecario";
+        } else if (panel instanceof ReportePrestamoZona) {
+            return "Reporte de Prestamos por Zona";
+        } else if (panel instanceof ConsultarMaterialesPendientes) {
+            return "Materiales con Prestamos Pendientes";
+        }
+        return "Funcion";
+    }
+
+    private void volverAPantallaInicial() {
+        // Ocultar el panel secundario
+        ocultarPanelDerecho();
         
-        // Item para registrar donación de artículo con estilo moderno
-        JMenuItem menuItemRegistrarArticulo = new JMenuItem("Registrar donacion de articulo") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemRegistrarArticulo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemRegistrarArticulo.setForeground(Color.BLACK);
-        menuItemRegistrarArticulo.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemRegistrarArticulo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirRegistrarDonacionArticulo();
-            }
-        });
-        menuMateriales.add(menuItemRegistrarArticulo);
+        // Ocultar todas las funciones
+        contentPanel.removeAll();
         
-        // Separador visual
-        menuMateriales.addSeparator();
+        // Mostrar panel de bienvenida
+        crearPanelBienvenida();
         
-        // Item para consultar donaciones registradas
-        JMenuItem menuItemConsultarDonaciones = new JMenuItem("Consultar donaciones registradas") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemConsultarDonaciones.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemConsultarDonaciones.setForeground(Color.BLACK);
-        menuItemConsultarDonaciones.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemConsultarDonaciones.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirConsultarDonacionesRegistradas();
-            }
-        });
-        menuMateriales.add(menuItemConsultarDonaciones);
-        
-        // Item para consultar donaciones por fecha
-        JMenuItem menuItemConsultarPorFecha = new JMenuItem("Consultar donaciones por fecha") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemConsultarPorFecha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemConsultarPorFecha.setForeground(Color.BLACK);
-        menuItemConsultarPorFecha.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemConsultarPorFecha.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirConsultarDonacionesPorFecha();
-            }
-        });
-        menuMateriales.add(menuItemConsultarPorFecha);
-        // -------------------------------------------------------
-        
-        // Menú "Gestión de Préstamos" con estilo moderno
-        JMenu menuPrestamos = new JMenu("Gestion de Prestamos") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuPrestamos.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        menuPrestamos.setForeground(new Color(220, 220, 220));
-        menuPrestamos.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-        menuBar.add(menuPrestamos);
-        
-        // Item para registrar préstamo con estilo moderno
-        JMenuItem menuItemRegistrarPrestamo = new JMenuItem("Registrar Prestamo") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemRegistrarPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemRegistrarPrestamo.setForeground(Color.BLACK);
-        menuItemRegistrarPrestamo.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemRegistrarPrestamo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirRegistrarPrestamo();
-            }
-        });
-        menuPrestamos.add(menuItemRegistrarPrestamo);
-        
-        // Item para actualizar préstamo con estilo moderno
-        JMenuItem menuItemActualizarPrestamo = new JMenuItem("Actualizar Prestamo") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemActualizarPrestamo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemActualizarPrestamo.setForeground(Color.BLACK);
-        menuItemActualizarPrestamo.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemActualizarPrestamo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirActualizarPrestamo();
-            }
-        });
-        menuPrestamos.add(menuItemActualizarPrestamo);
-        
-        // Item para historial de préstamos del lector con estilo moderno
-        JMenuItem menuItemHistorialPrestamosLector = new JMenuItem("Historial Prestamos Lector") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemHistorialPrestamosLector.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemHistorialPrestamosLector.setForeground(Color.BLACK);
-        menuItemHistorialPrestamosLector.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemHistorialPrestamosLector.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirHistorialPrestamosLector();
-            }
-        });
-        menuPrestamos.add(menuItemHistorialPrestamosLector);
-        // -------------------------------------------------------
-        
-        // Menú "Control y Seguimiento" con estilo moderno
-        JMenu menuControlSeguimiento = new JMenu("Control y Seguimiento") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuControlSeguimiento.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        menuControlSeguimiento.setForeground(new Color(220, 220, 220));
-        menuControlSeguimiento.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-        menuBar.add(menuControlSeguimiento);
-        
-        // Item para historial de préstamos del bibliotecario
-        JMenuItem menuItemHistorialPrestamoBibliotecario = new JMenuItem("Historial Prestamos Bibliotecario") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemHistorialPrestamoBibliotecario.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemHistorialPrestamoBibliotecario.setForeground(Color.BLACK);
-        menuItemHistorialPrestamoBibliotecario.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemHistorialPrestamoBibliotecario.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirHistorialPrestamoBibliotecario();
-            }
-        });
-        menuControlSeguimiento.add(menuItemHistorialPrestamoBibliotecario);
-        
-        // Item para reporte de préstamos por zona
-        JMenuItem menuItemReportePrestamoZona = new JMenuItem("Reporte Prestamos por Zona") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemReportePrestamoZona.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemReportePrestamoZona.setForeground(Color.BLACK);
-        menuItemReportePrestamoZona.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemReportePrestamoZona.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirReportePrestamoZona();
-            }
-        });
-        menuControlSeguimiento.add(menuItemReportePrestamoZona);
-        
-        // Item para materiales más solicitados
-        JMenuItem menuItemMaterialPendiente = new JMenuItem("Materiales mas solicitados") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(70, 130, 180, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemMaterialPendiente.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemMaterialPendiente.setForeground(Color.BLACK);
-        menuItemMaterialPendiente.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemMaterialPendiente.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirConsultarMaterialesPendientes();
-            }
-        });
-        menuControlSeguimiento.add(menuItemMaterialPendiente);
-        // -------------------------------------------------------
-        
-        // Menú "Salir" con estilo moderno
-        JMenu menuSalir = new JMenu("Salir") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(180, 70, 70, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuSalir.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        menuSalir.setForeground(new Color(220, 220, 220));
-        menuSalir.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-        menuBar.add(menuSalir);
-        
-        JMenuItem menuItemSalir = new JMenuItem("Cerrar Aplicacion") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getModel().isArmed()) {
-                    Graphics2D g2d = (Graphics2D) g.create();
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(new Color(180, 70, 70, 150));
-                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
-                    g2d.dispose();
-                }
-            }
-        };
-        menuItemSalir.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        menuItemSalir.setForeground(Color.BLACK);
-        menuItemSalir.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-        menuItemSalir.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
-        menuSalir.add(menuItemSalir);
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    // Metodos para abrir ventanas de gestion de usuarios
+    public void abrirAltaLector() {
+        ocultarPanelDerecho();
+        mostrarFuncionEnEspacioPrincipalPanel(altaLectorInternalFrame);
+    }
+    
+    public void abrirAltaBibliotecario() {
+        ocultarPanelDerecho();
+        mostrarFuncionEnEspacioPrincipalPanel(altaBibliotecarioInternalFrame);
     }
     
     public void abrirListaDeLectores() {
         ListaDeLectores listaDeLectoresFrame = new ListaDeLectores(controlador);
         listaDeLectoresFrame.setLocation(200, 100);
         listaDeLectoresFrame.setVisible(true);
-        // No agregar el frame al panel - debe ser una ventana independiente
-        // mainPanel.add(listaDeLectoresFrame);
         listaDeLectoresFrame.toFront();
     }
 
@@ -864,92 +922,73 @@ public class Principal {
         ListaDeBibliotecarios listaDeBibliotecariosFrame = new ListaDeBibliotecarios(controlador);
         listaDeBibliotecariosFrame.setLocation(200, 100);
         listaDeBibliotecariosFrame.setVisible(true);
-        // No agregar el frame al panel - debe ser una ventana independiente
-        // mainPanel.add(listaDeBibliotecariosFrame);
         listaDeBibliotecariosFrame.toFront();
     }
     
     public void abrirModificarEstadoLector() {
-        // Recargar lectores antes de mostrar la ventana
+        ocultarPanelDerecho();
         modificarEstadoLectorInternalFrame.cargarLectores();
-        modificarEstadoLectorInternalFrame.setLocation(200, 100);
-        modificarEstadoLectorInternalFrame.setVisible(true);
-        modificarEstadoLectorInternalFrame.toFront();
+        mostrarFuncionEnEspacioPrincipalPanel(modificarEstadoLectorInternalFrame);
     }
     
     public void abrirCambiarZonaLector() {
-        // Recargar lectores antes de mostrar la ventana
+        ocultarPanelDerecho();
         cambiarZonaLectorInternalFrame.cargarLectores();
-        cambiarZonaLectorInternalFrame.setLocation(200, 100);
-        cambiarZonaLectorInternalFrame.setVisible(true);
-        cambiarZonaLectorInternalFrame.toFront();
+        mostrarFuncionEnEspacioPrincipalPanel(cambiarZonaLectorInternalFrame);
     }
-    
 
-    // aca va lo d abrir ventanas de gestión de materiales
+    // Metodos para abrir ventanas de gestion de materiales
     public void abrirRegistrarDonacionLibro() {
-        registrarDonacionLibroInternalFrame.setLocation(200, 100);
-        registrarDonacionLibroInternalFrame.setVisible(true);
-        registrarDonacionLibroInternalFrame.toFront();
+        ocultarPanelDerecho();
+        mostrarFuncionEnEspacioPrincipalPanel(registrarDonacionLibroInternalFrame);
     }
     
     public void abrirRegistrarDonacionArticulo() {
-        registrarDonacionArticuloInternalFrame.setLocation(200, 100);
-        registrarDonacionArticuloInternalFrame.setVisible(true);
-        registrarDonacionArticuloInternalFrame.toFront();
+        ocultarPanelDerecho();
+        mostrarFuncionEnEspacioPrincipalPanel(registrarDonacionArticuloInternalFrame);
     }
     
     public void abrirConsultarDonacionesRegistradas() {
-        consultarDonacionesRegistradasInternalFrame.setLocation(200, 100);
-        consultarDonacionesRegistradasInternalFrame.setVisible(true);
-        consultarDonacionesRegistradasInternalFrame.toFront();
-        // Cargar donaciones después de mostrar la ventana
+        ocultarPanelDerecho();
         consultarDonacionesRegistradasInternalFrame.cargarDonaciones();
+        mostrarFuncionEnEspacioPrincipalPanel(consultarDonacionesRegistradasInternalFrame);
     }
     
     public void abrirConsultarDonacionesPorFecha() {
-        consultarDonacionesPorFechaInternalFrame.setLocation(200, 100);
-        consultarDonacionesPorFechaInternalFrame.setVisible(true);
-        consultarDonacionesPorFechaInternalFrame.toFront();
+        ocultarPanelDerecho();
+        mostrarFuncionEnEspacioPrincipalPanel(consultarDonacionesPorFechaInternalFrame);
     }
     
-    // aca va lo d abrir ventanas de gestión de préstamos
+    // Metodos para abrir ventanas de gestion de prestamos
     public void abrirRegistrarPrestamo() {
-        registrarPrestamoInternalFrame.setLocation(200, 100);
-        registrarPrestamoInternalFrame.setVisible(true);
-        registrarPrestamoInternalFrame.toFront();
+        ocultarPanelDerecho();
+        mostrarFuncionEnEspacioPrincipalPanel(registrarPrestamoInternalFrame);
     }
     
     public void abrirActualizarPrestamo() {
-        // Recargar préstamos antes de mostrar la ventana
+        ocultarPanelDerecho();
         actualizarPrestamoInternalFrame.cargarPrestamos();
-        actualizarPrestamoInternalFrame.setLocation(200, 100);
-        actualizarPrestamoInternalFrame.setVisible(true);
-        actualizarPrestamoInternalFrame.toFront();
+        mostrarFuncionEnEspacioPrincipalPanel(actualizarPrestamoInternalFrame);
     }
     
     public void abrirHistorialPrestamosLector() {
-        historialPrestamosLectorInternalFrame.setLocation(200, 100);
-        historialPrestamosLectorInternalFrame.setVisible(true);
-        historialPrestamosLectorInternalFrame.toFront();
+        ocultarPanelDerecho();
+        mostrarFuncionEnEspacioPrincipalPanel(historialPrestamosLectorInternalFrame);
     }
     
     // Metodos para abrir ventanas de control y seguimiento
     public void abrirHistorialPrestamoBibliotecario() {
-        historialPrestamoBibliotecarioInternalFrame.setLocation(200, 100);
-        historialPrestamoBibliotecarioInternalFrame.setVisible(true);
-        historialPrestamoBibliotecarioInternalFrame.toFront();
+        ocultarPanelDerecho();
+        mostrarFuncionEnEspacioPrincipalPanel(historialPrestamoBibliotecarioInternalFrame);
     }
     
     public void abrirReportePrestamoZona() {
-        reportePrestamoZonaInternalFrame.setLocation(200, 100);
-        reportePrestamoZonaInternalFrame.setVisible(true);
-        reportePrestamoZonaInternalFrame.toFront();
+        ocultarPanelDerecho();
+        mostrarFuncionEnEspacioPrincipalPanel(reportePrestamoZonaInternalFrame);
     }
     
     public void abrirConsultarMaterialesPendientes() {
-        consultarMaterialesPendientesInternalFrame.setLocation(200, 100);
-        consultarMaterialesPendientesInternalFrame.setVisible(true);
-        consultarMaterialesPendientesInternalFrame.toFront();
+        ocultarPanelDerecho();
+        mostrarFuncionEnEspacioPrincipalPanel(consultarMaterialesPendientesInternalFrame);
     }
 }
