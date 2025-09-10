@@ -90,10 +90,23 @@ public class Principal {
             // Aplicar look and feel moderno
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             
-            // Personalizar colores de la barra de titulo
-            UIManager.put("InternalFrame.titleBackground", new Color(34, 51, 59));
+            // Personalizar colores de la barra de titulo con esquinas menos redondeadas
+            UIManager.put("InternalFrame.titleBackground", new Color(46, 49, 54));
             UIManager.put("InternalFrame.titleForeground", Color.WHITE);
-            UIManager.put("InternalFrame.border", BorderFactory.createLineBorder(new Color(34, 51, 59), 1));
+            UIManager.put("InternalFrame.border", BorderFactory.createLineBorder(new Color(46, 49, 54), 1));
+            
+            // Configuraciones para una barra de titulo más moderna
+            UIManager.put("TitlePane.background", new Color(46, 49, 54));
+            UIManager.put("TitlePane.foreground", Color.WHITE);
+            UIManager.put("TitlePane.inactiveBackground", new Color(46, 49, 54));
+            UIManager.put("TitlePane.inactiveForeground", new Color(200, 200, 200));
+            
+            // Reducir el radio de las esquinas redondeadas
+            UIManager.put("TitlePane.border", BorderFactory.createEmptyBorder(0, 0, 0, 0));
+            
+            // Configurar el frame principal para esquinas menos redondeadas
+            UIManager.put("RootPane.background", new Color(46, 49, 54));
+            UIManager.put("RootPane.border", BorderFactory.createLineBorder(new Color(46, 49, 54), 1));
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -164,6 +177,10 @@ public class Principal {
 
     private void initialize() {
         frame = new JFrame("Lectores.uy - Sistema de Biblioteca");
+        
+        // Configurar frame para aspecto moderno
+        frame.setUndecorated(false); // Mantener la barra de título pero personalizada
+        frame.getRootPane().setBackground(new Color(46, 49, 54));
         
         // Tamaño inicial y redimensionable
         frame.setSize(new Dimension(1200, 800));
@@ -647,27 +664,30 @@ public class Principal {
         welcomePanel.setLayout(null);
         welcomePanel.setBounds(0, 0, contentPanel.getWidth(), contentPanel.getHeight());
         
-        // Titulo principal con sombra
+        // Titulo principal centrado
         JLabel lblBienvenida = new JLabel("Lectores.uy");
-        lblBienvenida.setFont(new Font("Segoe UI", Font.BOLD, 64));
+        lblBienvenida.setFont(new Font("Century Gothic", Font.BOLD, 92));
         lblBienvenida.setForeground(Color.WHITE);
-        lblBienvenida.setBounds(200, 150, 400, 80);
+        lblBienvenida.setHorizontalAlignment(SwingConstants.CENTER);
+        lblBienvenida.setBounds(0, 120, contentPanel.getWidth(), 100);
         welcomePanel.add(lblBienvenida);
         
-        // Subtitulo
+        // Subtitulo centrado
         JLabel lblSubtitulo = new JLabel("Sistema de Gestion de Biblioteca Comunitaria");
-        lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 20));
+        lblSubtitulo.setFont(new Font("Century Gothic", Font.PLAIN, 32));
         lblSubtitulo.setForeground(new Color(255, 255, 255));
-        lblSubtitulo.setBounds(200, 250, 400, 30);
+        lblSubtitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        lblSubtitulo.setBounds(0, 220, contentPanel.getWidth(), 40);
         welcomePanel.add(lblSubtitulo);
         
-        // Descripcion
-        JLabel lblDescripcion = new JLabel("<html><div style='text-align: center; width: 400px;'>" +
+        // Descripcion centrada y más abajo
+        JLabel lblDescripcion = new JLabel("<html><div style='text-align: center; width: 800px;'>" +
             "Bienvenido al sistema de gestion integral para bibliotecas comunitarias.<br>" +
             "Desde aqui podras administrar usuarios, materiales y prestamos de manera eficiente.</div></html>");
-        lblDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblDescripcion.setFont(new Font("Century Gothic", Font.PLAIN, 16));
         lblDescripcion.setForeground(new Color(255, 255, 255));
-        lblDescripcion.setBounds(200, 300, 400, 60);
+        lblDescripcion.setHorizontalAlignment(SwingConstants.CENTER);
+        lblDescripcion.setBounds((contentPanel.getWidth() - 800) / 2, 320, 800, 100);
         welcomePanel.add(lblDescripcion);
         
         contentPanel.add(welcomePanel);
@@ -677,6 +697,12 @@ public class Principal {
             @Override
             public void componentResized(ComponentEvent e) {
                 welcomePanel.setBounds(0, 0, contentPanel.getWidth(), contentPanel.getHeight());
+                
+                // Actualizar posiciones de los labels para mantener el centrado
+                lblBienvenida.setBounds(0, 120, contentPanel.getWidth(), 100);
+                lblSubtitulo.setBounds(0, 220, contentPanel.getWidth(), 40);
+                lblDescripcion.setBounds((contentPanel.getWidth() - 800) / 2, 320, 800, 100);
+                
                 welcomePanel.repaint();
             }
         });
@@ -839,7 +865,7 @@ public class Principal {
         } else if (panel instanceof RegistrarDonacionLibro) {
             return "Registrar Donacion de Libro";
         } else if (panel instanceof RegistrarDonacionArticulo) {
-            return "Registrar Donacion de Artículo";
+            return "Registrar Donacion de Articulo";
         } else if (panel instanceof ConsultarDonacionesRegistradas) {
             return "Consultar Donaciones Registradas";
         } else if (panel instanceof ConsultarDonacionesPorFecha) {
