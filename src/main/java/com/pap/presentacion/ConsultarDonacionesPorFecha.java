@@ -101,7 +101,7 @@ public class ConsultarDonacionesPorFecha extends JPanel {
         
         // Panel con scroll para la tabla
         JScrollPane scrollPane = new JScrollPane(tablaDonaciones);
-        scrollPane.setPreferredSize(new Dimension(800, 200));
+        scrollPane.setPreferredSize(new Dimension(800, 300));
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 5, 5, 5)

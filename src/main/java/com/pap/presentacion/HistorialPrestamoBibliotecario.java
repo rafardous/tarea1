@@ -101,13 +101,13 @@ public class HistorialPrestamoBibliotecario extends JPanel {
         gbc.weighty = 0.0;
         formContainerPanel.add(scrollPane, gbc);
         
-        add(formContainerPanel, BorderLayout.CENTER);
-        
-        // Button panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        buttonPanel.setBackground(new Color(74, 76, 81));
-        
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        buttonPanel.setOpaque(false);
+
+        // Add buttons to the button panel
         btnConsultar = createStyledButton("Consultar", new Color(46, 204, 113));
+        btnConsultar.setPreferredSize(new Dimension(120, 35));
         btnConsultar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 consultarHistorialBiblio();
@@ -116,6 +116,7 @@ public class HistorialPrestamoBibliotecario extends JPanel {
         buttonPanel.add(btnConsultar);
         
         btnLimpiar = createStyledButton("Limpiar", new Color(52, 152, 219));
+        btnLimpiar.setPreferredSize(new Dimension(120, 35));
         btnLimpiar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 limpiarTabla();
@@ -124,6 +125,7 @@ public class HistorialPrestamoBibliotecario extends JPanel {
         buttonPanel.add(btnLimpiar);
         
         btnCerrar = createStyledButton("Volver", new Color(52, 152, 219));
+        btnCerrar.setPreferredSize(new Dimension(120, 35));
         btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 com.pap.presentacion.Principal.getInstance().irASubmenuPrestamos();
@@ -131,7 +133,16 @@ public class HistorialPrestamoBibliotecario extends JPanel {
         });
         buttonPanel.add(btnCerrar);
         
-        add(buttonPanel, BorderLayout.SOUTH);
+        // Add button panel to form container
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        gbc.insets = new Insets(10, 0, 0, 0);
+        formContainerPanel.add(buttonPanel, gbc);
+        
+        add(formContainerPanel, BorderLayout.CENTER);
     }
     
     private JPanel crearPanelConsulta() {
@@ -145,7 +156,7 @@ public class HistorialPrestamoBibliotecario extends JPanel {
         // Label para el nro empleado
         JLabel lblLector = new JLabel("Bibliotecario a consultar:");
         lblLector.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lblLector.setForeground(Color.WHITE);
+        lblLector.setForeground(new Color(52, 73, 94));
         panelConsulta.add(lblLector);
         
         // Campo de texto para el nroEmp

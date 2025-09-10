@@ -52,7 +52,7 @@ public class ConsultarMaterialesPendientes extends JPanel {
         setBackground(new Color(74, 76, 81)); // Dark theme background
         
         // Header panel
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
         headerPanel.setBackground(new Color(74, 76, 81));
         
         JLabel lblTitulo = new JLabel("Consultar Materiales Pendientes");
@@ -67,7 +67,7 @@ public class ConsultarMaterialesPendientes extends JPanel {
         JPanel formContainerPanel = new JPanel(new GridBagLayout());
         formContainerPanel.setBackground(new Color(74, 76, 81));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 20, 10, 20);
+        gbc.insets = new Insets(5, 20, 10, 20);
         
         // Panel de información
         JPanel panelInfo = crearPanelInformacion();
@@ -82,7 +82,7 @@ public class ConsultarMaterialesPendientes extends JPanel {
         
         // Panel con scroll para la tabla
         JScrollPane scrollPane = new JScrollPane(tablaMateriales);
-        scrollPane.setPreferredSize(new Dimension(800, 200));
+        scrollPane.setPreferredSize(new Dimension(800, 400));
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
             new EmptyBorder(5, 5, 5, 5)
@@ -94,13 +94,13 @@ public class ConsultarMaterialesPendientes extends JPanel {
         gbc.weighty = 0.0;
         formContainerPanel.add(scrollPane, gbc);
         
-        add(formContainerPanel, BorderLayout.CENTER);
-        
-        // Button panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        buttonPanel.setBackground(new Color(74, 76, 81));
-        
+        // Add buttons with minimal spacing
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        buttonPanel.setOpaque(false);
+
+        // Add buttons to the button panel
         btnConsultar = createStyledButton("Consultar", new Color(46, 204, 113));
+        btnConsultar.setPreferredSize(new Dimension(120, 35));
         btnConsultar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 consultarMaterialesPendientes();
@@ -109,6 +109,7 @@ public class ConsultarMaterialesPendientes extends JPanel {
         buttonPanel.add(btnConsultar);
         
         btnLimpiar = createStyledButton("Limpiar", new Color(52, 152, 219));
+        btnLimpiar.setPreferredSize(new Dimension(120, 35));
         btnLimpiar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 limpiarTabla();
@@ -117,6 +118,7 @@ public class ConsultarMaterialesPendientes extends JPanel {
         buttonPanel.add(btnLimpiar);
         
         btnCerrar = createStyledButton("Volver", new Color(52, 152, 219));
+        btnCerrar.setPreferredSize(new Dimension(120, 35));
         btnCerrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 com.pap.presentacion.Principal.getInstance().irASubmenuControlSeguimiento();
@@ -124,18 +126,27 @@ public class ConsultarMaterialesPendientes extends JPanel {
         });
         buttonPanel.add(btnCerrar);
         
-        add(buttonPanel, BorderLayout.SOUTH);
+        // Add button panel to form container
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        gbc.insets = new Insets(10, 0, 0, 0);
+        formContainerPanel.add(buttonPanel, gbc);
+        
+        add(formContainerPanel, BorderLayout.CENTER);
     }
 
     private JPanel crearPanelInformacion() {
-        JPanel panelInfo = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        JPanel panelInfo = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelInfo.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(52, 152, 219)),
-            new EmptyBorder(15, 20, 15, 20)
+            new EmptyBorder(10, 20, 10, 20)
         ));
         panelInfo.setBackground(new Color(255, 255, 255, 200));
 
-        JLabel lblInfo = new JLabel("Esta consulta muestra los materiales que tienen prestamos en estado PENDIENTE");
+        JLabel lblInfo = new JLabel("Materiales que tienen prestamos en estado PENDIENTE");
         lblInfo.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblInfo.setForeground(Color.WHITE);
         panelInfo.add(lblInfo);

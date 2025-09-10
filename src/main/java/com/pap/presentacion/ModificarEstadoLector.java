@@ -475,7 +475,7 @@ public class ModificarEstadoLector extends JPanel {
             new EmptyBorder(5, 8, 5, 8)
         ));
         textField.setBackground(Color.WHITE);
-        textField.setForeground(Color.WHITE);
+        textField.setForeground(Color.BLACK);
         textField.setEditable(editable);
         return textField;
     }
